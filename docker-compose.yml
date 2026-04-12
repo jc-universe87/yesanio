@@ -1,0 +1,76 @@
+# =====================================================================
+# Yesanio v2 — Docker Compose
+# =====================================================================
+# This file defines a FULLY ISOLATED stack:
+#   - Its own named volume (yesanio_db_data) — cannot be shared
+#   - Its own private network (yesanio_net) — nothing else can join
+#   - Uniquely-named service and container (yesanio-db / yesanio_db)
+#   - Project name is locked to "yesanio" regardless of folder name
+#
+# To verify isolation after `docker compose up`:
+#   docker volume ls   | grep yesanio    # → yesanio_db_data
+#   docker network ls  | grep yesanio    # → yesanio_yesanio_net
+#   docker ps          | grep yesanio    # → yesanio_db, yesanio_backend, yesanio_frontend
+# =====================================================================
+
+name: yesanio
+
+services:
+
+  yesanio-db:
+    image: mariadb:11
+    container_name: yesanio_db
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: yesanio_root_change_me
+      MARIADB_DATABASE: yesanio
+      MARIADB_USER: yesanio_app
+      MARIADB_PASSWORD: yesanio_app_change_me
+    volumes:
+      - yesanio_db_data:/var/lib/mysql
+    networks:
+      - yesanio_net
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    # NOTE: no `ports:` block — the DB is only reachable inside yesanio_net.
+
+  yesanio-backend:
+    build: ./backend
+    container_name: yesanio_backend
+    restart: always
+    depends_on:
+      yesanio-db:
+        condition: service_healthy
+    ports:
+      - "6211:8000"
+    environment:
+      DB_HOST: yesanio-db
+      DB_USER: yesanio_app
+      DB_PASSWORD: yesanio_app_change_me
+      DB_NAME: yesanio
+    networks:
+      - yesanio_net
+
+  yesanio-frontend:
+    image: nginx:alpine
+    container_name: yesanio_frontend
+    restart: always
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+    ports:
+      - "6210:80"
+    networks:
+      - yesanio_net
+
+volumes:
+  yesanio_db_data:
+    name: yesanio_db_data
+
+networks:
+  yesanio_net:
+    name: yesanio_net
+    driver: bridge
+    internal: false   # backend needs outbound for pip during build; runtime is isolated by service rules

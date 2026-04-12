@@ -1,0 +1,14 @@
+{
+  "income": 4000,
+  "currency": "GBP",
+  "notes": "",
+  "groups": [
+    {"name":"Giving","kind":"FIXED","is_giving":true,"items":[{"name":"Tithe","amount":400}]},
+    {"name":"Housing","kind":"FIXED","items":[{"name":"Mortgage","amount":1200},{"name":"Council Tax","amount":150},{"name":"Home Insurance","amount":25}]},
+    {"name":"Utilities","kind":"FIXED","items":[{"name":"Electricity","amount":100},{"name":"Water","amount":40},{"name":"Internet","amount":50}]},
+    {"name":"Subscriptions","kind":"FIXED","items":[{"name":"Streaming","amount":30},{"name":"Software","amount":20}]},
+    {"name":"Transport","kind":"VARIABLE","items":[{"name":"Fuel","amount":200},{"name":"Insurance","amount":60}]},
+    {"name":"Living","kind":"VARIABLE","items":[{"name":"General Living","amount":1600}]},
+    {"name":"Professional","kind":"VARIABLE","items":[{"name":"Indemnity","amount":80}]}
+  ]
+}

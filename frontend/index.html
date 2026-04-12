@@ -1,0 +1,3667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yesanio v2.5.17</title>
+  <link rel="icon" type="image/png" href="./yesanio_logogram.png">
+  <link rel="apple-touch-icon" href="./yesanio_logogram.png">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <style>
+    :root {
+      --steel: #4682B4;
+      --steel-dark: #36648b;
+      --gold: #D4A017;
+      --burgundy: #800020;
+      --bg: #f7f8fa;
+      --card: #ffffff;
+      --text: #1a1a1a;
+      --muted: #6b7280;
+      --border: #e3e6ea;
+      --good: #2e7d32;
+      --bad: #c62828;
+      --bad-bg: #fff0f0;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.4;
+      font-size: 13px;
+    }
+    header {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-logo {
+      height: 36px;
+      width: 36px;
+      display: block;
+    }
+    .brand {
+      font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 800;
+      line-height: 1;
+      display: flex;
+      align-items: baseline;
+      letter-spacing: -1px;
+    }
+    .brand-yesan {
+      font-size: 28px;
+      color: #333333;
+    }
+    .brand-io {
+      font-size: 21px;          /* 75% of YESAN, matching SVG ratio (150/200) */
+      color: #4682B4;
+      letter-spacing: -1px;
+    }
+    .brand-tagline {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-weight: 400;
+      color: var(--muted);
+      font-size: 11px;
+      margin-left: 10px;
+      letter-spacing: 0;
+      align-self: center;
+      padding-bottom: 2px;
+    }
+    nav { display: flex; gap: 2px; }
+    nav button {
+      background: transparent;
+      border: 1px solid transparent;
+      padding: 5px 12px;
+      font-size: 13px;
+      cursor: pointer;
+      border-radius: 5px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    nav button.active { background: var(--steel); color: white; }
+    nav button:hover:not(.active) { background: #eef1f5; color: var(--text); }
+
+    main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 12px 16px;
+    }
+    .view { display: none; }
+    .view.active { display: block; }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+    }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+
+    label {
+      display: block;
+      font-size: 10px;
+      color: var(--muted);
+      margin-bottom: 2px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    input, select, textarea, button { font-family: inherit; font-size: 13px; }
+    input[type=text], input[type=number], input[type=month], select, textarea {
+      padding: 5px 8px;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      background: white;
+    }
+    input[type=text]:focus, input[type=number]:focus, select:focus, textarea:focus {
+      outline: 2px solid var(--steel);
+      outline-offset: -1px;
+      border-color: var(--steel);
+    }
+    textarea { width: 100%; resize: vertical; min-height: 36px; font-size: 12px; }
+
+    .btn {
+      background: var(--steel);
+      color: white;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+    }
+    .btn:hover { background: var(--steel-dark); }
+    .btn.dirty {
+      background: var(--gold);
+      color: #1a1a1a;
+      animation: pulse-dirty 2s ease-in-out infinite;
+    }
+    .btn.dirty:hover { background: #b8890a; color: white; }
+    @keyframes pulse-dirty {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(212, 160, 23, 0.4); }
+      50% { box-shadow: 0 0 0 4px rgba(212, 160, 23, 0); }
+    }
+    .last-saved {
+      font-size: 11px;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+      padding: 0 6px;
+    }
+    .last-saved.dirty { color: var(--gold); font-weight: 600; }
+
+    /* ---------- Tags input ---------- */
+    .tags-input {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      padding: 5px 6px;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      background: white;
+      min-height: 32px;
+      align-items: center;
+    }
+    .tags-input:focus-within {
+      outline: 2px solid var(--steel);
+      outline-offset: -1px;
+      border-color: var(--steel);
+    }
+    .tag-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #e8f0f7;
+      color: var(--steel-dark);
+      padding: 2px 6px 2px 8px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+    }
+    .tag-chip:hover { background: #d8e6f0; }
+    .tag-chip::after { content: "✕"; font-size: 9px; opacity: 0.6; margin-left: 2px; }
+    .tags-input input {
+      border: none;
+      outline: none;
+      flex: 1;
+      min-width: 80px;
+      padding: 2px 4px;
+      font-size: 12px;
+      background: transparent;
+    }
+
+    /* ---------- Group limit input ---------- */
+    .group-total.over-limit { color: var(--bad); }
+    .group-total.over-limit::after { content: " ⚠"; font-size: 12px; }
+
+    /* ---------- Recurring toggle ---------- */
+    .recurring-toggle {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      cursor: pointer;
+      padding: 2px 6px;
+      font-size: 13px;
+      border-radius: 4px;
+      width: 100%;
+      line-height: 1;
+    }
+    .recurring-toggle:hover { background: #f0f0f0; }
+    .recurring-toggle.on {
+      background: #e8f0f7;
+      color: var(--steel-dark);
+      border-color: #c5dbeb;
+    }
+
+    /* ---------- Charts ---------- */
+    .chart-container {
+      width: 100%;
+      overflow-x: auto;
+    }
+    .chart-container { display: flex; justify-content: center; }
+    .chart-container svg { display: block; max-width: 100%; height: auto; }
+    .chart-bar { fill: var(--steel); }
+    .chart-bar.income { fill: #b8d2e8; }
+    .chart-bar.allocated { fill: var(--steel); }
+    .chart-bar.fixed { fill: var(--steel-dark); }
+    .chart-bar.variable { fill: var(--gold); }
+    .chart-axis-label {
+      font-size: 10px;
+      fill: var(--muted);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .chart-value-label {
+      font-size: 9px;
+      fill: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-variant-numeric: tabular-nums;
+    }
+    .chart-grid { stroke: #eef0f3; stroke-width: 1; }
+    .chart-line { fill: none; stroke: var(--steel); stroke-width: 2; }
+    .chart-line-dot { fill: var(--steel); }
+    .chart-empty {
+      padding: 30px;
+      text-align: center;
+      color: var(--muted);
+      font-style: italic;
+      font-size: 12px;
+    }
+    .chart-legend {
+      display: flex;
+      gap: 14px;
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .chart-legend-item { display: inline-flex; align-items: center; gap: 4px; }
+    .chart-legend-swatch { width: 10px; height: 10px; border-radius: 2px; }
+    .btn-ghost {
+      background: transparent;
+      color: var(--steel);
+      border: 1px solid var(--steel);
+    }
+    .btn-ghost:hover { background: #eef4fa; }
+    .btn-danger {
+      background: transparent;
+      color: var(--bad);
+      border: 1px solid var(--bad);
+    }
+    .btn-danger:hover { background: var(--bad-bg); }
+    .btn-confirm {
+      background: var(--bad);
+      color: white;
+      border: none;
+    }
+    .btn-confirm:hover { background: #a01a1a; }
+    .btn-icon {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 2px 6px;
+      font-size: 14px;
+      border-radius: 4px;
+    }
+    .btn-icon:hover { background: #f0f0f0; color: var(--bad); }
+    .btn-icon.yes { color: var(--bad); font-weight: 700; }
+    .btn-icon.yes:hover { background: var(--bad); color: white; }
+    .btn-icon.month-nav {
+      background: white;
+      border: 1px solid var(--border);
+      color: var(--steel);
+      font-size: 11px;
+      padding: 5px 8px;
+      border-radius: 5px;
+      font-weight: 700;
+    }
+    .btn-icon.month-nav:hover {
+      background: var(--steel);
+      color: white;
+      border-color: var(--steel);
+    }
+
+    /* ---------- Groups: 2-column grid on wide screens ---------- */
+    #groupsContainer {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 1100px) {
+      #groupsContainer { grid-template-columns: 1fr 1fr; }
+    }
+
+    .group-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .group-card.confirming { border-color: var(--bad); background: var(--bad-bg); }
+    .group-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      background: #f9fafc;
+      border-bottom: 1px solid var(--border);
+    }
+    .group-card.confirming .group-header { background: #ffe5e5; }
+    .group-header input.group-name {
+      font-size: 14px;
+      font-weight: 700;
+      border: none;
+      background: transparent;
+      padding: 2px 4px;
+      flex: 1;
+      min-width: 80px;
+    }
+    .group-header input.group-name:focus {
+      background: white;
+      outline: 1px solid var(--steel);
+    }
+    .group-kind-select {
+      font-size: 10px !important;
+      padding: 2px 4px !important;
+      font-weight: 700;
+      border-radius: 8px !important;
+      letter-spacing: 0.4px;
+    }
+    .group-kind-select.FIXED { background: #e8f0f7; color: var(--steel-dark); border-color: #d0e0ed; }
+    .group-kind-select.VARIABLE { background: #fdf4e3; color: #8a6914; border-color: #ecdfb8; }
+    .group-total {
+      font-weight: 700;
+      color: var(--text);
+      margin-left: auto;
+      font-variant-numeric: tabular-nums;
+      font-size: 13px;
+    }
+    .group-confirm-bar {
+      padding: 6px 10px;
+      background: #ffe5e5;
+      color: var(--bad);
+      font-size: 12px;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid #f5c5c5;
+    }
+    .group-card.confirming .group-confirm-bar { display: flex; }
+
+    table.items {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    table.items th, table.items td {
+      padding: 3px 6px;
+      text-align: left;
+      border-bottom: 1px solid #f0f1f4;
+      font-size: 12px;
+      vertical-align: middle;
+    }
+    table.items th {
+      font-weight: 600;
+      color: var(--muted);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      background: #fcfcfd;
+      padding: 4px 6px;
+    }
+    table.items tr:last-child td { border-bottom: none; }
+    table.items input, table.items select {
+      width: 100%;
+      border: 1px solid transparent;
+      background: transparent;
+      padding: 3px 4px;
+      font-size: 12px;
+    }
+    table.items input:hover, table.items select:hover { border-color: var(--border); }
+    table.items input:focus, table.items select:focus { background: white; }
+    table.items td.amount input { text-align: right; font-variant-numeric: tabular-nums; }
+    .col-name { width: 28%; }
+    .col-amount { width: 16%; }
+    .col-notes { width: 26%; }
+    .col-status { width: 14%; }
+    .col-recurring { width: 8%; text-align: center; }
+    .col-actions { width: 8%; text-align: right; white-space: nowrap; }
+    .add-item-row {
+      padding: 4px 10px;
+      background: #fcfcfd;
+      border-top: 1px solid #f0f1f4;
+    }
+    .add-item-row button {
+      background: transparent;
+      border: 1px dashed var(--border);
+      color: var(--muted);
+      padding: 3px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+      width: 100%;
+    }
+    .add-item-row button:hover { border-color: var(--steel); color: var(--steel); }
+
+    tr.paid-row { background: #f4faf5; }
+    tr.paid-row td input { text-decoration: line-through; color: var(--muted); }
+    tr.confirming { background: var(--bad-bg) !important; }
+
+    /* ---------- Inline confirm for top buttons ---------- */
+    .inline-confirm {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      background: var(--bad-bg);
+      border: 1px solid var(--bad);
+      border-radius: 5px;
+      color: var(--bad);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* ---------- Dashboard ---------- */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .stat {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+    .stat-label {
+      font-size: 10px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      font-weight: 600;
+    }
+    .stat-value {
+      font-size: 20px;
+      font-weight: 700;
+      margin-top: 2px;
+      font-variant-numeric: tabular-nums;
+    }
+    .stat-value.positive { color: var(--good); }
+    .stat-value.negative { color: var(--bad); }
+    .stat-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+    .breakdown-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border);
+      align-items: center;
+    }
+    .breakdown-row:last-child { border-bottom: none; }
+    .breakdown-bar {
+      height: 5px;
+      background: #eef0f3;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 3px;
+    }
+    .breakdown-bar > div {
+      height: 100%;
+      background: var(--steel);
+      border-radius: 3px;
+    }
+    .breakdown-bar > div.over { background: var(--bad); }
+
+    /* ---------- Goals ---------- */
+    .goal-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .goal-card.confirming { border-color: var(--bad); background: var(--bad-bg); }
+    .goal-info { flex: 1; }
+    .goal-name { font-weight: 600; }
+    .goal-meta { font-size: 11px; color: var(--muted); }
+    .goal-progress {
+      width: 200px;
+      height: 6px;
+      background: #eef0f3;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    .goal-progress > div {
+      height: 100%;
+      background: var(--steel);
+    }
+    .goal-progress > div.complete { background: var(--good); }
+
+    /* ---------- Toast ---------- */
+    .toast {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      padding: 10px 16px;
+      border-radius: 6px;
+      background: var(--text);
+      color: white;
+      font-size: 13px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.2s, transform 0.2s;
+      pointer-events: none;
+      z-index: 1000;
+      max-width: 360px;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.error { background: var(--bad); }
+    .toast.success { background: var(--good); }
+
+    @media (max-width: 700px) {
+      main { padding: 8px; }
+      .col-notes { display: none; }
+      table.items th.col-notes, table.items td.col-notes { display: none; }
+    }
+  @font-face{font-family:'Inter';font-weight:400;font-style:normal;font-display:swap;src:url('/fonts/inter-regular.woff2') format('woff2')}
+@font-face{font-family:'Inter';font-weight:500;font-style:normal;font-display:swap;src:url('/fonts/inter-medium.woff2') format('woff2')}
+@font-face{font-family:'Lora';font-weight:500;font-style:normal;font-display:swap;src:url('/fonts/lora-medium.woff2') format('woff2')}
+@font-face{font-family:'Nunito';font-style:normal;font-display:swap;font-weight:200 900;src:url('/fonts/nunito-variable.woff2') format('woff2')}
+body,input,select,button,textarea{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+#homeView{max-width:720px;margin:0 auto;padding:8px 16px 24px}
+.home-heading{font-family:'Lora',Georgia,'Times New Roman',serif;font-size:28px;font-weight:500;color:#2c2722;margin-bottom:4px;padding:0 4px;letter-spacing:-.01em}
+.home-byline{font-size:11px;font-weight:500;font-variant:small-caps;letter-spacing:.08em;color:#7a716a;margin-bottom:20px;padding:0 4px}
+.home-headline{border-radius:12px;padding:28px 32px;margin-bottom:22px;border:1px solid transparent;background:#fbf8f1;box-shadow:0 1px 2px rgba(60,50,35,.04),0 4px 12px rgba(60,50,35,.04);transition:background .4s ease,border-color .4s ease}
+.home-headline.is-fresh{background:#f3f1ec;border-color:#e1ddd4}
+.home-headline.is-planned{background:#fbf8f1;border-color:#ebe5d6}
+.home-headline.is-surplus{background:#faf3df;border-color:#ead9a6}
+.home-headline.is-over{background:#f7e8e2;border-color:#e9b5ad}
+.home-headline-text{font-family:'Lora',Georgia,'Times New Roman',serif;font-size:23px;font-weight:500;line-height:1.5;color:#2c2722;letter-spacing:-.005em}
+.home-band{margin-bottom:22px;padding:0 8px}
+.home-band-line{font-size:14px;font-weight:400;line-height:1.65;color:#3a342e;margin-bottom:8px;position:relative;padding-left:18px}
+.home-band-line:empty{display:none}
+.home-band-line::before{content:"·";position:absolute;left:4px;top:-1px;color:#b8aa92;font-weight:500;font-size:18px;line-height:1}
+.home-bottom{font-size:11px;font-weight:500;font-variant:small-caps;letter-spacing:.06em;color:#7a716a;padding:0 4px;margin-top:4px;margin-bottom:14px}
+.home-bottom:empty{display:none}
+.home-footer{padding:0 4px}
+.home-footer-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.home-footer-tags:empty{display:none}
+.home-footer-tags .tag-chip{cursor:default;background:#f5f0e6;border:1px solid #e8e0d0;color:#6a5f50;font-size:11px;padding:2px 9px;border-radius:999px}
+.home-footer-tags .tag-chip::after{content:""}
+.home-footer-notes{font-size:12px;font-style:italic;color:#7a716a;white-space:pre-wrap;line-height:1.5}
+.home-footer-notes:empty{display:none}
+.col-saving{width:5%;text-align:center}
+.saving-toggle{background:none;border:1px solid var(--border);border-radius:4px;padding:2px 5px;font-size:13px;cursor:pointer;opacity:.4}
+.saving-toggle.on{opacity:1;border-color:#b8860b;background:#fdfaed}
+.goal-pending{font-size:11px;color:#b78103;margin-top:2px}
+.goal-pending .clock{margin-right:2px}
+.goal-dates{display:flex;gap:8px;margin-top:6px;font-size:11px}
+.goal-dates input{width:110px;font-size:11px;padding:2px 4px}
+.goal-dates label{font-size:10px;opacity:.6;display:block;margin-bottom:1px}
+.goal-save-row{margin-top:6px;display:flex;gap:6px;align-items:center}
+.goal-save-row input[type="number"]{width:90px;font-size:12px}
+/* ---------- Wizard (v2.5.1) ---------- */
+.wizard-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(44,39,34,.5);display:flex;align-items:center;justify-content:center;z-index:1000;padding:16px}
+.wizard-overlay.hidden{display:none}
+.wizard-logo{display:block;width:48px;height:48px;margin:0 auto 14px auto;opacity:0.9}
+.wizard-modal{background:#fbf8f1;border-radius:14px;max-width:560px;width:100%;padding:32px 36px;box-shadow:0 8px 32px rgba(60,50,35,.2);max-height:90vh;overflow-y:auto;font-family:'Inter',sans-serif}
+.wizard-progress{display:flex;gap:6px;justify-content:center;margin-bottom:20px}
+.wizard-progress span{width:8px;height:8px;border-radius:50%;background:#d8d0c0}
+.wizard-progress span.active{background:#4682B4}
+.wizard-title{font-family:'Lora',serif;font-size:24px;font-weight:500;color:#2c2722;margin-bottom:16px;letter-spacing:-.01em}
+.wizard-body{font-size:14px;line-height:1.6;color:#3a342e;margin-bottom:20px}
+.wizard-body p{margin:0 0 12px 0}
+.wizard-body p:last-child{margin-bottom:0}
+.wizard-body em{font-style:italic;color:#2c2722}
+.wizard-body strong{font-weight:600;color:#2c2722}
+.wizard-field{margin-bottom:16px}
+.wizard-field label{display:block;font-size:12px;opacity:.7;margin-bottom:4px}
+.wizard-field input,.wizard-field select{width:100%;padding:8px 10px;font-size:14px;border:1px solid var(--border);border-radius:6px;background:#fff;font-family:'Inter',sans-serif}
+.wizard-help{font-size:12px;opacity:.65;margin-top:6px;line-height:1.5}
+.wizard-actions{display:flex;justify-content:space-between;align-items:center;margin-top:24px;gap:12px}
+.wizard-actions .wizard-skip{font-size:12px;color:#7a716a;background:none;border:none;cursor:pointer;text-decoration:underline}
+.wizard-actions .wizard-right{display:flex;gap:8px;margin-left:auto}
+.wizard-btn{padding:8px 18px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid transparent;font-family:'Inter',sans-serif}
+.wizard-btn-primary{background:#4682B4;color:#fff;border-color:#4682B4}
+.wizard-btn-primary:hover{background:#3d6f9a}
+.wizard-btn-ghost{background:transparent;color:#3a342e;border-color:#c8c0ae}
+.wizard-btn-ghost:hover{background:#f0ebdd}
+.wizard-choice{display:flex;flex-direction:column;gap:12px;margin-top:16px}
+.wizard-choice-btn{padding:16px 18px;border-radius:10px;border:1px solid #d8d0c0;background:#fff;text-align:left;cursor:pointer;font-family:'Inter',sans-serif}
+.wizard-choice-btn:hover{border-color:#4682B4;background:#fbf8f1}
+.wizard-choice-btn strong{display:block;font-size:14px;color:#2c2722;margin-bottom:4px;font-weight:600}
+.wizard-choice-btn span{font-size:12px;color:#6a5f50;line-height:1.5}
+
+/* ---------- Helper tips ---------- */
+.helper-tip{background:#fdfaed;border:1px solid #ead9a6;border-left:3px solid #b8860b;border-radius:8px;padding:14px 16px;margin-bottom:16px;font-size:13px;line-height:1.6;color:#3a342e;position:relative}
+.helper-tip.hidden{display:none}
+.helper-tip-icon{margin-right:6px}
+.helper-tip-title{font-weight:600;color:#2c2722;margin-bottom:6px}
+.helper-tip p{margin:6px 0}
+.helper-tip p:last-child{margin-bottom:0}
+.helper-tip ul,.helper-tip ol{margin:6px 0;padding-left:22px}
+.helper-tip li{margin-bottom:3px}
+.helper-tip-dismiss{position:absolute;top:8px;right:10px;background:none;border:none;cursor:pointer;font-size:11px;color:#7a716a;text-decoration:underline}
+.helper-tip-dismiss:hover{color:#2c2722}
+
+/* ---------- Improved rename warning ---------- */
+.rename-warn-panel{background:#fdfaed;border:1px solid #ead9a6;border-left:3px solid #b8860b;border-radius:8px;padding:14px 16px;margin:8px 0;display:flex;gap:12px;align-items:flex-start}
+.rename-warn-icon{font-size:20px;flex-shrink:0;line-height:1}
+.rename-warn-body{flex:1;font-size:13px;line-height:1.55;color:#3a342e}
+.rename-warn-body strong{display:block;color:#2c2722;margin-bottom:6px;font-weight:600}
+.rename-warn-body p{margin:0 0 10px 0}
+.rename-warn-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.rename-warn-actions button{padding:6px 12px;border-radius:5px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif}
+.rename-warn-actions .btn-keep{background:#4682B4;color:#fff;border:1px solid #4682B4;font-weight:500}
+.rename-warn-actions .btn-keep:hover{background:#3d6f9a}
+.rename-warn-actions .btn-break{background:transparent;color:#6a5f50;border:1px solid #c8c0ae}
+.rename-warn-actions .btn-break:hover{background:#f0ebdd}
+
+/* ---------- Settings About + helper tips toggle ---------- */
+.settings-about{margin-top:24px;padding:16px 18px;background:#fbf8f1;border:1px solid #ebe5d6;border-radius:10px;font-size:13px;line-height:1.6;color:#3a342e}
+.settings-about h4{margin:0 0 8px 0;font-size:14px;font-weight:600;color:#2c2722;font-family:'Lora',serif}
+.settings-about p{margin:4px 0}
+.settings-about .version-line{font-size:11px;color:#7a716a;margin-top:10px}
+.settings-about .version-line a{color:#4682B4;text-decoration:none}
+.settings-about .version-line a:hover{text-decoration:underline}
+.settings-about blockquote{margin:12px 0 0 0;padding-left:12px;border-left:2px solid #c8c0ae;font-style:italic;color:#6a5f50;font-size:12px}
+.settings-toggle-row{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:12px;color:#3a342e}
+.settings-toggle-row input[type="checkbox"]{margin:0}
+#chartsView{max-width:960px;margin:0 auto;padding:0 16px}
+/* ---------- v2.5.8: Fixed nav bar ---------- */
+header{position:fixed;top:0;left:0;right:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--border);padding:8px 16px}
+body{padding-top:62px}
+
+/* ---------- v2.5.8: Undo/redo toolbar ---------- */
+.history-toolbar{display:inline-flex;gap:4px;align-items:center;margin-left:8px}
+.history-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:3px 8px;border-radius:4px;cursor:pointer;font-size:13px;line-height:1}
+.history-btn:hover:not(:disabled){border-color:var(--steel);color:var(--steel)}
+.history-btn:disabled{opacity:.35;cursor:not-allowed}
+.history-btn.revert{margin-left:6px;font-size:11px;padding:3px 8px}
+
+/* ---------- v2.5.8: Cancel button on rename + delete warnings ---------- */
+.rename-warn-actions .btn-cancel{background:transparent;color:#3a342e;border:1px solid #c8c0ae;padding:6px 12px;border-radius:5px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif}
+.rename-warn-actions .btn-cancel:hover{background:#f0ebdd}
+.delete-warn-panel{background:#fdf0ee;border:1px solid #e9b5ad;border-left:3px solid #c0392b;border-radius:8px;padding:14px 16px;margin:8px 0;display:flex;gap:12px;align-items:flex-start}
+.delete-warn-icon{font-size:20px;flex-shrink:0;line-height:1}
+.delete-warn-body{flex:1;font-size:13px;line-height:1.55;color:#3a342e}
+.delete-warn-body strong{display:block;color:#2c2722;margin-bottom:6px;font-weight:600}
+.delete-warn-body p{margin:0 0 10px 0}
+.delete-warn-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.delete-warn-actions .btn-delete{background:#c0392b;color:#fff;border:1px solid #c0392b;padding:6px 12px;border-radius:5px;font-size:12px;cursor:pointer;font-weight:500;font-family:'Inter',sans-serif}
+.delete-warn-actions .btn-delete:hover{background:#a52f22}
+.delete-warn-actions .btn-cancel{background:transparent;color:#3a342e;border:1px solid #c8c0ae;padding:6px 12px;border-radius:5px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif}
+.delete-warn-actions .btn-cancel:hover{background:#f0ebdd}
+
+/* ---------- v2.5.8: Achieved goals section ---------- */
+.achieved-section{margin-top:32px;border-top:1px solid var(--border);padding-top:16px}
+.achieved-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+.achieved-title{font-family:'Lora',serif;font-size:16px;font-weight:500;color:#3d6b3d;margin:0}
+.achieved-toggle{background:transparent;border:1px solid #c8c0ae;color:#6a5f50;padding:4px 10px;border-radius:5px;font-size:11px;cursor:pointer;font-family:'Inter',sans-serif}
+.achieved-toggle:hover{border-color:#3d6b3d;color:#3d6b3d}
+.goal-card.achieved{background:#f4f7f1;border:1px solid #c8d8c8;border-left:3px solid #3d6b3d;position:relative}
+.achieved-badge{position:absolute;top:10px;right:36px;font-family:'Lora',serif;font-style:italic;font-size:12px;color:#3d6b3d}
+.goal-card.achieved .goal-name{color:#2c2722}
+.achieved-line{font-size:12px;color:#3d6b3d;margin-top:4px;font-weight:500}
+
+/* ---------- v2.5.9: Drag handles + sortable states ---------- */
+.col-drag{width:30px;text-align:center;cursor:grab;user-select:none;background:transparent;transition:background 0.15s}
+.col-drag:hover{background:#f0ebdd}
+.col-drag:active{cursor:grabbing;background:#e8e0d0}
+.drag-handle{cursor:grab;user-select:none;touch-action:none}
+.drag-handle:active{cursor:grabbing}
+.drag-handle-icon{color:#b8aa92;font-size:14px;letter-spacing:-2px;font-weight:700;line-height:1;display:inline-block;pointer-events:none}
+tr:hover .drag-handle-icon,.col-drag:hover .drag-handle-icon{color:#3a342e}
+.group-drag-handle{color:#b8aa92;font-size:14px;letter-spacing:-2px;font-weight:700;padding:0 6px;cursor:grab;user-select:none;align-self:center}
+.group-drag-handle:hover{color:#3a342e}
+.group-drag-handle:active{cursor:grabbing}
+.goal-drag-handle{position:absolute;top:50%;left:8px;transform:translateY(-50%);background:transparent;border:1px solid transparent;color:#b8aa92;font-size:14px;letter-spacing:-2px;font-weight:700;padding:6px 6px;cursor:grab;user-select:none;border-radius:4px;touch-action:none;line-height:1}
+.goal-card{position:relative;padding-left:32px !important}
+.goal-card:hover .goal-drag-handle{color:#3a342e;border-color:#e1ddd4;background:#f0ebdd}
+.goal-drag-handle:active{cursor:grabbing}
+.sortable-ghost{opacity:0.4;background:#f0ebdd !important}
+.sortable-chosen{box-shadow:0 4px 12px rgba(60,50,35,.15)}
+
+/* ---------- v2.5.16: Hamburger nav for narrow viewports ---------- */
+#navToggle{display:none;background:transparent;border:1px solid var(--border);color:var(--muted);font-size:18px;line-height:1;padding:6px 12px;border-radius:5px;cursor:pointer;font-weight:500}
+#navToggle:hover{border-color:var(--steel);color:var(--steel)}
+#navToggle.is-open{background:var(--steel);color:#fff;border-color:var(--steel)}
+@media (max-width: 760px){
+  #navToggle{display:inline-block}
+  nav#nav{display:none;position:fixed;top:54px;right:8px;background:var(--card);border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 16px rgba(60,50,35,.15);padding:6px;flex-direction:column;gap:2px;min-width:160px;z-index:101}
+  nav#nav.is-open{display:flex}
+  nav#nav button{text-align:left;width:100%;padding:8px 14px;font-size:14px;border-radius:5px}
+}
+</style>
+</head>
+<body>
+
+<div id="wizardOverlay" class="wizard-overlay hidden">
+  <div class="wizard-modal">
+    <img src="/yesanio_logogram.png" alt="Yesanio" class="wizard-logo">
+    <div class="wizard-progress" id="wizardProgress"></div>
+    <div id="wizardBody"></div>
+  </div>
+</div>
+
+
+<header>
+  <div class="brand-wrap">
+    <img src="./yesanio_logogram.png" alt="Yesanio" class="brand-logo">
+    <div class="brand">
+      <span class="brand-yesan">YESAN</span><span class="brand-io">io</span>
+      <span class="brand-tagline">· Clarity. Overview. Control.</span>
+    </div>
+  </div>
+  <button id="navToggle" aria-label="Open menu" aria-expanded="false">☰</button>
+  <nav id="nav">
+    <button data-view="home" class="active">Home</button>
+    <button data-view="setup">Plan</button>
+    <button data-view="charts">Charts</button>
+    <button data-view="goals">Goals</button>
+    <button data-view="settings">Settings</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ============================================================ -->
+  <!-- PLAN (SETUP) VIEW                                            -->
+  <!-- ============================================================ -->
+  <!-- HOME VIEW -->
+  <section id="homeView" class="view active">
+    <div class="home-heading" id="homeHeading">—</div>
+    <div class="home-byline" id="homeByline"></div>
+    <div class="helper-tip" id="tip-home">
+      <button class="helper-tip-dismiss" onclick="dismissTip('home')">Understood, don't show again</button>
+      <div class="helper-tip-title"><span class="helper-tip-icon">💡</span>This is your Home page</div>
+      <p>This is what your household sees — it's read-only, so anyone can open it safely. Editing happens on the Plan tab.</p>
+    </div>
+    <div class="home-headline" id="homeHeadline">
+      <div class="home-headline-text" id="homeHeadlineText">—</div>
+    </div>
+    <div class="home-band" id="homeBand">
+      <div class="home-band-line" id="homeBandBills"></div>
+      <div class="home-band-line" id="homeBandGiving"></div>
+      <div class="home-band-line" id="homeBandSaving"></div>
+    </div>
+    <div class="home-bottom" id="homeBottom"></div>
+    <div class="home-footer" id="homeFooter">
+      <div class="home-footer-tags" id="homeFooterTags"></div>
+      <div class="home-footer-notes" id="homeFooterNotes"></div>
+    </div>
+  </section>
+  <section id="setupView" class="view">
+    <div class="helper-tip" id="tip-plan" style="margin:0 0 16px 0;">
+      <button class="helper-tip-dismiss" onclick="dismissTip('plan')">Understood, don't show again</button>
+      <div class="helper-tip-title"><span class="helper-tip-icon">💡</span>How the Plan view works</div>
+      <p>A plan is one month of your budget. You organise money into <strong>groups</strong> (categories like Housing, Giving, Groceries), and each group contains <strong>items</strong> (individual line entries).</p>
+      <ul>
+        <li><strong>FIXED</strong> groups are costs you've committed to — bills, subscriptions, long-term savings.</li>
+        <li><strong>VARIABLE</strong> groups are flexible living costs — credit or debit card payoffs, personal allowances, shopping budgets.</li>
+        <li><strong>🤲 Giving toggle</strong> on a group flags it as giving — shown separately on Home.</li>
+        <li><strong>💰 Saving toggle</strong> on an item links it to a goal and counts toward your progress.</li>
+        <li><strong>Paid checkbox</strong> marks whether each bill or contribution has actually been paid. Only ticked items count toward goal progress.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="row">
+        <div>
+          <label>Month</label>
+          <div style="display:flex; align-items:center; gap:4px;">
+            <button class="btn-icon month-nav" id="prevMonthBtn" title="Previous month">◄</button>
+            <input type="month" id="month">
+            <button class="btn-icon month-nav" id="nextMonthBtn" title="Next month">►</button>
+          </div>
+        </div>
+        <div>
+          <label>Income</label>
+          <input type="number" id="income" step="0.01" style="width:110px;">
+        </div>
+        <div>
+          <label>Currency</label>
+          <select id="currency">
+            <optgroup label="Most common">
+              <option value="USD">$ USD — US Dollar</option>
+              <option value="EUR">€ EUR — Euro</option>
+              <option value="JPY">¥ JPY — Japanese Yen</option>
+              <option value="GBP">£ GBP — British Pound</option>
+              <option value="CNY">¥ CNY — Chinese Yuan</option>
+              <option value="AUD">A$ AUD — Australian Dollar</option>
+              <option value="CAD">C$ CAD — Canadian Dollar</option>
+              <option value="CHF">CHF CHF — Swiss Franc</option>
+              <option value="HKD">HK$ HKD — Hong Kong Dollar</option>
+              <option value="SGD">S$ SGD — Singapore Dollar</option>
+            </optgroup>
+            <optgroup label="All currencies (alphabetical)">
+              <option value="AED">د.إ AED — UAE Dirham</option>
+              <option value="AFN">؋ AFN — Afghan Afghani</option>
+              <option value="ALL">L ALL — Albanian Lek</option>
+              <option value="AMD">֏ AMD — Armenian Dram</option>
+              <option value="ANG">ƒ ANG — Netherlands Antillean Guilder</option>
+              <option value="AOA">Kz AOA — Angolan Kwanza</option>
+              <option value="ARS">$ ARS — Argentine Peso</option>
+              <option value="AWG">ƒ AWG — Aruban Florin</option>
+              <option value="AZN">₼ AZN — Azerbaijani Manat</option>
+              <option value="BAM">KM BAM — Bosnia-Herzegovina Mark</option>
+              <option value="BBD">$ BBD — Barbadian Dollar</option>
+              <option value="BDT">৳ BDT — Bangladeshi Taka</option>
+              <option value="BGN">лв BGN — Bulgarian Lev</option>
+              <option value="BHD">.د.ب BHD — Bahraini Dinar</option>
+              <option value="BIF">FBu BIF — Burundian Franc</option>
+              <option value="BMD">$ BMD — Bermudan Dollar</option>
+              <option value="BND">$ BND — Brunei Dollar</option>
+              <option value="BOB">Bs. BOB — Bolivian Boliviano</option>
+              <option value="BRL">R$ BRL — Brazilian Real</option>
+              <option value="BSD">$ BSD — Bahamian Dollar</option>
+              <option value="BTN">Nu. BTN — Bhutanese Ngultrum</option>
+              <option value="BWP">P BWP — Botswanan Pula</option>
+              <option value="BYN">Br BYN — Belarusian Ruble</option>
+              <option value="BZD">BZ$ BZD — Belize Dollar</option>
+              <option value="CDF">FC CDF — Congolese Franc</option>
+              <option value="CLP">$ CLP — Chilean Peso</option>
+              <option value="COP">$ COP — Colombian Peso</option>
+              <option value="CRC">₡ CRC — Costa Rican Colón</option>
+              <option value="CUP">₱ CUP — Cuban Peso</option>
+              <option value="CVE">$ CVE — Cape Verdean Escudo</option>
+              <option value="CZK">Kč CZK — Czech Koruna</option>
+              <option value="DJF">Fdj DJF — Djiboutian Franc</option>
+              <option value="DKK">kr DKK — Danish Krone</option>
+              <option value="DOP">RD$ DOP — Dominican Peso</option>
+              <option value="DZD">د.ج DZD — Algerian Dinar</option>
+              <option value="EGP">E£ EGP — Egyptian Pound</option>
+              <option value="ERN">Nfk ERN — Eritrean Nakfa</option>
+              <option value="ETB">Br ETB — Ethiopian Birr</option>
+              <option value="FJD">$ FJD — Fijian Dollar</option>
+              <option value="FKP">£ FKP — Falkland Islands Pound</option>
+              <option value="GEL">₾ GEL — Georgian Lari</option>
+              <option value="GHS">₵ GHS — Ghanaian Cedi</option>
+              <option value="GIP">£ GIP — Gibraltar Pound</option>
+              <option value="GMD">D GMD — Gambian Dalasi</option>
+              <option value="GNF">FG GNF — Guinean Franc</option>
+              <option value="GTQ">Q GTQ — Guatemalan Quetzal</option>
+              <option value="GYD">$ GYD — Guyanaese Dollar</option>
+              <option value="HNL">L HNL — Honduran Lempira</option>
+              <option value="HRK">kn HRK — Croatian Kuna</option>
+              <option value="HTG">G HTG — Haitian Gourde</option>
+              <option value="HUF">Ft HUF — Hungarian Forint</option>
+              <option value="IDR">Rp IDR — Indonesian Rupiah</option>
+              <option value="ILS">₪ ILS — Israeli Shekel</option>
+              <option value="INR">₹ INR — Indian Rupee</option>
+              <option value="IQD">ع.د IQD — Iraqi Dinar</option>
+              <option value="IRR">﷼ IRR — Iranian Rial</option>
+              <option value="ISK">kr ISK — Icelandic Króna</option>
+              <option value="JMD">J$ JMD — Jamaican Dollar</option>
+              <option value="JOD">د.ا JOD — Jordanian Dinar</option>
+              <option value="KES">KSh KES — Kenyan Shilling</option>
+              <option value="KGS">с KGS — Kyrgystani Som</option>
+              <option value="KHR">៛ KHR — Cambodian Riel</option>
+              <option value="KRW">₩ KRW — South Korean Won</option>
+              <option value="KWD">د.ك KWD — Kuwaiti Dinar</option>
+              <option value="KYD">$ KYD — Cayman Islands Dollar</option>
+              <option value="KZT">₸ KZT — Kazakhstani Tenge</option>
+              <option value="LAK">₭ LAK — Laotian Kip</option>
+              <option value="LBP">ل.ل LBP — Lebanese Pound</option>
+              <option value="LKR">₨ LKR — Sri Lankan Rupee</option>
+              <option value="LRD">$ LRD — Liberian Dollar</option>
+              <option value="LSL">L LSL — Lesotho Loti</option>
+              <option value="LYD">ل.د LYD — Libyan Dinar</option>
+              <option value="MAD">د.م. MAD — Moroccan Dirham</option>
+              <option value="MDL">L MDL — Moldovan Leu</option>
+              <option value="MGA">Ar MGA — Malagasy Ariary</option>
+              <option value="MKD">ден MKD — Macedonian Denar</option>
+              <option value="MMK">K MMK — Myanma Kyat</option>
+              <option value="MNT">₮ MNT — Mongolian Tugrik</option>
+              <option value="MOP">MOP$ MOP — Macanese Pataca</option>
+              <option value="MUR">₨ MUR — Mauritian Rupee</option>
+              <option value="MVR">Rf MVR — Maldivian Rufiyaa</option>
+              <option value="MWK">MK MWK — Malawian Kwacha</option>
+              <option value="MXN">$ MXN — Mexican Peso</option>
+              <option value="MYR">RM MYR — Malaysian Ringgit</option>
+              <option value="MZN">MT MZN — Mozambican Metical</option>
+              <option value="NAD">$ NAD — Namibian Dollar</option>
+              <option value="NGN">₦ NGN — Nigerian Naira</option>
+              <option value="NIO">C$ NIO — Nicaraguan Córdoba</option>
+              <option value="NOK">kr NOK — Norwegian Krone</option>
+              <option value="NPR">₨ NPR — Nepalese Rupee</option>
+              <option value="NZD">$ NZD — New Zealand Dollar</option>
+              <option value="OMR">ر.ع. OMR — Omani Rial</option>
+              <option value="PAB">B/. PAB — Panamanian Balboa</option>
+              <option value="PEN">S/ PEN — Peruvian Sol</option>
+              <option value="PGK">K PGK — Papua New Guinean Kina</option>
+              <option value="PHP">₱ PHP — Philippine Peso</option>
+              <option value="PKR">₨ PKR — Pakistani Rupee</option>
+              <option value="PLN">zł PLN — Polish Złoty</option>
+              <option value="PYG">₲ PYG — Paraguayan Guarani</option>
+              <option value="QAR">ر.ق QAR — Qatari Rial</option>
+              <option value="RON">lei RON — Romanian Leu</option>
+              <option value="RSD">дин. RSD — Serbian Dinar</option>
+              <option value="RUB">₽ RUB — Russian Ruble</option>
+              <option value="SAR">ر.س SAR — Saudi Riyal</option>
+              <option value="SEK">kr SEK — Swedish Krona</option>
+              <option value="THB">฿ THB — Thai Baht</option>
+              <option value="TRY">₺ TRY — Turkish Lira</option>
+              <option value="TWD">NT$ TWD — New Taiwan Dollar</option>
+              <option value="UAH">₴ UAH — Ukrainian Hryvnia</option>
+              <option value="VND">₫ VND — Vietnamese Dong</option>
+              <option value="ZAR">R ZAR — South African Rand</option>
+            </optgroup>
+          </select>
+        </div>
+        <div style="margin-left:auto; display:flex; gap:6px; align-items:flex-end; flex-wrap:wrap;">
+          <button class="btn-ghost btn" id="importCsvBtn">📥 Import CSV</button>
+          <input type="file" id="csvFileInput" accept=".csv,text/csv" style="display:none;">
+          <button class="btn-ghost btn" id="exportCsvBtn">📤 Export CSV</button>
+          <button class="btn-ghost btn" id="copyPrevBtn" title="Copy all groups and recurring items from the previous month into this month's plan. Useful for starting a new month based on the last one.">📋 Copy from previous month</button>
+          <span id="deleteSlot">
+            <button class="btn-danger btn" id="deleteBtn">Delete month</button>
+          </span>
+          <button class="btn" id="saveBtnTop" title="Save plan (Ctrl+S)">💾 Save</button>
+          <span class="history-toolbar">
+            <button class="history-btn" id="undoBtn" title="Undo (Ctrl+Z)" onclick="doUndo()" disabled>↶</button>
+            <button class="history-btn" id="redoBtn" title="Redo (Ctrl+Shift+Z)" onclick="doRedo()" disabled>↷</button>
+            <button class="history-btn revert" id="revertBtn" title="Revert to last saved version" onclick="revertToSaved()" disabled>Revert</button>
+          </span>
+        </div>
+      </div>
+      <div style="margin-top:8px; display:flex; gap:12px; flex-wrap:wrap;">
+        <div style="flex:2; min-width:300px;">
+          <label>Month notes</label>
+          <textarea id="monthNotes" placeholder="Anything worth remembering about this month — context, exceptions, decisions…"></textarea>
+        </div>
+        <div style="flex:1; min-width:200px;">
+          <label>Tags</label>
+          <div id="tagsContainer" class="tags-input">
+            <input type="text" id="tagInput" placeholder="add tag + Enter">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="groupsContainer"></div>
+
+    <div class="row" style="justify-content:space-between; margin-top:6px;">
+      <button class="btn-ghost btn" id="addGroupBtn">+ Add group</button>
+      <div style="display:flex; gap:6px; align-items:center;">
+        <span id="lastSavedIndicator" class="last-saved" style="display:none;"></span>
+        <button class="btn" id="saveBtnBottom">💾 Save plan</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- DASHBOARD VIEW                                               -->
+  <!-- ============================================================ -->
+  <!-- ============================================================ -->
+  <!-- CHARTS VIEW                                                  -->
+  <!-- ============================================================ -->
+  <section id="chartsView" class="view">
+    <div class="helper-tip" id="tip-charts" style="margin:0 0 16px 0;">
+      <button class="helper-tip-dismiss" onclick="dismissTip('charts')">Understood, don't show again</button>
+      <p><span class="helper-tip-icon">💡</span>Charts show historical totals from saved plans, month by month. This is for looking back — not real-time spending.</p>
+    </div>
+    <div class="card">
+      <div class="row" style="justify-content:space-between;">
+        <h3 style="margin:0; font-size:14px;">Spending over time</h3>
+        <div style="display:flex; gap:6px; align-items:center;">
+          <label style="margin:0;">Months</label>
+          <select id="historyMonths">
+            <option value="3">3</option>
+            <option value="6">6</option>
+            <option value="12" selected>12</option>
+            <option value="24">24</option>
+          </select>
+          <button class="btn-ghost btn" id="reloadChartsBtn">Refresh</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h4 style="margin:0 0 8px 0; font-size:13px;">Income vs Allocated</h4>
+      <div id="chart_income_alloc" class="chart-container"></div>
+    </div>
+
+    <div class="card">
+      <h4 style="margin:0 0 8px 0; font-size:13px;">Fixed vs Variable spending</h4>
+      <div id="chart_fixed_var" class="chart-container"></div>
+    </div>
+
+    <div class="card">
+      <h4 style="margin:0 0 8px 0; font-size:13px;">Allocation rate (% of income committed)</h4>
+      <div id="chart_alloc_rate" class="chart-container"></div>
+    </div>
+
+    <div class="card">
+      <h4 style="margin:0 0 8px 0; font-size:13px;">Summary</h4>
+      <div id="chart_summary"></div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- GOALS VIEW                                                   -->
+  <!-- ============================================================ -->
+  <section id="goalsView" class="view">
+    <h2 style="font-family:'Lora',serif;font-size:20px;font-weight:500;margin:0 0 4px 0;color:#2c2722;">Goals</h2>
+    <p style="font-size:13px;color:#6a5f50;margin:0 0 16px 0;line-height:1.5;">Long-term targets you're saving toward — track progress as you mark monthly contributions paid.</p>
+    <div class="helper-tip" id="tip-goals" style="margin:0 0 16px 0;">
+      <button class="helper-tip-dismiss" onclick="dismissTip('goals')">Understood, don't show again</button>
+      <div class="helper-tip-title"><span class="helper-tip-icon">💡</span>How goals work in Yesanio</div>
+      <p>Goals are long-term targets you're saving toward — an emergency fund, a holiday, a car. In Yesanio, goals are not edited directly. Instead:</p>
+      <ol>
+        <li>Plan an item toward your goal (e.g. "Holiday Fund" or "Emergency Fund" in any FIXED group).</li>
+        <li>Click the 💰 toggle to mark it as a saving contribution.</li>
+        <li>Save the plan. A matching goal is created automatically.</li>
+        <li>Set a <strong>target</strong> here. The goal's balance grows as you tick the Paid box on each month's contribution.</li>
+      </ol>
+      <p>The <strong>date window</strong> lets you count contributions only from a specific time range — useful for yearly goals like "Holiday 2026". Leave both dates blank to count forever.</p>
+      <p>If you see <strong>"+£X pending"</strong>, it means items are flagged as savings but their Paid box isn't ticked yet. Tick Paid once the contribution actually happens, and it counts toward progress.</p>
+    </div>
+    <div class="card">
+      <h3 style="margin:0 0 8px 0; font-size:14px;">Add a goal</h3>
+      <div class="row">
+        <div>
+          <label>Name</label>
+          <input type="text" id="goal_name" placeholder="Emergency fund">
+        </div>
+        <div>
+          <label>Kind</label>
+          <input type="text" id="goal_kind" placeholder="emergency / sinking / aspirational">
+        </div>
+        <div>
+          <label>Target</label>
+          <input type="number" id="goal_target" step="0.01" style="width:110px;">
+        </div>
+        <div>
+          <label>Count from</label>
+          <input type="month" id="goal_count_from" style="width:120px;">
+        </div>
+        <div>
+          <label>Count to</label>
+          <input type="month" id="goal_count_to" style="width:120px;">
+        </div>
+        <div>
+          <button class="btn" id="addGoalBtn">Add</button>
+        </div>
+      </div>
+    </div>
+    <div id="goalsList"></div>
+  </section>
+
+
+  <!-- SETTINGS VIEW -->
+  <section id="settingsView" class="view">
+    <div class="card">
+      <h3 style="margin:0 0 8px 0; font-size:14px;">Settings</h3>
+      <div class="row">
+        <div style="flex:1;"><label>Your name</label>
+          <input type="text" id="settingsUserName" maxlength="50" placeholder="e.g. Johannes">
+          <div style="font-size:11px; opacity:0.6; margin-top:4px;">Shown on the Home view as the person handling the budget.</div>
+        </div>
+        <div><button class="btn" id="saveSettingsBtn">💾 Save</button></div>
+      </div>
+      <div class="settings-toggle-row">
+        <input type="checkbox" id="settingsTipsToggle" onchange="toggleHelperTips(this.checked)">
+        <label for="settingsTipsToggle">Show helper tips on each page</label>
+      </div>
+      <div class="settings-toggle-row">
+        <button class="btn btn-ghost" onclick="showWizardManually()" style="font-size:12px;">Show welcome tour again</button>
+      </div>
+    </div>
+    <div class="settings-about">
+      <h4>About Yesanio</h4>
+      <p>Yesanio is a self-hosted household budgeting tool built around the "pay yourself first" principle. Every pound gets a job before the month begins — savings and giving are set aside first, not last.</p>
+      <div class="version-line">Version 2.5.17 · <a href="https://github.com/jc-universe87/yesanio" target="_blank">GitHub</a> · MIT licence · © 2026 Johannes Kim (Pistio)</div>
+      <blockquote>"The plans of the diligent lead surely to abundance." — Proverbs 21:5</blockquote>
+    </div>
+  </section>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script src="/Sortable.min.js"></script>
+<script>
+// =====================================================================
+//  YESANIO v2.5.17
+//  - single state object, render functions, pure calculate
+//  - inline two-step delete confirms (no popups)
+//  - smarter copy-previous (uses /months)
+//  - 2-column group grid on wide screens
+//  - top + bottom save buttons
+//  - improved CSV with grouped subtotals + grand total + BOM
+// =====================================================================
+
+const API = `${window.location.protocol}//${window.location.hostname}:6211`;
+
+const CURRENCY_SYMBOL = {USD: "$", EUR: "€", JPY: "¥", GBP: "£", CNY: "¥", AUD: "A$", CAD: "C$", CHF: "CHF ", HKD: "HK$", SGD: "S$", AED: "د.إ ", AFN: "؋", ALL: "L", AMD: "֏", ANG: "ƒ", AOA: "Kz", ARS: "$", AWG: "ƒ", AZN: "₼", BAM: "KM", BBD: "$", BDT: "৳", BGN: "лв", BHD: ".د.ب ", BIF: "FBu", BMD: "$", BND: "$", BOB: "Bs.", BRL: "R$", BSD: "$", BTN: "Nu.", BWP: "P", BYN: "Br", BZD: "BZ$", CDF: "FC", CLP: "$", COP: "$", CRC: "₡", CUP: "₱", CVE: "$", CZK: "Kč", DJF: "Fdj", DKK: "kr", DOP: "RD$", DZD: "د.ج ", EGP: "E£", ERN: "Nfk", ETB: "Br", FJD: "$", FKP: "£", GEL: "₾", GHS: "₵", GIP: "£", GMD: "D", GNF: "FG", GTQ: "Q", GYD: "$", HNL: "L", HRK: "kn", HTG: "G", HUF: "Ft", IDR: "Rp", ILS: "₪", INR: "₹", IQD: "ع.د ", IRR: "﷼", ISK: "kr", JMD: "J$", JOD: "د.ا ", KES: "KSh", KGS: "с", KHR: "៛", KRW: "₩", KWD: "د.ك ", KYD: "$", KZT: "₸", LAK: "₭", LBP: "ل.ل ", LKR: "₨", LRD: "$", LSL: "L", LYD: "ل.د ", MAD: "د.م. ", MDL: "L", MGA: "Ar", MKD: "ден ", MMK: "K", MNT: "₮", MOP: "MOP$", MUR: "₨", MVR: "Rf", MWK: "MK", MXN: "$", MYR: "RM", MZN: "MT", NAD: "$", NGN: "₦", NIO: "C$", NOK: "kr", NPR: "₨", NZD: "$", OMR: "ر.ع. ", PAB: "B/.", PEN: "S/", PGK: "K", PHP: "₱", PKR: "₨", PLN: "zł", PYG: "₲", QAR: "ر.ق ", RON: "lei", RSD: "дин.", RUB: "₽", SAR: "ر.س ", SEK: "kr", THB: "฿", TRY: "₺", TWD: "NT$", UAH: "₴", VND: "₫", ZAR: "R"};
+
+// ---------- STATE ----------
+let state = {
+  month: thisMonth(),
+  income: 0,
+  currency: "GBP",
+  notes: "",
+  tags: [],
+  groups: []
+};
+let goalsState = [];
+let historyState = [];
+
+// ---------- DIRTY TRACKING ----------
+let dirty = false;
+let lastSavedAt = null;
+let suppressDirty = false;  // set true during programmatic state replacement
+
+function markDirty() {
+  if (suppressDirty) return;
+  if (!dirty) {
+    dirty = true;
+    updateSavedIndicator();
+    if (typeof pushHistory === "function") pushHistory();
+}
+}
+
+function markClean() {
+  dirty = false;
+  lastSavedAt = new Date();
+  updateSavedIndicator();
+  if (typeof updateHistoryButtons === "function") updateHistoryButtons();
+}
+
+function updateSavedIndicator() {
+  const ind = document.getElementById("lastSavedIndicator");
+  const top = document.getElementById("saveBtnTop");
+  const bot = document.getElementById("saveBtnBottom");
+  if (!ind || !top || !bot) return;
+
+  if (dirty) {
+    top.classList.add("dirty");
+    bot.classList.add("dirty");
+    ind.classList.add("dirty");
+    ind.textContent = "● Unsaved changes";
+    ind.style.display = "";
+  } else {
+    top.classList.remove("dirty");
+    bot.classList.remove("dirty");
+    ind.classList.remove("dirty");
+    if (lastSavedAt) {
+      const t = lastSavedAt.toLocaleTimeString("en-GB",
+        { hour: "2-digit", minute: "2-digit" });
+      ind.textContent = `Saved at ${t}`;
+      ind.style.display = "";
+    } else {
+      ind.style.display = "none";
+    }
+  }
+}
+
+function thisMonth() {
+  const d = new Date();
+  return d.toISOString().slice(0, 7);
+}
+
+function fmt(n) {
+  const sym = CURRENCY_SYMBOL[state.currency] || "";
+  return sym + (Math.round(Number(n) * 100) / 100).toLocaleString("en-GB", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2
+  });
+}
+
+function escapeHtml(s) {
+  return String(s ?? "").replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  }[c]));
+}
+
+// =====================================================================
+//  TOAST
+// =====================================================================
+function toast(msg, kind = "") {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.className = "toast show " + kind;
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => el.classList.remove("show"), 3000);
+}
+
+// =====================================================================
+//  RENDER
+// =====================================================================
+function render() {
+  document.getElementById("month").value = state.month;
+  document.getElementById("income").value = state.income;
+  document.getElementById("currency").value = state.currency;
+  document.getElementById("monthNotes").value = state.notes;
+  renderTags();
+
+  const container = document.getElementById("groupsContainer");
+  container.innerHTML = "";
+  state.groups.forEach((group, gIdx) => {
+    container.appendChild(renderGroup(group, gIdx));
+  });
+
+  updateTotals();
+  // v2.5.12: actually wire up drag-and-drop after the DOM is built
+  setTimeout(() => { if (typeof initPlanSortables === "function") initPlanSortables(); }, 0);
+}
+
+// ---------- TAGS ----------
+function renderTags() {
+  const c = document.getElementById("tagsContainer");
+  if (!c) return;
+  // Remove all existing chips, keep the input
+  c.querySelectorAll(".tag-chip").forEach(el => el.remove());
+  const input = document.getElementById("tagInput");
+  (state.tags || []).forEach((tag, idx) => {
+    const chip = document.createElement("span");
+    chip.className = "tag-chip";
+    chip.textContent = tag;
+    chip.title = "Click to remove";
+    chip.addEventListener("click", () => {
+      state.tags.splice(idx, 1);
+      markDirty();
+      renderTags();
+    });
+    c.insertBefore(chip, input);
+  });
+}
+
+function addTagFromInput() {
+  const input = document.getElementById("tagInput");
+  const raw = (input.value || "").trim();
+  if (!raw) return;
+  // Allow comma-separated entry: "holiday, tight, bonus"
+  const newTags = raw.split(",").map(t => t.trim()).filter(Boolean);
+  if (!state.tags) state.tags = [];
+  let added = 0;
+  for (const t of newTags) {
+    if (t.length > 30) continue;  // sanity
+    if (state.tags.includes(t)) continue;
+    state.tags.push(t);
+    added++;
+  }
+  input.value = "";
+  if (added > 0) {
+    markDirty();
+    renderTags();
+  }
+}
+
+function renderGroup(group, gIdx) {
+  const card = document.createElement("div");
+  card.className = "group-card";
+  card.dataset.gIdx = gIdx;
+
+  // ---- header ----
+  const header = document.createElement("div");
+  header.className = "group-header";
+
+  const nameInput = document.createElement("input");
+  nameInput.className = "group-name";
+  nameInput.value = group.name;
+  nameInput.addEventListener("input", e => {
+    state.groups[gIdx].name = e.target.value;
+    markDirty();
+  });
+
+  const kindSelect = document.createElement("select");
+  kindSelect.className = "group-kind-select " + group.kind;
+  kindSelect.innerHTML = `
+    <option value="FIXED">FIXED</option>
+    <option value="VARIABLE">VARIABLE</option>
+  `;
+  kindSelect.value = group.kind;
+  kindSelect.addEventListener("change", e => {
+    state.groups[gIdx].kind = e.target.value;
+    kindSelect.className = "group-kind-select " + e.target.value;
+    updateTotals();
+    markDirty();
+  });
+
+  const total = document.createElement("span");
+  total.className = "group-total";
+  total.dataset.groupTotal = gIdx;
+
+  const deleteBtn = document.createElement("button");
+  deleteBtn.className = "btn-icon";
+  deleteBtn.title = "Delete group";
+  deleteBtn.textContent = "✕";
+  deleteBtn.addEventListener("click", () => startGroupConfirm(gIdx));
+
+  const dragHandle = document.createElement("span");
+  dragHandle.className = "group-drag-handle drag-handle";
+  dragHandle.innerHTML = '⋮⋮';
+  dragHandle.title = "Drag to reorder group";
+  header.append(dragHandle, nameInput, kindSelect, total, deleteBtn);
+  // Giving toggle
+  const givingBtn = document.createElement("button");
+  givingBtn.type = "button";
+  givingBtn.className = "btn-icon" + (group.is_giving ? " on" : "");
+  givingBtn.textContent = "🤲";
+  givingBtn.title = group.is_giving ? "Marked as giving" : "Mark as giving";
+  givingBtn.style.cssText = "margin-right:4px;" + (group.is_giving ? "background:#fdf4e3;" : "");
+  givingBtn.addEventListener("click", () => {
+    state.groups[gIdx].is_giving = !state.groups[gIdx].is_giving;
+    markDirty();
+    render();
+  });
+  header.insertBefore(givingBtn, deleteBtn);
+  card.appendChild(header);
+
+  // ---- inline confirm bar (hidden by default) ----
+  const confirmBar = document.createElement("div");
+  confirmBar.className = "group-confirm-bar";
+  confirmBar.innerHTML = `
+    <span style="flex:1;">Delete group "<strong>${escapeHtml(group.name)}</strong>" and all ${group.items.length} item(s)?</span>
+  `;
+  const yes = document.createElement("button");
+  yes.className = "btn btn-confirm";
+  yes.textContent = "Confirm delete";
+  yes.addEventListener("click", () => {
+    state.groups.splice(gIdx, 1);
+    markDirty();
+    render();
+    toast("Group deleted");
+  });
+  const no = document.createElement("button");
+  no.className = "btn btn-ghost";
+  no.textContent = "Cancel";
+  no.addEventListener("click", () => {
+    card.classList.remove("confirming");
+  });
+  confirmBar.append(yes, no);
+  card.appendChild(confirmBar);
+
+  // ---- items table ----
+  const table = document.createElement("table");
+  table.className = "items";
+  table.innerHTML = `
+    <thead>
+      <tr>
+        <th class="col-drag" title="Drag to reorder"></th>
+        <th class="col-name">Item</th>
+        <th class="col-amount">Amount</th>
+        <th class="col-notes">Notes</th>
+        <th class="col-status" title="Tick when this item has been paid">Paid</th>
+        <th class="col-saving" title="Linked to a savings goal">💰</th>
+        <th class="col-recurring" title="Recurring items are kept when copying month">⟳</th>
+        <th class="col-actions"></th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  `;
+  const tbody = table.querySelector("tbody");
+  group.items.forEach((item, iIdx) => {
+    tbody.appendChild(renderItem(item, gIdx, iIdx));
+  });
+  card.appendChild(table);
+
+  // ---- add item row ----
+  const addRow = document.createElement("div");
+  addRow.className = "add-item-row";
+  const addBtn = document.createElement("button");
+  addBtn.textContent = "+ Add item";
+  addBtn.addEventListener("click", () => {
+    state.groups[gIdx].items.push({ name: "", amount: 0, notes: "", paid: false, is_saving: false });
+    markDirty();
+    render();
+    const tables = document.querySelectorAll(".group-card");
+    const rows = tables[gIdx].querySelectorAll("tbody tr");
+    rows[rows.length - 1]?.querySelector("input")?.focus();
+  });
+  addRow.appendChild(addBtn);
+  card.appendChild(addRow);
+
+  return card;
+}
+
+function startGroupConfirm(gIdx) {
+  // cancel any other group confirmation first
+  document.querySelectorAll(".group-card.confirming").forEach(c => c.classList.remove("confirming"));
+  const card = document.querySelector(`.group-card[data-g-idx="${gIdx}"]`);
+  if (card) card.classList.add("confirming");
+}
+
+function renderItem(item, gIdx, iIdx) {
+  const tr = document.createElement("tr");
+  tr.className = item.paid ? "paid-row" : "";
+
+  // name
+  const tdName = document.createElement("td");
+  const nameI = document.createElement("input");
+  nameI.type = "text";
+  nameI.value = item.name;
+  nameI.placeholder = "Item name";
+  nameI.addEventListener("input", e => {
+    state.groups[gIdx].items[iIdx].name = e.target.value;
+    markDirty();
+  });
+  nameI.addEventListener("blur", () => {
+    const it = state.groups[gIdx].items[iIdx];
+    const oldBanner = tr.querySelector(".rename-warn");
+    if (oldBanner) oldBanner.remove();
+    if (it.is_saving && it._originalName && it.name !== it._originalName) {
+      const warn = document.createElement("tr");
+      warn.className = "rename-warn";
+      warn.innerHTML = `<td colspan="8" style="padding:0;">
+        <div class="rename-warn-panel">
+          <div class="rename-warn-icon">🔗</div>
+          <div class="rename-warn-body">
+            <strong>This item is linked to the savings goal "${escapeHtml(it._originalName)}".</strong>
+            <p>Goals track progress by matching item names exactly across months. If you rename this item only for ${escapeHtml(state.month)}, the goal will stop counting this month's contribution — showing less progress than you've actually made. To keep the link intact, rename across all past months too.</p>
+            <div class="rename-warn-actions">
+              <button class="btn-keep" onclick="this.closest('tr').querySelector('.rw-flag').value='yes'; this.closest('tr').style.display='none';">Keep goal linked (rename everywhere)</button>
+              <button class="btn-break" onclick="this.closest('tr').style.display='none';">Just this month (will break the link)</button>
+              <button class="btn-cancel" onclick="cancelRename(${gIdx}, ${iIdx})">Cancel (restore name)</button>
+            </div>
+            <input type="hidden" class="rw-flag" data-gidx="${gIdx}" data-iidx="${iIdx}" value="no">
+          </div>
+        </div>
+      </td>`;
+      tr.after(warn);
+    }
+  });
+  tdName.appendChild(nameI);
+
+  // amount
+  const tdAmt = document.createElement("td");
+  tdAmt.className = "amount";
+  const amtI = document.createElement("input");
+  amtI.type = "number";
+  amtI.step = "0.01";
+  amtI.value = item.amount;
+  amtI.placeholder = "0";
+  amtI.addEventListener("input", e => {
+    state.groups[gIdx].items[iIdx].amount = Number(e.target.value || 0);
+    updateTotals();
+    markDirty();
+  });
+  amtI.addEventListener("blur", e => {
+    const v = Number(e.target.value || 0);
+    const rounded = Math.round(v * 100) / 100;
+    if (v !== rounded) {
+      e.target.value = rounded;
+      state.groups[gIdx].items[iIdx].amount = rounded;
+      updateTotals();
+    }
+  });
+  tdAmt.appendChild(amtI);
+
+  // notes
+  const tdNotes = document.createElement("td");
+  tdNotes.className = "col-notes";
+  const notesI = document.createElement("input");
+  notesI.type = "text";
+  notesI.value = item.notes || "";
+  notesI.placeholder = "—";
+  notesI.addEventListener("input", e => {
+    state.groups[gIdx].items[iIdx].notes = e.target.value;
+    markDirty();
+  });
+  tdNotes.appendChild(notesI);
+
+  // paid (checkbox)
+  const tdStatus = document.createElement("td");
+  tdStatus.style.textAlign = "center";
+  const paidBox = document.createElement("input");
+  paidBox.type = "checkbox";
+  paidBox.checked = !!item.paid;
+  paidBox.title = item.paid ? "Marked as paid. Click to unmark." : "Tick when paid.";
+  paidBox.addEventListener("change", e => {
+    state.groups[gIdx].items[iIdx].paid = e.target.checked;
+    tr.className = e.target.checked ? "paid-row" : "";
+    paidBox.title = e.target.checked ? "Marked as paid. Click to unmark." : "Tick when paid.";
+    updateTotals();
+    markDirty();
+  });
+  tdStatus.appendChild(paidBox);
+
+  // saving toggle
+  const tdSav = document.createElement("td");
+  tdSav.className = "col-saving";
+  const savBtn = document.createElement("button");
+  const isSav = !!item.is_saving;
+  savBtn.className = "saving-toggle" + (isSav ? " on" : "");
+  savBtn.textContent = "💰";
+  savBtn.title = isSav ? "Linked to savings goal. Click to unlink." : "Click to link to a savings goal.";
+  savBtn.addEventListener("click", () => {
+    const cur = !!state.groups[gIdx].items[iIdx].is_saving;
+    state.groups[gIdx].items[iIdx].is_saving = !cur;
+    savBtn.classList.toggle("on", !cur);
+    savBtn.title = !cur ? "Linked to savings goal. Click to unlink." : "Click to link to a savings goal.";
+    markDirty();
+  });
+  tdSav.appendChild(savBtn);
+
+  // recurring toggle
+  const tdRec = document.createElement("td");
+  tdRec.className = "col-recurring";
+  const recBtn = document.createElement("button");
+  const isRec = item.recurring !== false;  // default true
+  recBtn.className = "recurring-toggle" + (isRec ? " on" : "");
+  recBtn.textContent = "⟳";
+  recBtn.title = isRec
+    ? "Recurring — kept when copying month. Click to make one-off."
+    : "One-off — dropped when copying month. Click to make recurring.";
+  recBtn.addEventListener("click", () => {
+    const cur = state.groups[gIdx].items[iIdx].recurring !== false;
+    state.groups[gIdx].items[iIdx].recurring = !cur;
+    recBtn.classList.toggle("on", !cur);
+    recBtn.title = !cur
+      ? "Recurring — kept when copying month. Click to make one-off."
+      : "One-off — dropped when copying month. Click to make recurring.";
+    markDirty();
+  });
+  tdRec.appendChild(recBtn);
+
+  // delete (with inline two-step confirm)
+  const tdDel = document.createElement("td");
+  tdDel.className = "col-actions";
+  renderItemDeleteCell(tdDel, tr, gIdx, iIdx, false);
+  const tdDrag = document.createElement("td");
+  tdDrag.className = "col-drag drag-handle";
+  tdDrag.innerHTML = '<span class="drag-handle-icon" title="Drag to reorder">⋮⋮</span>';
+  tr.append(tdDrag, tdName, tdAmt, tdNotes, tdStatus, tdSav, tdRec, tdDel);
+  return tr;
+}
+
+function renderItemDeleteCell(td, tr, gIdx, iIdx, confirming) {
+  td.innerHTML = "";
+  if (!confirming) {
+    const btn = document.createElement("button");
+    btn.className = "btn-icon";
+    btn.textContent = "✕";
+    btn.title = "Delete item";
+    btn.addEventListener("click", () => {
+      const it = state.groups[gIdx] && state.groups[gIdx].items[iIdx];
+      // For is_saving items, show a goal-aware warning panel
+      if (it && it.is_saving && it.name) {
+        showSavingDeleteWarning(gIdx, iIdx, tr);
+        return;
+      }
+      tr.classList.add("confirming");
+      renderItemDeleteCell(td, tr, gIdx, iIdx, true);
+    });
+    td.appendChild(btn);
+  } else {
+    const yes = document.createElement("button");
+    yes.className = "btn-icon yes";
+    yes.textContent = "✓";
+    yes.title = "Confirm delete";
+    yes.addEventListener("click", () => {
+      state.groups[gIdx].items.splice(iIdx, 1);
+      markDirty();
+      render();
+      toast("Item deleted");
+    });
+    const no = document.createElement("button");
+    no.className = "btn-icon";
+    no.textContent = "✕";
+    no.title = "Cancel";
+    no.addEventListener("click", () => {
+      tr.classList.remove("confirming");
+      renderItemDeleteCell(td, tr, gIdx, iIdx, false);
+    });
+    td.append(yes, no);
+  }
+}
+
+function showSavingDeleteWarning(gIdx, iIdx, tr) {
+  // Remove any existing warning for this row
+  const existing = tr.nextElementSibling;
+  if (existing && existing.classList.contains("delete-warn")) existing.remove();
+  const it = state.groups[gIdx].items[iIdx];
+  const warn = document.createElement("tr");
+  warn.className = "delete-warn";
+  warn.innerHTML = `<td colspan="8" style="padding:0;">
+    <div class="delete-warn-panel">
+      <div class="delete-warn-icon">⚠️</div>
+      <div class="delete-warn-body">
+        <strong>This item contributes to the savings goal "${escapeHtml(it.name)}".</strong>
+        <p>Deleting it removes this month's contribution from the goal's progress. The goal itself is not deleted, and contributions from other months are unaffected.</p>
+        <p>If you simply didn't make this month's contribution, you can also leave the item in place and uncheck its status — the unmarked item then shows as "pending" on the goal instead of being lost.</p>
+        <div class="delete-warn-actions">
+          <button class="btn-delete" onclick="confirmSavingDelete(${gIdx}, ${iIdx})">Delete this month's contribution</button>
+          <button class="btn-cancel" onclick="this.closest('tr').remove()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </td>`;
+  tr.after(warn);
+}
+
+function confirmSavingDelete(gIdx, iIdx) {
+  state.groups[gIdx].items.splice(iIdx, 1);
+  markDirty();
+  render();
+  toast("Item deleted");
+}
+window.showSavingDeleteWarning = showSavingDeleteWarning;
+window.confirmSavingDelete = confirmSavingDelete;
+
+// =====================================================================
+//  CALCULATE  (pure: reads state, writes only display elements)
+// =====================================================================
+function calculateTotals(){
+  const groups=state.groups||[]; const income=Number(state.income)||0;
+  let allocated=0,fixed=0,variable=0,giving=0; const groupTotals=[],billsCounts={};
+  groups.forEach((g,gi)=>{
+    const items=g.items||[]; const gt=items.reduce((a,i)=>a+(Number(i.amount)||0),0);
+    groupTotals.push(gt); allocated+=gt;
+    if(g.is_giving) giving+=gt;
+    if(g.kind==="FIXED") fixed+=gt;
+    if(g.kind==="VARIABLE") variable+=gt;
+    if(g.kind==="FIXED" && !g.is_giving){
+      let done=0,pending=0,none=0;
+      items.forEach(i=>{if(i.paid)done++; else none++;});
+      billsCounts[gi]={done,pending,none,total:items.length};
+    }
+  });
+  return {income,allocated,fixed,variable,giving,remaining:income-allocated,groupTotals,billsCounts};
+}
+function updateTotals(){}
+function formatMonthLabel(m){if(!m)return"—"; try{const[y,mo]=m.split("-").map(Number); return new Date(y,mo-1,1).toLocaleDateString("en-GB",{month:"long",year:"numeric"});}catch(e){return m;}}
+function relativeUpdatedClause(u){if(!u)return""; try{const up=new Date(u),now=new Date(); const sToday=new Date(now.getFullYear(),now.getMonth(),now.getDate()); const sUp=new Date(up.getFullYear(),up.getMonth(),up.getDate()); const d=Math.round((sToday-sUp)/86400000); if(d<=0)return"last looked at today"; if(d===1)return"last looked at yesterday"; if(d<=6)return`last looked at ${d} days ago`; if(d<=13)return"last looked at last week"; return`last looked at on ${up.toLocaleDateString("en-GB",{day:"numeric",month:"long"})}`;}catch(e){return"";}}
+let homeGoals=[];
+async function renderHome(){
+  try{const r=await fetch(`${API}/goals`); if(r.ok) homeGoals=await r.json();}catch(e){homeGoals=[];}
+  const t=calculateTotals();
+  const fmt=n=>`${CURRENCY_SYMBOL[state.currency]||""}${Math.round(n).toLocaleString()}`;
+  const groups=state.groups||[]; const monthLabel=formatMonthLabel(state.month); const monthShort=monthLabel.split(" ")[0]; const TOL=0.50;
+  document.getElementById("homeHeading").textContent=monthLabel;
+  const handler=state.userName?`handled by ${state.userName}`:""; const upd=relativeUpdatedClause(state.updated_at);
+  let byParts=[];
+  if(handler) byParts.push(handler);
+  if(upd) byParts.push(upd);
+  document.getElementById("homeByline").textContent=byParts.length?byParts.join(" · "):"";
+  const headline=document.getElementById("homeHeadline");
+  headline.classList.remove("is-fresh","is-planned","is-surplus","is-over");
+  const planEmpty=t.income===0 && t.allocated===0;
+  let sentence;
+  if(planEmpty){headline.classList.add("is-fresh"); sentence=`${monthShort} hasn't been planned yet — that's the next thing on my list.`;}
+  else if(t.remaining<-TOL){headline.classList.add("is-over"); sentence=`${monthShort} is planned for ${fmt(-t.remaining)} more than the income — let's look at it together when we get a moment.`;}
+  else if(t.remaining>TOL){headline.classList.add("is-surplus"); sentence=`${monthShort} has ${fmt(t.remaining)} unassigned — worth deciding where it should go.`;}
+  else{headline.classList.add("is-planned"); sentence=`${monthShort} is fully planned. Every pound has a job.`;}
+  const note=(state.notes||"").trim();
+  if(note && note.length<=80) sentence=note;
+  document.getElementById("homeHeadlineText").textContent=sentence;
+  const billsLine=document.getElementById("homeBandBills");
+  const billsIdxs=Object.keys(t.billsCounts).map(Number);
+  if(billsIdxs.length===0||planEmpty) billsLine.textContent="";
+  else{let ti=0,pi=0; billsIdxs.forEach(gi=>{ti+=t.billsCounts[gi].total; pi+=t.billsCounts[gi].done;}); billsLine.textContent=`Bills for ${monthShort} are all set aside. ${pi} of ${ti} marked paid so far.`;}
+  const givingLine=document.getElementById("homeBandGiving");
+  if(t.giving<=0||planEmpty) givingLine.textContent="";
+  else{const gg=groups.find(g=>g.is_giving); const names=gg?(gg.items||[]).slice(0,3).map(i=>i.name).filter(Boolean):[]; const more=gg?(gg.items||[]).length:0; let tail=""; if(names.length>0) tail=` — including ${names.join(", ")}${more>3?", and others":""}`; givingLine.textContent=`We're setting aside ${fmt(t.giving)} for giving in ${monthShort}${tail}.`;}
+  const savingLine=document.getElementById("homeBandSaving");
+  const ag=(homeGoals||[]).filter(g=>Number(g.target)>0 && Number(g.current)<Number(g.target)).map(g=>({...g,pct:Number(g.current)/Number(g.target)})).sort((a,b)=>b.pct-a.pct).slice(0,2);
+  if(ag.length===0) savingLine.textContent="";
+  else{
+    const parts=ag.map(g=>{
+      let s=`${g.name} (${Math.round(g.pct*100)}%`;
+      if(g.pending>0) s+=`, plus ${fmt(g.pending)} pending`;
+      s+=")";
+      return s;
+    });
+    savingLine.textContent=parts.length===1?`Saving toward ${parts[0]}.`:`Saving toward ${parts[0]} and ${parts[1]}.`;
+  }
+  const bottom=document.getElementById("homeBottom");
+  if(planEmpty) bottom.textContent="";
+  else{let trail; if(t.remaining<-TOL) trail=`planned for ${fmt(-t.remaining)} more than the income.`; else if(t.remaining>TOL) trail=`${fmt(t.remaining)} still to assign.`; else trail="everything assigned a job."; bottom.textContent=`Income ${fmt(t.income)} · ${trail}`;}
+  const tagsEl=document.getElementById("homeFooterTags"); tagsEl.innerHTML="";
+  (state.tags||[]).forEach(tag=>{const c=document.createElement("span"); c.className="tag-chip"; c.textContent=tag; tagsEl.appendChild(c);});
+  document.getElementById("homeFooterNotes").textContent=(note && note.length>80)?note:"";
+}
+async function saveSettings(){
+  const name = document.getElementById("settingsUserName").value.trim();
+  await saveSetting("user_name", name);
+  state.userName = name;
+  toast("Settings saved","success");
+  if(document.getElementById("homeView").classList.contains("active")) renderHome();
+}
+
+// =====================================================================
+//  LOAD / SAVE / DELETE
+// =====================================================================
+function confirmDiscardIfDirty() {
+  if (!dirty) return true;
+  return confirm("You have unsaved changes. Discard them and continue?");
+}
+
+function shiftMonth(delta) {
+  if (!confirmDiscardIfDirty()) return;
+  const cur = document.getElementById("month").value || thisMonth();
+  const d = new Date(cur + "-01");
+  d.setMonth(d.getMonth() + delta);
+  const newMonth = d.toISOString().slice(0, 7);
+  document.getElementById("month").value = newMonth;
+  state.month = newMonth;
+  loadMonth(true);  // already confirmed
+}
+
+async function loadMonth(skipDirtyCheck) {
+  if (!skipDirtyCheck && !confirmDiscardIfDirty()) return;
+  const month = document.getElementById("month").value || thisMonth();
+  state.month = month;
+  try {
+    const res = await fetch(`${API}/plan/${month}`);
+    if (res.status === 404) {
+      await loadTemplate();
+      toast(`No plan for ${month} — loaded template`);
+      if (document.getElementById("homeView").classList.contains("active") && typeof renderHome === "function") renderHome();
+      return;
+    }
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    suppressDirty = true;
+    try {
+      state = {
+        month: data.month,
+        income: data.income,
+        currency: data.currency,
+        notes: data.notes || "",
+        tags: Array.isArray(data.tags) ? data.tags : [],
+        groups: data.groups.map(g => ({
+          name: g.name,
+          kind: g.kind,
+          is_giving: !!g.is_giving,
+          items: g.items.map(i => ({
+            name: i.name,
+            amount: i.amount,
+            notes: i.notes || "",
+            paid: !!i.paid,
+            recurring: i.recurring !== false,
+            is_saving: !!i.is_saving,
+            _originalName: i.name
+          }))
+        }))
+      };
+      render();
+    } finally {
+      suppressDirty = false;
+    }
+    markClean();
+    toast(`Loaded plan for ${month}`, "success");
+        if (document.getElementById("homeView").classList.contains("active") && typeof renderHome === "function") renderHome();
+  } catch (e) {
+    console.error("loadMonth failed, falling back to template:", e);
+    toast("Backend unreachable — loaded template", "error");
+      if (document.getElementById("homeView").classList.contains("active") && typeof renderHome === "function") renderHome();
+    await loadTemplate();
+  }
+}
+
+async function loadTemplate() {
+  try {
+    const res = await fetch("./template.json");
+    const data = await res.json();
+    suppressDirty = true;
+    try {
+      state = {
+        month: document.getElementById("month").value || thisMonth(),
+        income: data.income || 0,
+        currency: data.currency || "GBP",
+        notes: data.notes || "",
+        tags: [],
+        groups: (data.groups || []).map(g => ({
+          name: g.name,
+          kind: g.kind,
+          is_giving: !!g.is_giving,
+          items: (g.items || []).map(i => ({
+            name: i.name,
+            amount: i.amount,
+            notes: i.notes || "",
+            paid: false,
+            recurring: i.recurring !== false,
+            is_saving: false
+          }))
+        }))
+      };
+      render();
+    } finally {
+      suppressDirty = false;
+    }
+    // Template = no saved plan exists yet → mark as dirty so the user
+    // knows they need to save it.
+    dirty = true;
+    lastSavedAt = null;
+    updateSavedIndicator();
+  } catch (e) {
+    console.error("Template load failed:", e);
+    suppressDirty = true;
+    try {
+      state.groups = [];
+      render();
+    } finally {
+      suppressDirty = false;
+    }
+  }
+}
+
+async function savePlan() {
+  state.month = document.getElementById("month").value || state.month;
+  state.income = Number(document.getElementById("income").value || 0);
+  state.currency = document.getElementById("currency").value;
+  state.notes = document.getElementById("monthNotes").value;
+  // tags are kept in state via renderTags handlers
+
+  try {
+    const res = await fetch(`${API}/plan/${state.month}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        income: state.income,
+        currency: state.currency,
+        notes: state.notes,
+        tags: state.tags || [],
+        groups: state.groups
+      })
+    });
+    if (!res.ok) {
+      const txt = await res.text();
+      throw new Error(`HTTP ${res.status}: ${txt}`);
+    }
+    markClean();
+    clearHistory();
+    toast(`Saved ${state.month}`, "success");
+    // Fire any pending cross-month renames
+    document.querySelectorAll(".rename-warn .rw-flag").forEach(async flag => {
+      if (flag.value === "yes") {
+        const gi = Number(flag.dataset.gidx);
+        const ii = Number(flag.dataset.iidx);
+        const it = state.groups[gi]?.items[ii];
+        if (it && it._originalName && it.name !== it._originalName) {
+          try {
+            const r = await fetch(`${API}/goals/rename`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ old_name: it._originalName, new_name: it.name })
+            });
+            if (r.ok) {
+              const d = await r.json();
+              toast(`Renamed "${it._originalName}" → "${it.name}" across ${d.renamed_items} items`, "success");
+              it._originalName = it.name;
+            }
+          } catch (e) { toast("Cross-month rename failed: " + e.message, "error"); }
+        }
+      }
+    });
+    document.querySelectorAll(".rename-warn").forEach(el => el.remove());
+  } catch (e) {
+    console.error(e);
+    toast("Save failed: " + e.message, "error");
+  }
+}
+
+// ---------- Inline confirm for delete-month ----------
+function startMonthDeleteConfirm() {
+  const slot = document.getElementById("deleteSlot");
+  const month = state.month;
+  slot.innerHTML = `
+    <span class="inline-confirm">
+      Type <strong>${escapeHtml(month)}</strong> to confirm:
+      <input type="text" id="monthDeleteConfirmInput" placeholder="${escapeHtml(month)}" style="width:90px;padding:2px 6px;font-size:13px;margin:0 4px;">
+      <button class="btn btn-confirm" id="confirmDeleteBtn" disabled>Delete</button>
+      <button class="btn btn-ghost" id="cancelDeleteBtn">Cancel</button>
+    </span>
+  `;
+    const confirmInput = document.getElementById("monthDeleteConfirmInput");
+  const confirmBtn = document.getElementById("confirmDeleteBtn");
+  if (confirmInput && confirmBtn) {
+    confirmInput.addEventListener("input", () => {
+      confirmBtn.disabled = confirmInput.value.trim() !== state.month;
+    });
+    confirmInput.focus();
+  }
+  document.getElementById("confirmDeleteBtn").addEventListener("click", deleteMonth);
+  document.getElementById("cancelDeleteBtn").addEventListener("click", resetMonthDeleteButton);
+}
+
+function resetMonthDeleteButton() {
+  const slot = document.getElementById("deleteSlot");
+  slot.innerHTML = `<button class="btn-danger btn" id="deleteBtn">Delete month</button>`;
+  document.getElementById("deleteBtn").addEventListener("click", startMonthDeleteConfirm);
+}
+
+async function deleteMonth() {
+  const month = state.month;
+  try {
+    const res = await fetch(`${API}/plan/${month}`, { method: "DELETE" });
+    if (!res.ok && res.status !== 404) throw new Error(`HTTP ${res.status}`);
+    toast(`Deleted ${month}`, "success");
+    resetMonthDeleteButton();
+    await loadTemplate();
+  } catch (e) {
+    toast("Delete failed: " + e.message, "error");
+    resetMonthDeleteButton();
+  }
+}
+
+// ---------- Smart copy previous month ----------
+async function copyPreviousMonth() {
+  if (!confirmDiscardIfDirty()) return;
+  const current = document.getElementById("month").value || thisMonth();
+  state.month = current;
+
+  try {
+    const monthsRes = await fetch(`${API}/months`);
+    if (!monthsRes.ok) throw new Error(`HTTP ${monthsRes.status}`);
+    const months = await monthsRes.json();
+    const prior = months.filter(m => m < current).sort();
+    if (prior.length === 0) {
+      toast("No earlier month found to copy from", "error");
+      return;
+    }
+    const prev = prior[prior.length - 1]; // most recent prior
+
+    const planRes = await fetch(`${API}/plan/${prev}`);
+    if (!planRes.ok) throw new Error(`HTTP ${planRes.status}`);
+    const data = await planRes.json();
+
+    suppressDirty = true;
+    try {
+      // Filter to recurring items only, then drop empty groups
+      const filteredGroups = data.groups.map(g => ({
+        name: g.name,
+        kind: g.kind,
+        items: g.items
+          .filter(i => i.recurring !== false)  // drop one-offs
+          .map(i => ({
+            name: i.name,
+            amount: i.amount,
+            notes: i.notes || "",
+            paid: false,  // always reset
+            recurring: true  // by definition (passed the filter)
+          }))
+      })).filter(g => g.items.length > 0);  // drop groups that became empty
+
+      const droppedItems = data.groups.reduce(
+        (n, g) => n + g.items.filter(i => i.recurring === false).length, 0
+      );
+
+      state = {
+        month: current,
+        income: data.income,
+        currency: data.currency,
+        notes: "",  // fresh notes for new month
+        tags: [],   // fresh tags for new month
+        groups: filteredGroups,
+        _droppedItems: droppedItems  // used in toast below, then ignored
+      };
+      delete state._droppedItems;
+      render();
+    } finally {
+      suppressDirty = false;
+    }
+    // Copied content is unsaved by definition
+    dirty = true;
+    lastSavedAt = null;
+    updateSavedIndicator();
+    const droppedCount = data.groups.reduce(
+      (n, g) => n + g.items.filter(i => i.recurring === false).length, 0
+    );
+    const dropMsg = droppedCount > 0
+      ? ` (${droppedCount} one-off item${droppedCount === 1 ? "" : "s"} skipped)`
+      : "";
+    toast(`Copied from ${prev}${dropMsg}. Click Save to keep.`, "success");
+  } catch (e) {
+    console.error(e);
+    toast("Copy failed: " + e.message, "error");
+  }
+}
+
+function addGroup() {
+  state.groups.push({
+    name: "New group",
+    kind: "VARIABLE",
+    items: []
+  });
+  markDirty();
+  render();
+}
+
+// =====================================================================
+//  CSV EXPORT (improved: BOM, header, grouped, subtotals, grand total)
+// =====================================================================
+function csvEscape(s) {
+  const str = String(s ?? "");
+  if (/[",\n]/.test(str)) return '"' + str.replace(/"/g, '""') + '"';
+  return str;
+}
+
+function paidLabel(p) {
+  return p ? "Paid" : "Not paid";
+}
+
+function exportCSV() {
+  // Pull current input values into state first
+  state.month = document.getElementById("month").value || state.month;
+  state.income = Number(document.getElementById("income").value || 0);
+  state.currency = document.getElementById("currency").value;
+  state.notes = document.getElementById("monthNotes").value;
+
+  const lines = [];
+  // Metadata header
+  lines.push(["Yesanio Budget", state.month].map(csvEscape).join(","));
+  lines.push(["Income", state.income.toFixed(2), state.currency].map(csvEscape).join(","));
+  if (state.notes) {
+    lines.push(["Notes", state.notes].map(csvEscape).join(","));
+  }
+  if (state.tags && state.tags.length > 0) {
+    lines.push(["Tags", ...state.tags].map(csvEscape).join(","));
+  }
+  lines.push(""); // blank line
+
+  // Column headers (now 7 columns)
+  lines.push(["Group", "Kind", "Item", "Amount", "Notes", "Paid", "Recurring"].join(","));
+
+  let grandTotal = 0;
+  let fixedTotal = 0;
+  let variableTotal = 0;
+
+  state.groups.forEach(g => {
+    let gt = 0;
+    g.items.forEach(it => {
+      const amt = Number(it.amount || 0);
+      gt += amt;
+      lines.push([
+        csvEscape(g.name),
+        csvEscape(g.kind),
+        csvEscape(it.name),
+        amt.toFixed(2),
+        csvEscape(it.notes || ""),
+        csvEscape(paidLabel(it.paid)),
+        it.recurring === false ? "No" : "Yes"
+      ].join(","));
+    });
+    // Group subtotal row
+    lines.push([
+      csvEscape(g.name),
+      csvEscape(g.kind),
+      "Subtotal",
+      gt.toFixed(2),
+      "",
+      "",
+      ""
+    ].join(","));
+    lines.push(""); // blank line between groups
+
+    grandTotal += gt;
+    if (g.kind === "FIXED") fixedTotal += gt;
+    else variableTotal += gt;
+  });
+
+  // Summary footer
+  lines.push(["", "", "Fixed total", fixedTotal.toFixed(2), "", "", ""].join(","));
+  lines.push(["", "", "Variable total", variableTotal.toFixed(2), "", "", ""].join(","));
+  lines.push(["", "", "ALLOCATED", grandTotal.toFixed(2), "", "", ""].join(","));
+  lines.push(["", "", "REMAINING", (state.income - grandTotal).toFixed(2), "", "", ""].join(","));
+
+  // Add UTF-8 BOM so Excel renders £/€/₩ correctly
+  const csv = "\uFEFF" + lines.join("\n");
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `yesanio-${state.month}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// =====================================================================
+//  CSV IMPORT  (round-trips with the export above)
+// =====================================================================
+
+// A real CSV parser that handles quoted fields, escaped quotes ("" → "),
+// and quoted newlines. Returns an array of rows, each row an array of strings.
+function parseCSV(text) {
+  // Strip UTF-8 BOM if present
+  if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+
+  const rows = [];
+  let row = [];
+  let field = '';
+  let inQuotes = false;
+  let i = 0;
+
+  while (i < text.length) {
+    const c = text[i];
+    if (inQuotes) {
+      if (c === '"') {
+        if (text[i + 1] === '"') {
+          field += '"';
+          i += 2;
+        } else {
+          inQuotes = false;
+          i++;
+        }
+      } else {
+        field += c;
+        i++;
+      }
+    } else {
+      if (c === '"') {
+        inQuotes = true;
+        i++;
+      } else if (c === ',') {
+        row.push(field);
+        field = '';
+        i++;
+      } else if (c === '\n' || c === '\r') {
+        row.push(field);
+        rows.push(row);
+        row = [];
+        field = '';
+        i++;
+        if (c === '\r' && text[i] === '\n') i++;
+      } else {
+        field += c;
+        i++;
+      }
+    }
+  }
+  // Last field / row if no trailing newline
+  if (field !== '' || row.length > 0) {
+    row.push(field);
+    rows.push(row);
+  }
+  // Filter out completely empty rows
+  return rows.filter(r => r.length > 0 && !(r.length === 1 && r[0] === ''));
+}
+
+// Map paid labels (CSV display form) back to boolean
+const PAID_LABEL_MAP = {
+  "Paid": true,
+  "Not paid": false,
+  "Done": true,            // legacy CSVs
+  "Not started": false,    // legacy CSVs
+  "Pending": false,        // legacy CSVs
+  "true": true,
+  "false": false,
+  "yes": true,
+  "no": false,
+  "1": true,
+  "0": false,
+  "": false,
+};
+
+// Detect rows that are summary/footer/subtotal rows in our export format
+function isSkipRow(groupName, itemName) {
+  if (itemName === "Subtotal") return true;
+  if (groupName === "" && (
+    itemName === "Fixed total" ||
+    itemName === "Variable total" ||
+    itemName === "ALLOCATED" ||
+    itemName === "REMAINING"
+  )) return true;
+  return false;
+}
+
+// Parse a Yesanio CSV export into a plan object
+function parseYesanioCSV(text) {
+  const rows = parseCSV(text);
+  if (rows.length === 0) throw new Error("Empty CSV");
+
+  let monthFromCSV = null;
+  let income = 0;
+  let currency = "GBP";
+  let notes = "";
+  let tags = [];
+  let dataStartIdx = 0;
+  let hasMetadataHeader = false;
+
+  // Detect format: full Yesanio export starts with "Yesanio Budget" header
+  if (rows[0][0] === "Yesanio Budget") {
+    hasMetadataHeader = true;
+    monthFromCSV = (rows[0][1] || "").trim();
+    // Walk forward looking for metadata, then the column header row
+    for (let i = 1; i < rows.length; i++) {
+      const r = rows[i];
+      if (r[0] === "Income") {
+        income = Number(r[1] || 0);
+        if (r[2]) currency = r[2].trim();
+      } else if (r[0] === "Notes") {
+        notes = r[1] || "";
+      } else if (r[0] === "Tags") {
+        // Tags,tag1,tag2,tag3...
+        tags = r.slice(1).map(t => (t || "").trim()).filter(Boolean);
+      } else if (r[0] === "Group" && r[1] === "Kind" && r[2] === "Item") {
+        dataStartIdx = i + 1;
+        break;
+      }
+    }
+    if (dataStartIdx === 0) {
+      throw new Error("Malformed Yesanio CSV: missing 'Group,Kind,Item,...' header row");
+    }
+  } else if (rows[0][0] === "Group" && rows[0][1] === "Kind" && rows[0][2] === "Item") {
+    // Stripped-down CSV: just the column header + data, no metadata
+    dataStartIdx = 1;
+  } else {
+    throw new Error(
+      "Unrecognised CSV format. Expected a Yesanio export starting with " +
+      "'Yesanio Budget,YYYY-MM' or 'Group,Kind,Item,Amount,Notes,Status'."
+    );
+  }
+
+  // Parse data rows into a Map keyed by group name (preserves first-seen order)
+  const groupMap = new Map();
+  let skipped = 0;
+  let imported = 0;
+
+  for (let i = dataStartIdx; i < rows.length; i++) {
+    const r = rows[i];
+    if (r.length < 3) continue;
+
+    const groupName = (r[0] || "").trim();
+    const groupKind = (r[1] || "").trim().toUpperCase();
+    const itemName = (r[2] || "").trim();
+    const amount = Number(r[3] || 0);
+    const itemNotes = r[4] || "";
+    const paidRaw = (r[5] || "").trim();
+    const recurringRaw = (r[6] || "").trim().toLowerCase();
+
+    if (isSkipRow(groupName, itemName)) {
+      skipped++;
+      continue;
+    }
+    if (!groupName || !itemName) continue;
+
+    const kind = (groupKind === "FIXED" || groupKind === "VARIABLE")
+      ? groupKind : "VARIABLE";
+    const paid = PAID_LABEL_MAP[paidRaw] !== undefined ? PAID_LABEL_MAP[paidRaw] : false;
+    // Recurring: default true unless explicitly "no"/"false"/"0"
+    const recurring = !(recurringRaw === "no" || recurringRaw === "false" || recurringRaw === "0");
+
+    if (!groupMap.has(groupName)) {
+      groupMap.set(groupName, {
+        name: groupName,
+        kind: kind,
+        items: []
+      });
+    }
+    groupMap.get(groupName).items.push({
+      name: itemName,
+      amount: isNaN(amount) ? 0 : (Math.round(amount * 100) / 100),
+      notes: itemNotes,
+      paid: paid,
+      recurring: recurring,
+    });
+    imported++;
+  }
+
+  return {
+    month: monthFromCSV,
+    income: income,
+    currency: currency,
+    notes: notes,
+    tags: tags,
+    groups: Array.from(groupMap.values()),
+    _stats: { imported, skipped, hasMetadataHeader },
+  };
+}
+
+async function importCSV(file) {
+  if (!confirmDiscardIfDirty()) return;
+
+  let text;
+  try {
+    text = await file.text();
+  } catch (e) {
+    toast("Could not read file: " + e.message, "error");
+    return;
+  }
+
+  let parsed;
+  try {
+    parsed = parseYesanioCSV(text);
+  } catch (e) {
+    toast("CSV parse error: " + e.message, "error");
+    console.error("Full CSV parse error:", e);
+    return;
+  }
+
+  if (parsed.groups.length === 0) {
+    toast("CSV contained no items to import", "error");
+    return;
+  }
+
+  // Decide month: prefer CSV's month, fall back to current
+  const targetMonth = parsed.month || state.month;
+
+  // Confirm before replacing state
+  const groupCount = parsed.groups.length;
+  const itemCount = parsed.groups.reduce((n, g) => n + g.items.length, 0);
+  const summary =
+    `Import ${itemCount} item(s) in ${groupCount} group(s) into ${targetMonth}?\n\n` +
+    `This will REPLACE the current in-memory plan. ` +
+    `You'll still need to click Save to persist it.`;
+  if (!confirm(summary)) return;
+
+  // Apply
+  suppressDirty = true;
+  try {
+    state = {
+      month: targetMonth,
+      income: parsed.income,
+      currency: parsed.currency,
+      notes: parsed.notes,
+      tags: parsed.tags || [],
+      groups: parsed.groups,
+    };
+    document.getElementById("month").value = targetMonth;
+    render();
+  } finally {
+    suppressDirty = false;
+  }
+  // Imported content is unsaved by definition
+  dirty = true;
+  lastSavedAt = null;
+  updateSavedIndicator();
+
+  toast(
+    `Imported ${itemCount} item(s) in ${groupCount} group(s) into ${targetMonth}. ` +
+    `Click Save to keep.`,
+    "success"
+  );
+}
+
+// =====================================================================
+//  GOALS
+// =====================================================================
+
+async function saveGoalInline(goalId, btn) {
+  const card = btn.closest(".goal-card");
+  const target = Number(card.querySelector(".goal-target-input").value || 0);
+  const kind = card.querySelector(".goal-kind-input").value.trim();
+  const count_from = card.querySelector(".goal-cf").value || null;
+  const count_to = card.querySelector(".goal-ct").value || null;
+  try {
+    const res = await fetch(`${API}/goals/${goalId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: "", kind, target, count_from, count_to })
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    await loadGoals();
+    toast("Goal updated", "success");
+  } catch (e) {
+    toast("Update failed: " + e.message, "error");
+  }
+}
+
+async function loadGoals() {
+  try {
+    const res = await fetch(`${API}/goals`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    goalsState = await res.json();
+    renderGoals();
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+function renderGoals() {
+  const list = document.getElementById("goalsList");
+  list.innerHTML = "";
+  if (goalsState.length === 0) {
+    list.innerHTML = '<div class="card" style="text-align:center; color:var(--muted);">No goals yet</div>';
+    return;
+  }
+  // Split into active and achieved
+  const active = goalsState.filter(g => !g.achieved_at);
+  const achieved = goalsState.filter(g => g.achieved_at);
+  active.forEach(g => list.appendChild(renderGoalCard(g, false)));
+
+  if (achieved.length > 0) {
+    const section = document.createElement("div");
+    section.className = "achieved-section";
+    const hidden = appSettings && appSettings.hide_achieved_goals === "true";
+    section.innerHTML = `
+      <div class="achieved-header">
+        <h3 class="achieved-title">✓ Achieved goals (${achieved.length})</h3>
+        <button class="achieved-toggle" onclick="toggleAchievedGoals()">${hidden ? "Show" : "Hide"} achieved</button>
+      </div>
+      <div id="achievedGoalsList" style="${hidden ? "display:none;" : ""}"></div>
+    `;
+    list.appendChild(section);
+    const inner = section.querySelector("#achievedGoalsList");
+    achieved.forEach(g => inner.appendChild(renderGoalCard(g, false)));
+  }
+  _initGoalsSortableSoon();
+}
+
+async function _initGoalsSortableSoon(){
+  setTimeout(() => { if (typeof initGoalsSortable === "function") initGoalsSortable(); }, 0);
+}
+
+async function toggleAchievedGoals(){
+  const cur = appSettings.hide_achieved_goals === "true";
+  await saveSetting("hide_achieved_goals", cur ? "false" : "true");
+  renderGoals();
+}
+window.toggleAchievedGoals = toggleAchievedGoals;
+
+function renderGoalCard(g, confirming) {
+  const card = document.createElement("div");
+  const isAchieved = !!g.achieved_at;
+  card.className = "goal-card" + (confirming ? " confirming" : "") + (isAchieved ? " achieved" : "");
+  card.dataset.goalId = g.id;
+  const pct = g.target > 0 ? Math.min(100, (g.current / g.target) * 100) : 0;
+  const complete = pct >= 100;
+  const hasPending = (g.pending || 0) > 0;
+  const pendingOverThreshold = g.target > 0 && (g.pending || 0) / g.target > 0.1;
+
+  if (!confirming) {
+    let pendingHtml = "";
+    if (hasPending) {
+      pendingHtml = `<div class="goal-pending">${pendingOverThreshold ? '<span class="clock">🕒</span>' : ""}+${fmt(g.pending)} pending — ${g.pending_count || 1} item${(g.pending_count||1)>1?"s":""} not yet marked paid</div>`;
+    }
+    const targetLabel = g.target > 0 ? `${fmt(g.current)} of ${fmt(g.target)} (${Math.round(pct)}%)` : "no target set";
+    let achievedHtml = "";
+    if (isAchieved) {
+      achievedHtml = `<span class="achieved-badge">✓ Achieved</span><div class="achieved-line">Reached ${formatAchievedDate(g.achieved_at)}</div>`;
+    }
+    card.innerHTML = `
+      <div class="goal-info">
+        ${achievedHtml}<div class="goal-name">${escapeHtml(g.name)}</div>
+        <div class="goal-meta">${escapeHtml(g.kind || "—")} · ${targetLabel}</div>
+        <div class="goal-progress"><div class="${complete ? 'complete' : ''}" style="width:${pct}%"></div></div>
+        ${pendingHtml}
+        <div class="goal-save-row">
+          <label style="font-size:11px;">Target</label>
+          <input type="number" step="0.01" value="${g.target}" class="goal-target-input" data-id="${g.id}">
+          <label style="font-size:11px;">Kind</label>
+          <input type="text" value="${escapeHtml(g.kind||"")}" class="goal-kind-input" data-id="${g.id}" style="width:90px;font-size:12px;" placeholder="saving / emergency">
+          <button class="btn" onclick="saveGoalInline(${g.id}, this)">Save</button>
+        </div>
+        <div class="goal-dates">
+          <div><label>Count from</label><input type="month" value="${g.count_from||""}" class="goal-cf" data-id="${g.id}"></div>
+          <div><label>Count to</label><input type="month" value="${g.count_to||""}" class="goal-ct" data-id="${g.id}"></div>
+        </div>
+      </div>
+    `;
+    if (pendingOverThreshold) card.style.borderLeft = "3px solid #b8860b";
+    const delBtn = document.createElement("button");
+    delBtn.className = "btn-icon";
+    delBtn.title = "Delete";
+    delBtn.textContent = "✕";
+    delBtn.addEventListener("click", () => {
+      const replacement = renderGoalCard(g, true);
+      card.replaceWith(replacement);
+    });
+    card.appendChild(delBtn);
+    const goalDrag = document.createElement("button");
+    goalDrag.className = "goal-drag-handle drag-handle";
+    goalDrag.innerHTML = "⋮⋮";
+    goalDrag.title = "Drag to reorder";
+    goalDrag.type = "button";
+    card.appendChild(goalDrag);
+  } else {
+    card.innerHTML = `
+      <div class="goal-info">
+        <div class="goal-name" style="color:var(--bad);">Delete "${escapeHtml(g.name)}"?</div>
+        <div class="goal-meta">This cannot be undone.</div>
+      </div>
+    `;
+    const yes = document.createElement("button");
+    yes.className = "btn btn-confirm";
+    yes.textContent = "Confirm";
+    yes.addEventListener("click", async () => {
+      try {
+        const res = await fetch(`${API}/goals/${g.id}`, { method: "DELETE" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        await loadGoals();
+        toast("Goal deleted");
+      } catch (e) {
+        toast("Delete failed: " + e.message, "error");
+      }
+    });
+    const no = document.createElement("button");
+    no.className = "btn btn-ghost";
+    no.textContent = "Cancel";
+    no.addEventListener("click", () => {
+      const replacement = renderGoalCard(g, false);
+      card.replaceWith(replacement);
+    });
+    const wrap = document.createElement("div");
+    wrap.style.display = "flex";
+    wrap.style.gap = "6px";
+    wrap.append(yes, no);
+    card.appendChild(wrap);
+  }
+  return card;
+}
+
+async function addGoal() {
+  const name = document.getElementById("goal_name").value.trim();
+  const kind = document.getElementById("goal_kind").value.trim();
+  const target = Number(document.getElementById("goal_target").value || 0);
+  const count_from = document.getElementById("goal_count_from").value || null;
+  const count_to = document.getElementById("goal_count_to").value || null;
+  if (!name || target <= 0) {
+    toast("Name and target required", "error");
+    return;
+  }
+  try {
+    const res = await fetch(`${API}/goals`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, kind, target, current: 0, count_from, count_to })
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    document.getElementById("goal_name").value = "";
+    document.getElementById("goal_kind").value = "";
+    document.getElementById("goal_target").value = "";
+    document.getElementById("goal_count_from").value = "";
+    document.getElementById("goal_count_to").value = "";
+    await loadGoals();
+    toast("Goal added", "success");
+  } catch (e) {
+    toast("Add failed: " + e.message, "error");
+  }
+}
+
+// =====================================================================
+//  CHARTS
+// =====================================================================
+async function loadHistory() {
+  const months = Number(document.getElementById("historyMonths").value || 12);
+  try {
+    const res = await fetch(`${API}/history?months=${months}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    historyState = await res.json();
+    renderCharts();
+  } catch (e) {
+    console.error("loadHistory failed:", e);
+    historyState = [];
+    renderCharts();
+    toast("Could not load history: " + e.message, "error");
+  }
+}
+
+function renderCharts() {
+  const data = historyState || [];
+
+  // Sort ascending by month for chronological display
+  const sorted = [...data].sort((a, b) => a.month.localeCompare(b.month));
+
+  if (sorted.length === 0) {
+    const empty = '<div class="chart-empty">No history yet — save a few months of plans first.</div>';
+    document.getElementById("chart_income_alloc").innerHTML = empty;
+    document.getElementById("chart_fixed_var").innerHTML = empty;
+    document.getElementById("chart_alloc_rate").innerHTML = empty;
+    document.getElementById("chart_summary").innerHTML = "";
+    return;
+  }
+
+  // Chart 1: grouped bar — income vs allocated
+  document.getElementById("chart_income_alloc").innerHTML =
+    drawGroupedBars(sorted, [
+      { key: "income", label: "Income", className: "income" },
+      { key: "allocated", label: "Allocated", className: "allocated" },
+    ]);
+
+  // Chart 2: stacked bar — fixed vs variable
+  document.getElementById("chart_fixed_var").innerHTML =
+    drawStackedBars(sorted, [
+      { key: "fixed_total", label: "Fixed", className: "fixed" },
+      { key: "variable_total", label: "Variable", className: "variable" },
+    ]);
+
+  // Chart 3: line — allocation rate (%)
+  document.getElementById("chart_alloc_rate").innerHTML =
+    drawLineChart(sorted.map(m => ({
+      month: m.month,
+      value: m.income > 0 ? (m.allocated / m.income) * 100 : 0,
+    })), { yMax: 120, ySuffix: "%" });
+
+  // Summary card
+  const totalMonths = sorted.length;
+  const avgIncome = sorted.reduce((s, m) => s + m.income, 0) / totalMonths;
+  const avgFixed = sorted.reduce((s, m) => s + m.fixed_total, 0) / totalMonths;
+  const avgVariable = sorted.reduce((s, m) => s + m.variable_total, 0) / totalMonths;
+  const avgAllocated = avgFixed + avgVariable;
+  const fixedShare = avgIncome > 0 ? (avgFixed / avgIncome * 100).toFixed(0) : 0;
+  const allocShare = avgIncome > 0 ? (avgAllocated / avgIncome * 100).toFixed(0) : 0;
+
+  document.getElementById("chart_summary").innerHTML = `
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:10px;">
+      <div><div class="stat-label">Months tracked</div><div style="font-size:18px; font-weight:700;">${totalMonths}</div></div>
+      <div><div class="stat-label">Avg income</div><div style="font-size:18px; font-weight:700;">${fmt(avgIncome)}</div></div>
+      <div><div class="stat-label">Avg fixed</div><div style="font-size:18px; font-weight:700;">${fmt(avgFixed)} <span style="font-size:11px; color:var(--muted);">(${fixedShare}%)</span></div></div>
+      <div><div class="stat-label">Avg variable</div><div style="font-size:18px; font-weight:700;">${fmt(avgVariable)}</div></div>
+      <div><div class="stat-label">Avg allocated</div><div style="font-size:18px; font-weight:700;">${fmt(avgAllocated)} <span style="font-size:11px; color:var(--muted);">(${allocShare}%)</span></div></div>
+    </div>
+  `;
+}
+
+// ---------- SVG chart drawing helpers ----------
+function chartDims(monthCount) {
+  const barWidth = 28;
+  const barGap = 8;
+  const groupWidth = 60;
+  const leftPad = 50;
+  const rightPad = 20;
+  const topPad = 16;
+  const bottomPad = 32;
+  const innerWidth = Math.max(monthCount * groupWidth, 200);
+  const width = leftPad + innerWidth + rightPad;
+  const height = 220;
+  const innerHeight = height - topPad - bottomPad;
+  return { barWidth, barGap, groupWidth, leftPad, rightPad, topPad, bottomPad, innerWidth, innerHeight, width, height };
+}
+
+function niceMax(value) {
+  if (value <= 0) return 100;
+  const mag = Math.pow(10, Math.floor(Math.log10(value)));
+  const norm = value / mag;
+  let nice;
+  if (norm < 1.5) nice = 1.5;
+  else if (norm < 2) nice = 2;
+  else if (norm < 3) nice = 3;
+  else if (norm < 5) nice = 5;
+  else if (norm < 7.5) nice = 7.5;
+  else nice = 10;
+  return nice * mag;
+}
+
+function drawGroupedBars(data, series) {
+  const d = chartDims(data.length);
+  let maxVal = 0;
+  data.forEach(m => series.forEach(s => { if (m[s.key] > maxVal) maxVal = m[s.key]; }));
+  maxVal = niceMax(maxVal);
+  if (maxVal === 0) maxVal = 100;
+
+  const groupInner = (d.barWidth * series.length) + (d.barGap * (series.length - 1));
+  const groupLeft = (d.groupWidth - groupInner) / 2;
+
+  let svg = `<svg viewBox="0 0 ${d.width} ${d.height}" width="${d.width}" height="${d.height}" style="max-width:100%;height:auto;display:block" xmlns="http://www.w3.org/2000/svg">`;
+
+  // Y axis grid lines
+  for (let i = 0; i <= 4; i++) {
+    const y = d.topPad + (d.innerHeight * i / 4);
+    const value = maxVal * (1 - i / 4);
+    svg += `<line class="chart-grid" x1="${d.leftPad}" y1="${y}" x2="${d.width - d.rightPad}" y2="${y}" />`;
+    svg += `<text class="chart-axis-label" x="${d.leftPad - 5}" y="${y + 3}" text-anchor="end">${fmtShort(value)}</text>`;
+  }
+
+  data.forEach((m, idx) => {
+    const groupX = d.leftPad + idx * d.groupWidth + groupLeft;
+    series.forEach((s, sIdx) => {
+      const value = m[s.key] || 0;
+      const barHeight = (value / maxVal) * d.innerHeight;
+      const x = groupX + sIdx * (d.barWidth + d.barGap);
+      const y = d.topPad + d.innerHeight - barHeight;
+      svg += `<rect class="chart-bar ${s.className}" x="${x}" y="${y}" width="${d.barWidth}" height="${barHeight}"><title>${escapeHtml(s.label)} ${m.month}: ${fmt(value)}</title></rect>`;
+    });
+    // x-axis label
+    const labelX = d.leftPad + idx * d.groupWidth + d.groupWidth / 2;
+    svg += `<text class="chart-axis-label" x="${labelX}" y="${d.height - 14}" text-anchor="middle">${shortMonth(m.month)}</text>`;
+  });
+
+  svg += "</svg>";
+
+  // Legend
+  let legend = '<div class="chart-legend">';
+  series.forEach(s => {
+    legend += `<span class="chart-legend-item"><span class="chart-legend-swatch" style="background:${swatchColor(s.className)};"></span>${escapeHtml(s.label)}</span>`;
+  });
+  legend += "</div>";
+  return svg + legend;
+}
+
+function drawStackedBars(data, series) {
+  const d = chartDims(data.length);
+  let maxVal = 0;
+  data.forEach(m => {
+    const total = series.reduce((s, ser) => s + (m[ser.key] || 0), 0);
+    if (total > maxVal) maxVal = total;
+  });
+  maxVal = niceMax(maxVal);
+  if (maxVal === 0) maxVal = 100;
+
+  const barW = 36;
+  const groupLeft = (d.groupWidth - barW) / 2;
+
+  let svg = `<svg viewBox="0 0 ${d.width} ${d.height}" width="${d.width}" height="${d.height}" style="max-width:100%;height:auto;display:block" xmlns="http://www.w3.org/2000/svg">`;
+
+  for (let i = 0; i <= 4; i++) {
+    const y = d.topPad + (d.innerHeight * i / 4);
+    const value = maxVal * (1 - i / 4);
+    svg += `<line class="chart-grid" x1="${d.leftPad}" y1="${y}" x2="${d.width - d.rightPad}" y2="${y}" />`;
+    svg += `<text class="chart-axis-label" x="${d.leftPad - 5}" y="${y + 3}" text-anchor="end">${fmtShort(value)}</text>`;
+  }
+
+  data.forEach((m, idx) => {
+    const x = d.leftPad + idx * d.groupWidth + groupLeft;
+    let yCursor = d.topPad + d.innerHeight;
+    series.forEach(s => {
+      const value = m[s.key] || 0;
+      const h = (value / maxVal) * d.innerHeight;
+      yCursor -= h;
+      svg += `<rect class="chart-bar ${s.className}" x="${x}" y="${yCursor}" width="${barW}" height="${h}"><title>${escapeHtml(s.label)} ${m.month}: ${fmt(value)}</title></rect>`;
+    });
+    const labelX = d.leftPad + idx * d.groupWidth + d.groupWidth / 2;
+    svg += `<text class="chart-axis-label" x="${labelX}" y="${d.height - 14}" text-anchor="middle">${shortMonth(m.month)}</text>`;
+  });
+
+  svg += "</svg>";
+
+  let legend = '<div class="chart-legend">';
+  series.forEach(s => {
+    legend += `<span class="chart-legend-item"><span class="chart-legend-swatch" style="background:${swatchColor(s.className)};"></span>${escapeHtml(s.label)}</span>`;
+  });
+  legend += "</div>";
+  return svg + legend;
+}
+
+function drawLineChart(data, opts = {}) {
+  const d = chartDims(data.length);
+  let maxVal = opts.yMax || 0;
+  if (!opts.yMax) {
+    data.forEach(m => { if (m.value > maxVal) maxVal = m.value; });
+    maxVal = niceMax(maxVal);
+  }
+  if (maxVal === 0) maxVal = 100;
+  const suffix = opts.ySuffix || "";
+
+  let svg = `<svg viewBox="0 0 ${d.width} ${d.height}" width="${d.width}" height="${d.height}" style="max-width:100%;height:auto;display:block" xmlns="http://www.w3.org/2000/svg">`;
+
+  for (let i = 0; i <= 4; i++) {
+    const y = d.topPad + (d.innerHeight * i / 4);
+    const value = maxVal * (1 - i / 4);
+    svg += `<line class="chart-grid" x1="${d.leftPad}" y1="${y}" x2="${d.width - d.rightPad}" y2="${y}" />`;
+    svg += `<text class="chart-axis-label" x="${d.leftPad - 5}" y="${y + 3}" text-anchor="end">${Math.round(value)}${suffix}</text>`;
+  }
+
+  // 100% reference line if percentage
+  if (opts.ySuffix === "%") {
+    const refY = d.topPad + d.innerHeight - (100 / maxVal) * d.innerHeight;
+    svg += `<line x1="${d.leftPad}" y1="${refY}" x2="${d.width - d.rightPad}" y2="${refY}" stroke="#c62828" stroke-width="1" stroke-dasharray="3,3" />`;
+  }
+
+  // Build path
+  const points = data.map((m, idx) => {
+    const x = d.leftPad + idx * d.groupWidth + d.groupWidth / 2;
+    const y = d.topPad + d.innerHeight - (m.value / maxVal) * d.innerHeight;
+    return { x, y, m };
+  });
+
+  if (points.length > 1) {
+    const path = points.map((p, i) => (i === 0 ? "M" : "L") + p.x + "," + p.y).join(" ");
+    svg += `<path class="chart-line" d="${path}" />`;
+  }
+  points.forEach(p => {
+    svg += `<circle class="chart-line-dot" cx="${p.x}" cy="${p.y}" r="3"><title>${shortMonth(p.m.month)}: ${Math.round(p.m.value)}${suffix}</title></circle>`;
+  });
+
+  data.forEach((m, idx) => {
+    const labelX = d.leftPad + idx * d.groupWidth + d.groupWidth / 2;
+    svg += `<text class="chart-axis-label" x="${labelX}" y="${d.height - 14}" text-anchor="middle">${shortMonth(m.month)}</text>`;
+  });
+
+  svg += "</svg>";
+  return svg;
+}
+
+function shortMonth(yyyymm) {
+  const [y, m] = yyyymm.split("-");
+  const names = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                 "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  return names[Number(m)] + " " + y.slice(2);
+}
+
+function fmtShort(n) {
+  if (Math.abs(n) >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, "") + "k";
+  return Math.round(n).toString();
+}
+
+function swatchColor(className) {
+  return ({
+    income: "#b8d2e8",
+    allocated: "#4682B4",
+    fixed: "#36648b",
+    variable: "#D4A017",
+  })[className] || "#4682B4";
+}
+
+// =====================================================================
+//  VIEW SWITCHING
+// =====================================================================
+function showView(view) {
+  document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+  document.getElementById(view + "View").classList.add("active");
+  document.querySelectorAll("#nav button").forEach(b => {
+    b.classList.toggle("active", b.dataset.view === view);
+  });
+  if (view === "home") renderHome();
+  applyTipVisibility();
+  if (view === "goals") loadGoals();
+  if (view === "charts") loadHistory();
+}
+
+// =====================================================================
+//  WIRE UP
+// =====================================================================
+async function waitForBackend(){
+  // Show a small overlay if backend takes >500ms
+  let overlayShown = false;
+  const overlayTimer = setTimeout(() => {
+    overlayShown = true;
+    let ov = document.getElementById("bootOverlay");
+    if (!ov) {
+      ov = document.createElement("div");
+      ov.id = "bootOverlay";
+      ov.style.cssText = "position:fixed;inset:0;background:#fbf8f1;display:flex;align-items:center;justify-content:center;z-index:9999;font-family:'Lora',serif;font-size:18px;color:#6a5f50;";
+      ov.innerHTML = '<div style="text-align:center;"><div style="font-size:24px;margin-bottom:8px;">Yesanio</div><div style="font-size:13px;font-family:Inter,sans-serif;opacity:0.7;">Connecting&hellip;</div></div>';
+      document.body.appendChild(ov);
+    }
+  }, 500);
+  // Poll /health up to 30 seconds
+  const start = Date.now();
+  while (Date.now() - start < 30000) {
+    try {
+      const r = await fetch(`${API}/health`, {cache: "no-store"});
+      if (r.ok) {
+        clearTimeout(overlayTimer);
+        if (overlayShown) {
+          const ov = document.getElementById("bootOverlay");
+          if (ov) ov.remove();
+        }
+        return true;
+      }
+    } catch(e) { /* keep trying */ }
+    await new Promise(r => setTimeout(r, 250));
+  }
+  clearTimeout(overlayTimer);
+  // Give up after 30s; let normal error handling show what's wrong
+  const ov = document.getElementById("bootOverlay");
+  if (ov) ov.innerHTML = '<div style="text-align:center;color:#c0392b;"><div style="font-size:18px;margin-bottom:8px;">Could not reach Yesanio backend</div><div style="font-size:13px;font-family:Inter,sans-serif;">Check that all containers are running, then refresh.</div></div>';
+  return false;
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  await waitForBackend();
+  document.getElementById("month").value = state.month;
+
+  document.querySelectorAll("#nav button").forEach(b => {
+    b.addEventListener("click", () => {
+      showView(b.dataset.view);
+      if (typeof closeNavMenu === "function") closeNavMenu();
+    });
+  });
+  document.getElementById("prevMonthBtn").addEventListener("click", () => shiftMonth(-1));
+  document.getElementById("nextMonthBtn").addEventListener("click", () => shiftMonth(1));
+  document.getElementById("deleteBtn").addEventListener("click", startMonthDeleteConfirm);
+  document.getElementById("copyPrevBtn").addEventListener("click", copyPreviousMonth);
+  document.getElementById("addGroupBtn").addEventListener("click", addGroup);
+  document.getElementById("saveBtnTop").addEventListener("click", savePlan);
+  document.getElementById("saveBtnBottom").addEventListener("click", savePlan);
+  document.getElementById("exportCsvBtn").addEventListener("click", exportCSV);
+  document.getElementById("addGoalBtn").addEventListener("click", addGoal);
+  document.getElementById("saveSettingsBtn").addEventListener("click", saveSettings);
+  (async()=>{
+    await loadAllSettings();
+    applyTipVisibility();
+    maybeShowWizard();
+  })();
+
+  // CSV import
+  document.getElementById("importCsvBtn").addEventListener("click", () => {
+    document.getElementById("csvFileInput").click();
+  });
+  document.getElementById("csvFileInput").addEventListener("change", async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (file) await importCSV(file);
+    // reset so the same filename can be re-imported
+    e.target.value = "";
+  });
+
+  // Tags input — Enter to add, comma also splits
+  const tagInput = document.getElementById("tagInput");
+  tagInput.addEventListener("keydown", e => {
+    if (e.key === "Enter" || e.key === ",") {
+      e.preventDefault();
+      addTagFromInput();
+    } else if (e.key === "Backspace" && tagInput.value === "" && state.tags && state.tags.length > 0) {
+      // Backspace on empty input removes the last tag
+      state.tags.pop();
+      markDirty();
+      renderTags();
+    }
+  });
+  tagInput.addEventListener("blur", () => {
+    if (tagInput.value.trim()) addTagFromInput();
+  });
+  // Click anywhere on the tags container focuses the input
+  document.getElementById("tagsContainer").addEventListener("click", e => {
+    if (e.target.id === "tagsContainer") tagInput.focus();
+  });
+
+  // Charts
+  document.getElementById("reloadChartsBtn").addEventListener("click", loadHistory);
+  document.getElementById("historyMonths").addEventListener("change", loadHistory);
+
+  document.getElementById("income").addEventListener("input", e => {
+    state.income = Number(e.target.value || 0);
+    updateTotals();
+    markDirty();
+  });
+  document.getElementById("income").addEventListener("blur", e => {
+    const v = Number(e.target.value || 0);
+    const rounded = Math.round(v * 100) / 100;
+    if (v !== rounded) {
+      e.target.value = rounded;
+      state.income = rounded;
+      updateTotals();
+    }
+  });
+  document.getElementById("currency").addEventListener("change", e => {
+    state.currency = e.target.value;
+    updateTotals();
+    markDirty();
+  });
+  document.getElementById("monthNotes").addEventListener("input", e => {
+    state.notes = e.target.value;
+    markDirty();
+  });
+  document.getElementById("month").addEventListener("change", e => {
+    const newMonth = e.target.value;
+    if (!newMonth) return;
+    // Auto-load when month is changed directly. confirmDiscardIfDirty() inside
+    // loadMonth() prevents accidental loss of unsaved edits.
+    state.month = newMonth;
+    loadMonth();
+  });
+
+  // Ctrl+S / Cmd+S → save; Ctrl+Z → undo; Ctrl+Shift+Z → redo
+  document.addEventListener("keydown", e => {
+    const isPlanView = document.getElementById("setupView").classList.contains("active");
+    if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+      e.preventDefault();
+      savePlan();
+    } else if (isPlanView && (e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === "z") {
+      // Don't intercept undo when typing in input/textarea (browser native undo wins for those)
+      const tag = (e.target.tagName || "").toLowerCase();
+      if (tag !== "input" && tag !== "textarea") {
+        e.preventDefault();
+        doUndo();
+      }
+    } else if (isPlanView && (e.ctrlKey || e.metaKey) && e.shiftKey && e.key === "Z") {
+      const tag = (e.target.tagName || "").toLowerCase();
+      if (tag !== "input" && tag !== "textarea") {
+        e.preventDefault();
+        doRedo();
+      }
+    }
+  });
+
+  // Browser-level unsaved-changes guard. Modern browsers ignore the
+  // custom message and show a generic prompt — what matters is that
+  // we set returnValue to a truthy string.
+  window.addEventListener("beforeunload", e => {
+    if (dirty) {
+      e.preventDefault();
+      e.returnValue = "You have unsaved changes in Yesanio.";
+      return e.returnValue;
+    }
+  });
+
+  // Initial load — bypass dirty check (nothing has been edited yet)
+  loadMonth(true);
+});
+
+// =====================================================================
+//  v2.5.1+ — Wizard + helper tips + settings (re-injected in v2.5.3)
+// =====================================================================
+let appSettings = {};
+
+async function loadAllSettings(){
+  try{
+    const r = await fetch(`${API}/settings`);
+    if(r.ok) appSettings = await r.json();
+  }catch(e){ appSettings = {}; }
+  state.userName = appSettings.user_name || "";
+  const input = document.getElementById("settingsUserName");
+  if(input) input.value = state.userName;
+  const toggle = document.getElementById("settingsTipsToggle");
+  if(toggle) toggle.checked = (appSettings.helper_tips_enabled !== "false");
+}
+
+async function saveSetting(key, value){
+  try{
+    await fetch(`${API}/settings/${key}`, {
+      method:"PUT",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({value: String(value)})
+    });
+    appSettings[key] = String(value);
+  }catch(e){ console.error("saveSetting failed", e); }
+}
+
+// ---------- Wizard ----------
+let wizardStep = 1;
+
+let wizardIsExistingUser = false;
+async function maybeShowWizard(){
+  if(appSettings.wizard_completed === "true") return;
+  // Detect whether DB has any plans — affects step 4 visibility
+  try{
+    const r = await fetch(`${API}/months`);
+    if(r.ok){
+      const months = await r.json();
+      wizardIsExistingUser = Array.isArray(months) && months.length > 0;
+    }
+  }catch(e){ wizardIsExistingUser = false; }
+  wizardStep = 1;
+  renderWizard();
+  const ov = document.getElementById("wizardOverlay");
+  if(ov) ov.classList.remove("hidden");
+}
+
+// Manual trigger from Settings — always re-checks existing-user state
+async function showWizardManually(){
+  await saveSetting("wizard_completed", "false");
+  appSettings.wizard_completed = "false";
+  await maybeShowWizard();
+}
+
+function renderWizard(){
+  const body = document.getElementById("wizardBody");
+  const progress = document.getElementById("wizardProgress");
+  if(!body || !progress) return;
+  const totalSteps = wizardIsExistingUser ? 3 : 4;
+  progress.innerHTML = "";
+  for(let i=1;i<=totalSteps;i++){
+    const dot = document.createElement("span");
+    if(i===wizardStep) dot.className="active";
+    progress.appendChild(dot);
+  }
+  if(wizardStep===1){
+    body.innerHTML = `
+      <div class="wizard-title">Welcome to Yesanio</div>
+      <div class="wizard-body">
+        <p>This is a budgeting tool for households that plan their money together. Every pound gets a job before the month begins.</p>
+        <p>Yesanio follows a principle called <strong>"pay yourself first"</strong> &mdash; savings, giving, and long-term commitments are set aside at the start of the month, not whatever happens to be left at the end. The boring bills are handled. The important things you're saving for are funded. What remains funds daily life.</p>
+        <p>Yesanio doesn't track what you spend. It helps you decide where your money goes, so that by the end of the month, you've done what you intended to do.</p>
+      </div>
+      <div class="wizard-actions">
+        <button class="wizard-skip" onclick="skipWizard()">Skip wizard</button>
+        <div class="wizard-right">
+          <button class="wizard-btn wizard-btn-primary" onclick="wizardNext()">Next</button>
+        </div>
+      </div>
+    `;
+  } else if(wizardStep===2){
+    body.innerHTML = `
+      <div class="wizard-title">What should we call you?</div>
+      <div class="wizard-body">
+        <p>Yesanio shows "handled by [your name]" at the top of the Home page, so anyone else in the household who opens it knows who's currently looking after the budget.</p>
+        <p>You can change this any time in Settings.</p>
+      </div>
+      <div class="wizard-field">
+        <label>Your name</label>
+        <input type="text" id="wizardName" maxlength="50" placeholder="e.g. Johannes" value="${appSettings.user_name||''}">
+      </div>
+      <div class="wizard-actions">
+        <button class="wizard-skip" onclick="wizardBack()">Back</button>
+        <div class="wizard-right">
+          <button class="wizard-skip" onclick="skipWizard()" style="margin-right:8px;">Skip wizard</button>
+          <button class="wizard-btn wizard-btn-ghost" onclick="wizardNext(true)">Skip step</button>
+          <button class="wizard-btn wizard-btn-primary" onclick="wizardSaveNameAndNext()">Next</button>
+        </div>
+      </div>
+    `;
+    setTimeout(()=>{ const f=document.getElementById("wizardName"); if(f) f.focus(); }, 50);
+  } else if(wizardStep===3){
+    body.innerHTML = `
+      <div class="wizard-title">Which currency?</div>
+      <div class="wizard-body"><p>Which currency does your household plan in?</p></div>
+      <div class="wizard-field">
+        <label>Currency</label>
+        <select id="wizardCurrency">
+          <optgroup label="Most common">
+          <option value="USD">$ USD &mdash; US Dollar</option>
+          <option value="EUR">€ EUR &mdash; Euro</option>
+          <option value="JPY">¥ JPY &mdash; Japanese Yen</option>
+          <option value="GBP">£ GBP &mdash; British Pound</option>
+          <option value="CNY">¥ CNY &mdash; Chinese Yuan</option>
+          <option value="AUD">A$ AUD &mdash; Australian Dollar</option>
+          <option value="CAD">C$ CAD &mdash; Canadian Dollar</option>
+          <option value="CHF">CHF CHF &mdash; Swiss Franc</option>
+          <option value="HKD">HK$ HKD &mdash; Hong Kong Dollar</option>
+          <option value="SGD">S$ SGD &mdash; Singapore Dollar</option>
+          </optgroup>
+          <optgroup label="All currencies (alphabetical)">
+          <option value="AED">د.إ AED &mdash; UAE Dirham</option>
+          <option value="AFN">؋ AFN &mdash; Afghan Afghani</option>
+          <option value="ALL">L ALL &mdash; Albanian Lek</option>
+          <option value="AMD">֏ AMD &mdash; Armenian Dram</option>
+          <option value="ANG">ƒ ANG &mdash; Netherlands Antillean Guilder</option>
+          <option value="AOA">Kz AOA &mdash; Angolan Kwanza</option>
+          <option value="ARS">$ ARS &mdash; Argentine Peso</option>
+          <option value="AWG">ƒ AWG &mdash; Aruban Florin</option>
+          <option value="AZN">₼ AZN &mdash; Azerbaijani Manat</option>
+          <option value="BAM">KM BAM &mdash; Bosnia-Herzegovina Mark</option>
+          <option value="BBD">$ BBD &mdash; Barbadian Dollar</option>
+          <option value="BDT">৳ BDT &mdash; Bangladeshi Taka</option>
+          <option value="BGN">лв BGN &mdash; Bulgarian Lev</option>
+          <option value="BHD">.د.ب BHD &mdash; Bahraini Dinar</option>
+          <option value="BIF">FBu BIF &mdash; Burundian Franc</option>
+          <option value="BMD">$ BMD &mdash; Bermudan Dollar</option>
+          <option value="BND">$ BND &mdash; Brunei Dollar</option>
+          <option value="BOB">Bs. BOB &mdash; Bolivian Boliviano</option>
+          <option value="BRL">R$ BRL &mdash; Brazilian Real</option>
+          <option value="BSD">$ BSD &mdash; Bahamian Dollar</option>
+          <option value="BTN">Nu. BTN &mdash; Bhutanese Ngultrum</option>
+          <option value="BWP">P BWP &mdash; Botswanan Pula</option>
+          <option value="BYN">Br BYN &mdash; Belarusian Ruble</option>
+          <option value="BZD">BZ$ BZD &mdash; Belize Dollar</option>
+          <option value="CDF">FC CDF &mdash; Congolese Franc</option>
+          <option value="CLP">$ CLP &mdash; Chilean Peso</option>
+          <option value="COP">$ COP &mdash; Colombian Peso</option>
+          <option value="CRC">₡ CRC &mdash; Costa Rican Colón</option>
+          <option value="CUP">₱ CUP &mdash; Cuban Peso</option>
+          <option value="CVE">$ CVE &mdash; Cape Verdean Escudo</option>
+          <option value="CZK">Kč CZK &mdash; Czech Koruna</option>
+          <option value="DJF">Fdj DJF &mdash; Djiboutian Franc</option>
+          <option value="DKK">kr DKK &mdash; Danish Krone</option>
+          <option value="DOP">RD$ DOP &mdash; Dominican Peso</option>
+          <option value="DZD">د.ج DZD &mdash; Algerian Dinar</option>
+          <option value="EGP">E£ EGP &mdash; Egyptian Pound</option>
+          <option value="ERN">Nfk ERN &mdash; Eritrean Nakfa</option>
+          <option value="ETB">Br ETB &mdash; Ethiopian Birr</option>
+          <option value="FJD">$ FJD &mdash; Fijian Dollar</option>
+          <option value="FKP">£ FKP &mdash; Falkland Islands Pound</option>
+          <option value="GEL">₾ GEL &mdash; Georgian Lari</option>
+          <option value="GHS">₵ GHS &mdash; Ghanaian Cedi</option>
+          <option value="GIP">£ GIP &mdash; Gibraltar Pound</option>
+          <option value="GMD">D GMD &mdash; Gambian Dalasi</option>
+          <option value="GNF">FG GNF &mdash; Guinean Franc</option>
+          <option value="GTQ">Q GTQ &mdash; Guatemalan Quetzal</option>
+          <option value="GYD">$ GYD &mdash; Guyanaese Dollar</option>
+          <option value="HNL">L HNL &mdash; Honduran Lempira</option>
+          <option value="HRK">kn HRK &mdash; Croatian Kuna</option>
+          <option value="HTG">G HTG &mdash; Haitian Gourde</option>
+          <option value="HUF">Ft HUF &mdash; Hungarian Forint</option>
+          <option value="IDR">Rp IDR &mdash; Indonesian Rupiah</option>
+          <option value="ILS">₪ ILS &mdash; Israeli Shekel</option>
+          <option value="INR">₹ INR &mdash; Indian Rupee</option>
+          <option value="IQD">ع.د IQD &mdash; Iraqi Dinar</option>
+          <option value="IRR">﷼ IRR &mdash; Iranian Rial</option>
+          <option value="ISK">kr ISK &mdash; Icelandic Króna</option>
+          <option value="JMD">J$ JMD &mdash; Jamaican Dollar</option>
+          <option value="JOD">د.ا JOD &mdash; Jordanian Dinar</option>
+          <option value="KES">KSh KES &mdash; Kenyan Shilling</option>
+          <option value="KGS">с KGS &mdash; Kyrgystani Som</option>
+          <option value="KHR">៛ KHR &mdash; Cambodian Riel</option>
+          <option value="KRW">₩ KRW &mdash; South Korean Won</option>
+          <option value="KWD">د.ك KWD &mdash; Kuwaiti Dinar</option>
+          <option value="KYD">$ KYD &mdash; Cayman Islands Dollar</option>
+          <option value="KZT">₸ KZT &mdash; Kazakhstani Tenge</option>
+          <option value="LAK">₭ LAK &mdash; Laotian Kip</option>
+          <option value="LBP">ل.ل LBP &mdash; Lebanese Pound</option>
+          <option value="LKR">₨ LKR &mdash; Sri Lankan Rupee</option>
+          <option value="LRD">$ LRD &mdash; Liberian Dollar</option>
+          <option value="LSL">L LSL &mdash; Lesotho Loti</option>
+          <option value="LYD">ل.د LYD &mdash; Libyan Dinar</option>
+          <option value="MAD">د.م. MAD &mdash; Moroccan Dirham</option>
+          <option value="MDL">L MDL &mdash; Moldovan Leu</option>
+          <option value="MGA">Ar MGA &mdash; Malagasy Ariary</option>
+          <option value="MKD">ден MKD &mdash; Macedonian Denar</option>
+          <option value="MMK">K MMK &mdash; Myanma Kyat</option>
+          <option value="MNT">₮ MNT &mdash; Mongolian Tugrik</option>
+          <option value="MOP">MOP$ MOP &mdash; Macanese Pataca</option>
+          <option value="MUR">₨ MUR &mdash; Mauritian Rupee</option>
+          <option value="MVR">Rf MVR &mdash; Maldivian Rufiyaa</option>
+          <option value="MWK">MK MWK &mdash; Malawian Kwacha</option>
+          <option value="MXN">$ MXN &mdash; Mexican Peso</option>
+          <option value="MYR">RM MYR &mdash; Malaysian Ringgit</option>
+          <option value="MZN">MT MZN &mdash; Mozambican Metical</option>
+          <option value="NAD">$ NAD &mdash; Namibian Dollar</option>
+          <option value="NGN">₦ NGN &mdash; Nigerian Naira</option>
+          <option value="NIO">C$ NIO &mdash; Nicaraguan Córdoba</option>
+          <option value="NOK">kr NOK &mdash; Norwegian Krone</option>
+          <option value="NPR">₨ NPR &mdash; Nepalese Rupee</option>
+          <option value="NZD">$ NZD &mdash; New Zealand Dollar</option>
+          <option value="OMR">ر.ع. OMR &mdash; Omani Rial</option>
+          <option value="PAB">B/. PAB &mdash; Panamanian Balboa</option>
+          <option value="PEN">S/ PEN &mdash; Peruvian Sol</option>
+          <option value="PGK">K PGK &mdash; Papua New Guinean Kina</option>
+          <option value="PHP">₱ PHP &mdash; Philippine Peso</option>
+          <option value="PKR">₨ PKR &mdash; Pakistani Rupee</option>
+          <option value="PLN">zł PLN &mdash; Polish Złoty</option>
+          <option value="PYG">₲ PYG &mdash; Paraguayan Guarani</option>
+          <option value="QAR">ر.ق QAR &mdash; Qatari Rial</option>
+          <option value="RON">lei RON &mdash; Romanian Leu</option>
+          <option value="RSD">дин. RSD &mdash; Serbian Dinar</option>
+          <option value="RUB">₽ RUB &mdash; Russian Ruble</option>
+          <option value="SAR">ر.س SAR &mdash; Saudi Riyal</option>
+          <option value="SEK">kr SEK &mdash; Swedish Krona</option>
+          <option value="THB">฿ THB &mdash; Thai Baht</option>
+          <option value="TRY">₺ TRY &mdash; Turkish Lira</option>
+          <option value="TWD">NT$ TWD &mdash; New Taiwan Dollar</option>
+          <option value="UAH">₴ UAH &mdash; Ukrainian Hryvnia</option>
+          <option value="VND">₫ VND &mdash; Vietnamese Dong</option>
+          <option value="ZAR">R ZAR &mdash; South African Rand</option>
+          </optgroup>
+        </select>
+        <div class="wizard-help">You can change this per month later &mdash; useful if you spend a month abroad.</div>
+      </div>
+      <div class="wizard-actions">
+        <button class="wizard-skip" onclick="wizardBack()">Back</button>
+        <div class="wizard-right">
+          <button class="wizard-skip" onclick="skipWizard()" style="margin-right:8px;">Skip wizard</button>
+          <button class="wizard-btn wizard-btn-primary" onclick="${wizardIsExistingUser ? 'finishExistingUser()' : 'wizardNext()'}">${wizardIsExistingUser ? 'Finish' : 'Next'}</button>
+        </div>
+      </div>
+    `;
+  } else if(wizardStep===4){
+    body.innerHTML = `
+      <div class="wizard-title">Build your first plan</div>
+      <div class="wizard-body">
+        <p>Ready to start your first monthly budget?</p>
+        <p>Either way, the Home page will look empty until you plan and save your first month.</p>
+      </div>
+      <div class="wizard-choice">
+        <button class="wizard-choice-btn" onclick="finishWizard('template')">
+          <strong>Start from the template &rarr;</strong>
+          <span>Loads a ready-made structure with groups for Giving, Housing, Utilities, Transport, Subscriptions, and Living. Edit or delete anything you don't need.</span>
+        </button>
+        <button class="wizard-choice-btn" onclick="finishWizard('blank')">
+          <strong>Start with a blank month &rarr;</strong>
+          <span>Build it from scratch, exactly as you want.</span>
+        </button>
+      </div>
+      <div class="wizard-help" style="margin-top:12px;">Note: the structure loads in the Plan view but isn\'t saved automatically. Click <strong>Save</strong> in the Plan view when you\'re ready to commit your first plan.</div>
+      <div class="wizard-actions">
+        <button class="wizard-skip" onclick="wizardBack()">Back</button>
+        <div class="wizard-right">
+          <button class="wizard-skip" onclick="skipWizard()">Skip wizard</button>
+        </div>
+      </div>
+    `;
+  }
+}
+
+function wizardNext(){ wizardStep++; renderWizard(); }
+function wizardBack(){ if(wizardStep>1) wizardStep--; renderWizard(); }
+async function wizardSaveNameAndNext(){
+  const f = document.getElementById("wizardName");
+  const name = f ? f.value.trim() : "";
+  if(name){ await saveSetting("user_name", name); state.userName = name; }
+  wizardStep++; renderWizard();
+}
+async function skipWizard(){ await saveSetting("wizard_completed", "true"); closeWizard(); }
+async function finishWizard(choice){
+  const cur = document.getElementById("wizardCurrency");
+  const chosenCurrency = cur ? cur.value : "GBP";
+  state.currency = chosenCurrency;
+  const cEl = document.getElementById("currency");
+  if(cEl) cEl.value = chosenCurrency;
+  await saveSetting("wizard_completed", "true");
+  closeWizard();
+  showView("setup");
+  if(choice==="template"){ await loadTemplate(); }
+  else { state.groups = []; render(); }
+  toast("Welcome! Start building your first plan.", "success");
+}
+
+async function finishExistingUser(){
+  const cur = document.getElementById("wizardCurrency");
+  if(cur && cur.value){
+    // Don't overwrite per-month currency for existing users; just close.
+  }
+  await saveSetting("wizard_completed", "true");
+  closeWizard();
+  showView("home");
+  if(typeof renderHome === "function") renderHome();
+}
+function closeWizard(){
+  const ov = document.getElementById("wizardOverlay");
+  if(ov) ov.classList.add("hidden");
+}
+
+// ---------- Helper tips ----------
+function getDismissedTips(){
+  try{ return JSON.parse(appSettings.dismissed_tips || "[]"); }
+  catch(e){ return []; }
+}
+function isTipVisible(tipId){
+  if(appSettings.helper_tips_enabled === "false") return false;
+  return !getDismissedTips().includes(tipId);
+}
+async function dismissTip(tipId){
+  const dismissed = getDismissedTips();
+  if(!dismissed.includes(tipId)) dismissed.push(tipId);
+  await saveSetting("dismissed_tips", JSON.stringify(dismissed));
+  appSettings.dismissed_tips = JSON.stringify(dismissed);
+  const el = document.getElementById("tip-"+tipId);
+  if(el) el.classList.add("hidden");
+}
+function applyTipVisibility(){
+  ["plan","goals","charts","home"].forEach(id=>{
+    const el = document.getElementById("tip-"+id);
+    if(!el) return;
+    if(isTipVisible(id)) el.classList.remove("hidden");
+    else el.classList.add("hidden");
+  });
+}
+async function toggleHelperTips(enabled){
+  await saveSetting("helper_tips_enabled", enabled ? "true" : "false");
+  if(enabled){
+    await saveSetting("dismissed_tips", "[]");
+    appSettings.dismissed_tips = "[]";
+  }
+  applyTipVisibility();
+}
+
+// Expose to global scope for inline onclick handlers
+window.dismissTip = dismissTip;
+window.toggleHelperTips = toggleHelperTips;
+window.saveSetting = saveSetting;
+window.wizardNext = wizardNext;
+window.wizardBack = wizardBack;
+window.wizardSaveNameAndNext = wizardSaveNameAndNext;
+window.skipWizard = skipWizard;
+window.finishWizard = finishWizard;
+window.applyTipVisibility = applyTipVisibility;
+window.loadAllSettings = loadAllSettings;
+window.maybeShowWizard = maybeShowWizard;
+window.saveGoalInline = saveGoalInline;
+window.finishExistingUser = finishExistingUser;
+window.showWizardManually = showWizardManually;
+
+
+// =====================================================================
+//  v2.5.8 — Undo/redo history
+// =====================================================================
+const HISTORY_LIMIT = 100;
+let historyStack = [];
+let historyIndex = -1;  // points to current state in stack
+let historyTimer = null;
+
+function snapshotState(){
+  // Deep-clone the editable parts of state
+  return JSON.stringify({
+    income: state.income,
+    notes: state.notes,
+    tags: state.tags,
+    groups: state.groups
+  });
+}
+
+function pushHistory(){
+  // Debounce: collapse rapid edits into a single history entry
+  clearTimeout(historyTimer);
+  historyTimer = setTimeout(() => {
+    const snap = snapshotState();
+    // Don't push if identical to current top
+    if (historyIndex >= 0 && historyStack[historyIndex] === snap) return;
+    // Truncate any redo history when a new edit happens
+    historyStack = historyStack.slice(0, historyIndex + 1);
+    historyStack.push(snap);
+    if (historyStack.length > HISTORY_LIMIT) {
+      historyStack.shift();
+    } else {
+      historyIndex++;
+    }
+    updateHistoryButtons();
+  }, 250);
+}
+
+function applyHistorySnapshot(snap){
+  const data = JSON.parse(snap);
+  state.income = data.income;
+  state.notes = data.notes;
+  state.tags = data.tags;
+  state.groups = data.groups;
+  // Re-render Plan view from the restored state
+  const incomeEl = document.getElementById("income");
+  if (incomeEl) incomeEl.value = state.income;
+  const notesEl = document.getElementById("monthNotes");
+  if (notesEl) notesEl.value = state.notes;
+  if (typeof renderTags === "function") renderTags();
+  render();
+  markDirty();
+}
+
+function doUndo(){
+  if (historyIndex <= 0) return;
+  historyIndex--;
+  applyHistorySnapshot(historyStack[historyIndex]);
+  updateHistoryButtons();
+}
+
+function doRedo(){
+  if (historyIndex >= historyStack.length - 1) return;
+  historyIndex++;
+  applyHistorySnapshot(historyStack[historyIndex]);
+  updateHistoryButtons();
+}
+
+function clearHistory(){
+  historyStack = [];
+  historyIndex = -1;
+  // Seed with current state so the first edit creates a meaningful undo
+  setTimeout(() => {
+    historyStack = [snapshotState()];
+    historyIndex = 0;
+    updateHistoryButtons();
+  }, 0);
+}
+
+function updateHistoryButtons(){
+  const undoBtn = document.getElementById("undoBtn");
+  const redoBtn = document.getElementById("redoBtn");
+  const revertBtn = document.getElementById("revertBtn");
+  if (undoBtn) undoBtn.disabled = historyIndex <= 0;
+  if (redoBtn) redoBtn.disabled = historyIndex >= historyStack.length - 1;
+  if (revertBtn) revertBtn.disabled = !dirty;
+}
+
+async function revertToSaved(){
+  if (!dirty) return;
+  if (!confirm("Discard all changes since the last save and reload from the database?")) return;
+  await loadMonth(true);
+  clearHistory();
+  toast("Reverted to last saved version", "info");
+}
+
+
+function cancelRename(gIdx, iIdx){
+  const it = state.groups[gIdx] && state.groups[gIdx].items[iIdx];
+  if (!it || !it._originalName) return;
+  it.name = it._originalName;
+  // Find and update the input field
+  const tbody = document.querySelectorAll(".items tbody")[gIdx];
+  if (tbody) {
+    const row = tbody.children[iIdx];
+    if (row) {
+      const input = row.querySelector('input[type="text"]');
+      if (input) input.value = it._originalName;
+    }
+  }
+  // Remove the warning row
+  const warns = document.querySelectorAll(".rename-warn");
+  warns.forEach(w => {
+    const flag = w.querySelector(".rw-flag");
+    if (flag && Number(flag.dataset.gidx) === gIdx && Number(flag.dataset.iidx) === iIdx) {
+      w.remove();
+    }
+  });
+}
+
+function formatAchievedDate(iso){
+  if(!iso) return "";
+  try{
+    const d = new Date(iso);
+    const now = new Date();
+    const sameMonth = d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+    const lastMonth = (now.getFullYear() === d.getFullYear() && now.getMonth() - d.getMonth() === 1) ||
+                      (now.getFullYear() - d.getFullYear() === 1 && d.getMonth() === 11 && now.getMonth() === 0);
+    if(sameMonth) return "this month";
+    if(lastMonth) return "last month";
+    return d.toLocaleDateString("en-GB", {month: "long", year: "numeric"});
+  }catch(e){ return iso; }
+}
+window.formatAchievedDate = formatAchievedDate;
+
+window.cancelRename = cancelRename;
+
+window.doUndo = doUndo;
+window.doRedo = doRedo;
+window.revertToSaved = revertToSaved;
+
+
+// =====================================================================
+//  v2.5.9 — Drag and drop reordering (SortableJS)
+// =====================================================================
+let _sortableInstances = [];
+
+function destroySortables(){
+  _sortableInstances.forEach(s => { try { s.destroy(); } catch(e){} });
+  _sortableInstances = [];
+}
+
+function initPlanSortables(){
+  destroySortables();
+  if (typeof Sortable === "undefined") return;
+  // Sortable for the groups container
+  const groupsEl = document.getElementById("groupsContainer");
+  if (groupsEl) {
+    _sortableInstances.push(Sortable.create(groupsEl, {
+      handle: ".group-drag-handle",
+      animation: 150,
+      delay: 0,
+      delayOnTouchOnly: true,
+      touchStartThreshold: 5,
+      forceFallback: true,
+      fallbackTolerance: 3,
+      ghostClass: "sortable-ghost",
+      chosenClass: "sortable-chosen",
+      onEnd: function(evt){
+        if (evt.oldIndex === evt.newIndex) return;
+        const moved = state.groups.splice(evt.oldIndex, 1)[0];
+        state.groups.splice(evt.newIndex, 0, moved);
+        markDirty();
+        if (typeof pushHistory === "function") pushHistory();
+        // Defer re-render so SortableJS finishes its callback + handles update gIdx datasets
+        setTimeout(() => render(), 0);
+      }
+    }));
+  }
+  // Sortable for each items tbody
+  document.querySelectorAll(".group-card").forEach(card => {
+    const gIdx = Number(card.dataset.gIdx);
+    const tbody = card.querySelector("table.items tbody");
+    if (!tbody) return;
+    _sortableInstances.push(Sortable.create(tbody, {
+      handle: ".col-drag",
+      draggable: "tr:not(.rename-warn):not(.delete-warn)",
+      animation: 150,
+      delay: 0,
+      delayOnTouchOnly: true,
+      touchStartThreshold: 5,
+      forceFallback: true,
+      fallbackTolerance: 3,
+      ghostClass: "sortable-ghost",
+      chosenClass: "sortable-chosen",
+      onEnd: function(evt){
+        if (evt.oldIndex === evt.newIndex) return;
+        const items = state.groups[gIdx].items;
+        const moved = items.splice(evt.oldIndex, 1)[0];
+        items.splice(evt.newIndex, 0, moved);
+        markDirty();
+        if (typeof pushHistory === "function") pushHistory();
+        // No re-render needed — DOM already matches. Just update totals.
+        if (typeof updateTotals === "function") updateTotals();
+      }
+    }));
+  });
+}
+
+let _goalSortableInstances = [];
+function initGoalsSortable(){
+  if (typeof Sortable === "undefined") return;
+  // Destroy any existing goal sortables before creating new ones
+  _goalSortableInstances.forEach(inst => { try { inst.destroy(); } catch(e){} });
+  _goalSortableInstances = [];
+  const list = document.getElementById("goalsList");
+  if (!list) return;
+  // Active goals only — achieved are in their own list
+  const containers = [list];
+  const achievedInner = document.getElementById("achievedGoalsList");
+  if (achievedInner) containers.push(achievedInner);
+  containers.forEach(container => {
+    _goalSortableInstances.push(Sortable.create(container, {
+      handle: ".goal-drag-handle",
+      animation: 150,
+      delay: 0,
+      delayOnTouchOnly: true,
+      touchStartThreshold: 5,
+      forceFallback: true,
+      fallbackTolerance: 3,
+      draggable: ".goal-card",
+      ghostClass: "sortable-ghost",
+      chosenClass: "sortable-chosen",
+      onEnd: async function(evt){
+        if (evt.oldIndex === evt.newIndex) return;
+        // Build the new ID order from DOM
+        const allCards = document.querySelectorAll("#goalsList .goal-card, #achievedGoalsList .goal-card");
+        const orderedIds = Array.from(allCards).map(c => Number(c.dataset.goalId)).filter(n => !isNaN(n));
+        try {
+          await fetch(`${API}/goals/reorder`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({order: orderedIds})
+          });
+          await loadGoals();
+        } catch(e) {
+          toast("Could not save goal order: " + e.message, "error");
+        }
+      }
+    }));
+  });
+}
+
+window.initPlanSortables = initPlanSortables;
+window.initGoalsSortable = initGoalsSortable;
+
+
+// =====================================================================
+//  v2.5.16 — Hamburger nav toggle
+// =====================================================================
+function toggleNavMenu(forceClose){
+  const nav = document.getElementById("nav");
+  const toggle = document.getElementById("navToggle");
+  if (!nav || !toggle) return;
+  const isOpen = nav.classList.contains("is-open");
+  const willOpen = forceClose === true ? false : !isOpen;
+  nav.classList.toggle("is-open", willOpen);
+  toggle.classList.toggle("is-open", willOpen);
+  toggle.setAttribute("aria-expanded", willOpen ? "true" : "false");
+  toggle.textContent = willOpen ? "✕" : "☰";
+  toggle.setAttribute("aria-label", willOpen ? "Close menu" : "Open menu");
+}
+function closeNavMenu(){ toggleNavMenu(true); }
+
+document.addEventListener("DOMContentLoaded", () => {
+  const toggle = document.getElementById("navToggle");
+  if (toggle) toggle.addEventListener("click", e => { e.stopPropagation(); toggleNavMenu(); });
+  // Close menu when clicking outside
+  document.addEventListener("click", e => {
+    const nav = document.getElementById("nav");
+    if (!nav || !nav.classList.contains("is-open")) return;
+    if (!nav.contains(e.target) && e.target.id !== "navToggle") closeNavMenu();
+  });
+  // Close menu on Escape
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape") closeNavMenu();
+  });
+});
+
+window.toggleNavMenu = toggleNavMenu;
+window.closeNavMenu = closeNavMenu;
+
+</script>
+
+</body>
+</html>
