@@ -2,6 +2,10 @@
 
 All notable changes to Yesanio.
 
+## 2.5.18 — April 2026
+- README now shows the Yesanio logo, and two screenshots (Home view and Plan view) placed inline with the explanations they illustrate. Images live in `docs/images/`.
+- Added the *"Clarity. Overview. Control."* tagline to the README header, matching the in-app wordmark.
+
 ## 2.5.17 — April 2026
 - **Bug fix:** the v2.5.16 hamburger menu broke the fixed-floating header on narrow viewports. The dropdown was positioned `absolute` relative to the header, which forced the header itself to `position: relative` — undoing the global `position: fixed`. Now the dropdown is `position: fixed` and anchored to the viewport directly (54px from top, 8px from right), so the header stays floating at all widths.
 

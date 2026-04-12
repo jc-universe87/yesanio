@@ -1,8 +1,14 @@
-# Yesanio
+<p align="center">
+  <img src="docs/images/logo.png" alt="Yesanio logo" height="120">
+</p>
+
+<h1 align="center">Yesanio</h1>
+
+<p align="center"><em>Clarity. Overview. Control.</em></p>
 
 Yesanio is a self-hosted budgeting tool for households that plan their money together — built around the principle that every pound has a job before the month begins.
 
-Version 2.5.17 · [Changelog](CHANGELOG.md) · MIT licence · © 2026 Johannes Kim (Pistio)
+Version 2.5.18 · [Changelog](CHANGELOG.md) · MIT licence · © 2026 Johannes Kim (Pistio)
 
 ---
 
@@ -13,6 +19,12 @@ Yesanio is a budgeting tool for households that plan their money together. It's 
 Yesanio does **not** track what you spend. It's not a bank-transaction importer or an expense tracker. It's a planning tool: you decide where every pound goes, save the plan, and by the end of the month you've done what you intended to do. How that maps to reality — bank statements, credit card bills, actual receipts — happens outside Yesanio.
 
 This is a deliberate choice. Most budgeting tools fail by making you feel guilty about things you can no longer change. Yesanio's failure mode is the opposite: an incomplete plan, with the fix visible right in front of you.
+
+<p align="center">
+  <img src="docs/images/home.png" alt="Yesanio Home view — editorial summary of the current month's plan" width="720">
+  <br>
+  <em>The Home view — read-only, shared across the household.</em>
+</p>
 
 ## Who is it for?
 
@@ -33,6 +45,12 @@ This is a deliberate choice. Most budgeting tools fail by making you feel guilty
 A **plan** is one month's budget. Inside a plan are **groups** — categories like Housing, Giving, Groceries. Inside each group are **items** — individual line entries with a name, amount, optional notes, and a Paid checkbox.
 
 Groups are either `FIXED` (bills, subscriptions, long-term savings) or `VARIABLE` (flexible living costs). The 🤲 toggle on a group marks it as a *giving* group, surfaced separately on the Home page.
+
+<p align="center">
+  <img src="docs/images/plan.png" alt="Yesanio Plan view — editing a month's budget with groups, items, and the Paid checkbox" width="720">
+  <br>
+  <em>The Plan view — where the month gets built, group by group.</em>
+</p>
 
 ### Saving goals
 
