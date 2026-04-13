@@ -33,7 +33,17 @@ if [ "$CONFIRM" != "restore" ]; then
 fi
 
 echo "Restoring..."
-docker compose exec -T yesanio-db mariadb -uroot -pyesanio_root_change_me yesanio < "$BACKUP_FILE"
+# Detect whether we have modern `docker compose` (with space) or legacy `docker-compose`
+if docker compose version >/dev/null 2>&1; then
+  COMPOSE="docker compose"
+elif docker-compose version >/dev/null 2>&1; then
+  COMPOSE="docker-compose"
+else
+  echo "Error: neither 'docker compose' nor 'docker-compose' found."
+  exit 1
+fi
+
+$COMPOSE exec -T yesanio-db mariadb -uroot -pyesanio_root_change_me yesanio < "$BACKUP_FILE"
 echo "Restore complete."
 echo "Restart the backend so it picks up the restored data:"
-echo "  docker compose restart yesanio-backend"
+echo "  $COMPOSE restart yesanio-backend"

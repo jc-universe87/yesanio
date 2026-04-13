@@ -11,9 +11,12 @@
 #   docker volume ls   | grep yesanio    # → yesanio_db_data
 #   docker network ls  | grep yesanio    # → yesanio_yesanio_net
 #   docker ps          | grep yesanio    # → yesanio_db, yesanio_backend, yesanio_frontend
+#
+# IMPORTANT: container/volume names derive from the folder name. Always
+# unzip Yesanio into a folder called `yesanio` so the names match the
+# documentation. (We removed the `name:` directive in v2.5.19 to keep
+# the file compatible with legacy docker-compose 1.x on Debian/Chromebook.)
 # =====================================================================
-
-name: yesanio
 
 services:
 

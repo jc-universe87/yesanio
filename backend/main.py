@@ -312,7 +312,7 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="Yesanio API", version="2.5.18", lifespan=lifespan)
+app = FastAPI(title="Yesanio API", version="2.5.19", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -888,7 +888,7 @@ def health():
             "status": "ok",
             "db": "ok",
             "schema_version": schema_version,
-            "version": "2.5.18",
+            "version": "2.5.19",
         }
     except Exception as e:
         raise HTTPException(status_code=503, detail=f"DB unreachable: {e}")
@@ -896,4 +896,4 @@ def health():
 
 @app.get("/")
 def root():
-    return {"name": "Yesanio API", "version": "2.5.18", "docs": "/docs"}
+    return {"name": "Yesanio API", "version": "2.5.19", "docs": "/docs"}

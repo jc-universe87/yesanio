@@ -218,11 +218,13 @@ The right command depends on your distribution.
 **Ubuntu / Debian / Mint:**
 ```
 sudo apt update
-sudo apt install -y docker.io docker-compose-plugin
+sudo apt install -y docker.io docker-compose
 sudo systemctl enable --now docker
 sudo usermod -aG docker $USER
 ```
-Then log out and back in, so the group change takes effect.
+Then log out and back in completely (not just close the terminal — fully sign out), so the group change takes effect.
+
+> **A note on the package names:** Debian and Ubuntu ship `docker.io` (the daemon) and `docker-compose` (with a hyphen — the older command syntax). Yesanio works with both `docker compose` (with a space, modern) and `docker-compose` (with a hyphen, older), so use whichever your distro provides.
 
 **Fedora:**
 ```
@@ -259,6 +261,8 @@ cd yesanio
 docker compose up -d
 ```
 
+(On older Linux installs, use `docker-compose up -d` with a hyphen instead. Both work with Yesanio.)
+
 Continue to [Opening Yesanio for the first time](#opening-yesanio-for-the-first-time).
 
 ---
@@ -289,12 +293,14 @@ In that Linux terminal, type these commands one at a time, pressing Enter after 
 
 ```
 sudo apt update
-sudo apt install -y docker.io docker-compose-plugin
+sudo apt install -y docker.io docker-compose
 sudo systemctl enable --now docker
-sudo usermod -aG newgrp docker
+sudo usermod -aG docker $USER
 ```
 
-When the last command finishes, **close the terminal and reopen it** (Settings → Linux → Develop with Linux, or right-click the Files app → Linux files, then open Terminal).
+(Note: it's `docker-compose` with a hyphen on Debian-based systems including Chromebook's Linux. Some online tutorials show `docker-compose-plugin` — that's a different package name from Docker's own repository, which Chromebook's Linux doesn't use.)
+
+When the last command finishes, **fully restart the Linux container** so the docker group permission takes effect. Right-click the terminal app icon in the launcher → **Shut down Linux**. Wait a few seconds, then reopen the terminal app. (Just closing and reopening the terminal window isn't enough on Chromebook — the whole Linux environment needs to restart for the group change to apply.)
 
 ### Step 3 — Download Yesanio
 
@@ -312,8 +318,10 @@ cd yesanio
 ### Step 4 — Start Yesanio
 
 ```
-docker compose up -d
+docker-compose up -d
 ```
+
+(That's `docker-compose` with a hyphen, since Chromebook uses Debian's older Docker package. On Windows and Mac, the Docker Desktop install includes the newer `docker compose` with a space — both work the same way.)
 
 Continue to [Opening Yesanio for the first time](#opening-yesanio-for-the-first-time).
 

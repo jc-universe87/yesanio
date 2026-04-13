@@ -2,6 +2,11 @@
 
 All notable changes to Yesanio.
 
+## 2.5.19 — April 2026
+- **Compatibility fix:** Yesanio now runs on systems with legacy `docker-compose` (1.x), including Chromebook's default Linux environment, Debian Bookworm, and older Ubuntu installs. The `name: yesanio` directive at the top of `docker-compose.yml` was a Compose v2.x feature that broke compose-1.x with `'name' does not match any of the regexes` error. Removed. Container/volume names now derive from folder name, so users should always unzip into a folder called `yesanio`.
+- `restore.sh` now auto-detects whether `docker compose` (space) or `docker-compose` (hyphen) is available and uses whichever exists.
+- INSTALL.md and INSTALL-FOR-EVERYONE.md: corrected the Linux/Chromebook install commands. The package name `docker-compose-plugin` only exists in Docker's own apt repo (not added by default on Debian/Chromebook); the Debian package is `docker-compose` (hyphen). Fixed `usermod -aG newgrp docker` typo to `usermod -aG docker $USER`. Documented that Chromebook needs a full Linux container restart, not just a terminal reopen, for the docker group to take effect.
+
 ## 2.5.18 — April 2026
 - README now shows the Yesanio logo, and two screenshots (Home view and Plan view) placed inline with the explanations they illustrate. Images live in `docs/images/`.
 - Added the *"Clarity. Overview. Control."* tagline to the README header, matching the in-app wordmark.
