@@ -8,7 +8,7 @@
 
 Yesanio is a self-hosted budgeting tool for households that plan their money together — built around the principle that every pound has a job before the month begins.
 
-Version 2.5.22 · [Changelog](CHANGELOG.md) · MIT licence · © 2026 Johannes Kim (Pistio)
+Version 2.5.23 · [Changelog](CHANGELOG.md) · MIT licence · © 2026 Johannes Kim (Pistio)
 
 ---
 
@@ -66,13 +66,13 @@ The Home page is Yesanio's most important surface. It's read-only and summarises
 
 ```
 April 2026
-HANDLED BY JOHANNES · LAST LOOKED AT TODAY
+HANDLED BY ALEX · LAST LOOKED AT TODAY
 
     April is fully planned. Every pound has a job.
 
 · Bills for April are all set aside. 23 of 27 marked paid so far.
-· We're setting aside £1,832 for giving in April — including Tithes + 
-  Offering, Mission Offering, Compassion Donation.
+· We're setting aside £1,832 for giving in April — including Tithe, 
+  Mission Giving, Charity Donation.
 · Saving toward the emergency fund (62%) and the family holiday (18%).
 
 INCOME £7,923 · EVERYTHING ASSIGNED A JOB.

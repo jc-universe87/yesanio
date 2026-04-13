@@ -2,6 +2,13 @@
 
 All notable changes to Yesanio.
 
+## 2.5.23 — April 2026
+Doc and UI-text polish pass. No code logic or schema changes. Users on v2.5.22 don't need to redeploy, but this release is the cleaner face for anyone landing on the public repo.
+- **README Home view example**: changed the example name from "JOHANNES" to the generic "ALEX", so the illustration reads as an example rather than as the author's real budget.
+- **README Home view example giving line**: changed the giving category examples from "Tithes + Offering, Mission Offering, Compassion Donation" (specifically Christian) to "Tithe, Mission Giving, Charity Donation" (denomination-neutral). The giving feature itself is unchanged — the user can name their giving categories anything. This is just the example copy.
+- **Settings and Wizard "Your name" input placeholders**: changed from `e.g. Johannes` to `e.g. Alex` in both spots. The placeholder now reads as a generic example rather than as a suggested default.
+- The author's name is preserved where it belongs — in the MIT licence copyright line (LICENCE, README footer, frontend footer), as required for attribution.
+
 ## 2.5.22 — April 2026
 Doc-only release. No code or schema changes.
 - **README.md**: the upgrade instructions used `cd ~/docker-compose/yesanio` — a path specific to the author's server setup. Replaced with `cd yesanio` and a comment saying "navigate to wherever you installed Yesanio". Users with the folder at `~/yesanio`, `~/Downloads/yesanio`, or elsewhere no longer need to mentally translate.
