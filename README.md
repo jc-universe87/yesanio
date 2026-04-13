@@ -8,7 +8,7 @@
 
 Yesanio is a self-hosted budgeting tool for households that plan their money together — built around the principle that every pound has a job before the month begins.
 
-Version 2.5.21 · [Changelog](CHANGELOG.md) · MIT licence · © 2026 Johannes Kim (Pistio)
+Version 2.5.22 · [Changelog](CHANGELOG.md) · MIT licence · © 2026 Johannes Kim (Pistio)
 
 ---
 
@@ -21,7 +21,7 @@ Yesanio does **not** track what you spend. It's not a bank-transaction importer 
 This is a deliberate choice. Most budgeting tools fail by making you feel guilty about things you can no longer change. Yesanio's failure mode is the opposite: an incomplete plan, with the fix visible right in front of you.
 
 <p align="center">
-  <img src="docs/images/home.png" alt="Yesanio Home view — editorial summary of the current month's plan" width="720">
+  <img src="docs/images/home.png" alt="Yesanio Home view — editorial summary of the current month's plan" width="560">
   <br>
   <em>The Home view — read-only, shared across the household.</em>
 </p>
@@ -47,7 +47,7 @@ A **plan** is one month's budget. Inside a plan are **groups** — categories li
 Groups are either `FIXED` (bills, subscriptions, long-term savings) or `VARIABLE` (flexible living costs). The 🤲 toggle on a group marks it as a *giving* group, surfaced separately on the Home page.
 
 <p align="center">
-  <img src="docs/images/plan.png" alt="Yesanio Plan view — editing a month's budget with groups, items, and the Paid checkbox" width="720">
+  <img src="docs/images/plan.png" alt="Yesanio Plan view — editing a month's budget with groups, items, and the Paid checkbox" width="560">
   <br>
   <em>The Plan view — where the month gets built, group by group.</em>
 </p>
@@ -140,7 +140,8 @@ Writes a timestamped `.sql` dump of the database to `./backups/`. Run this on a 
 ### Upgrade
 
 ```bash
-cd ~/docker-compose/yesanio
+# Navigate to wherever you installed Yesanio — the folder containing docker-compose.yml
+cd yesanio
 git pull
 docker compose down
 docker compose build --no-cache yesanio-backend

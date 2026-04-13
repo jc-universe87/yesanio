@@ -2,6 +2,12 @@
 
 All notable changes to Yesanio.
 
+## 2.5.22 — April 2026
+Doc-only release. No code or schema changes.
+- **README.md**: the upgrade instructions used `cd ~/docker-compose/yesanio` — a path specific to the author's server setup. Replaced with `cd yesanio` and a comment saying "navigate to wherever you installed Yesanio". Users with the folder at `~/yesanio`, `~/Downloads/yesanio`, or elsewhere no longer need to mentally translate.
+- **INSTALL-FOR-EVERYONE.md**: all 8 embedded screenshots converted from plain markdown to HTML `<img>` tags with `width="560"`. At native resolution they rendered huge on GitHub, dominating the text around them. 560px fits comfortably in GitHub's rendered content column while keeping all image detail readable.
+- **README.md**: home and plan screenshots also scaled from 720 to 560 for visual consistency with the install docs.
+
 ## 2.5.21 — April 2026
 Doc-only release. No code or schema changes.
 
