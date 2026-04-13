@@ -52,41 +52,59 @@ Then continue from [Opening Yesanio for the first time](#opening-yesanio-for-the
 
 ## Windows 10 or Windows 11
 
-### Before you start: check your Windows version
+### Before you start: check your Windows version and chip type
 
 Yesanio works on Windows 10 (64-bit, version 2004 / May 2020 update or newer — this is Docker Desktop's WSL2 requirement) and Windows 11. To check yours:
 
 1. Press the **Windows key** on your keyboard, type "About your PC", and press Enter.
 2. Scroll down to find **Edition** and **Version**. You want Windows 10 (any modern edition) or Windows 11.
+3. While you're there, look at **System type**. It'll say either *"64-bit operating system, x64-based processor"* (most Windows machines — this means your chip is AMD64/Intel) or *"ARM-based processor"* (some newer Surface and Windows-on-ARM laptops). You'll need this in a moment to pick the right Docker download.
+
+![The Windows About page showing System type, Edition, and Version](images/install-windows-about.png)
 
 If you have an older version of Windows (8, 7, or earlier), Docker Desktop won't install on your machine. You'd need to upgrade Windows first, which is a bigger project than this guide covers.
-
-> **[Screenshot: the Windows "About" page showing Edition and Version highlighted]**
 
 ### Step 1 — Install Docker Desktop
 
 1. In your web browser, go to: **https://www.docker.com/products/docker-desktop/**
-2. Click the big **Download for Windows** button. A file called something like `Docker Desktop Installer.exe` will start downloading. It's about 700 MB, which can take a few minutes.
+2. Click **Download Docker Desktop**. A menu appears with five options:
 
-> **[Screenshot: the Docker.com download page with the Windows download button highlighted]**
+![The Docker Desktop download page showing the five download options](images/install-docker-download.png)
 
-3. When the download finishes, double-click the installer file (you'll find it in your Downloads folder).
-4. The installer will ask permission to make changes to your computer — click **Yes**.
-5. The Docker Desktop setup window appears. **Leave both checkboxes ticked** (one is about WSL 2, the other is about a desktop shortcut). Click **OK**.
+3. Click **Download for Windows – AMD64** if your System type said "x64-based processor" (this is the vast majority of Windows machines). Click **Download for Windows – ARM64** if it said "ARM-based processor" (Surface Pro X, Surface Pro 9 5G, and a handful of 2023+ laptops). **Picking the wrong one means Docker won't run on your PC — picking the right one means it just works.**
+4. A file called something like `Docker Desktop Installer.exe` starts downloading. It's about 700 MB, which can take a few minutes.
 
-> **[Screenshot: the Docker Desktop installer's initial configuration screen]**
+5. When the download finishes, double-click the installer file (you'll find it in your Downloads folder).
+6. The installer will ask permission to make changes to your computer — click **Yes**.
+7. The Docker Desktop setup window appears with three checkboxes:
 
-6. Docker installs itself. This takes a few minutes. When it's done, it will say *"Installation succeeded"*. Click **Close**.
+![The Docker Desktop installer Configuration screen with three checkboxes](images/install-docker-config.png)
+
+   - **Tick** "Use WSL 2 instead of Hyper-V (recommended)" — this should already be ticked by default
+   - **Leave unticked** "Allow Windows Containers to be used with this installation" — Yesanio runs in Linux containers, not Windows containers; ticking this would not help you and might cause confusion later
+   - **Tick** "Add shortcut to desktop" — so you can find Docker easily afterwards
+
+   Then click **OK**.
+
+8. Docker installs itself. This takes a few minutes. When it's done, it will say *"Installation succeeded"*. Click **Close**.
 
 > **Inline help — if you see "WSL 2 installation is incomplete":** This means a feature called WSL2 isn't enabled on your Windows. Don't panic. Docker shows a link to the Microsoft instructions to enable it. The short version: open PowerShell as administrator (right-click the Start button, choose "Windows PowerShell (Admin)"), type `wsl --install`, press Enter, and restart your computer. Then re-run the Docker installer.
 
-7. After installing, you may need to log out of Windows and back in (Windows will tell you if so).
-8. Find Docker Desktop in your Start menu and open it.
-9. The first time you open Docker Desktop, it shows a welcome screen and asks you to accept its licence terms. Read them, accept them. It may also ask you to sign in or create a Docker account — **you can skip this**. Click "Continue without signing in" or similar.
+9. **Windows asks you to restart your computer.** This is a full restart, not just a sign-out — Docker needs Windows to reload with WSL2 properly integrated. Save any open work, close your other apps, and restart.
+10. After the restart, find Docker Desktop in your Start menu and open it.
+11. The first time you open Docker Desktop, it shows a welcome screen and asks you to accept its licence terms. Read them, accept them. It then asks you to sign in with a work email or Google/GitHub account — **you can skip this entirely**. Look for the small **Skip** link in the top-right corner of the sign-in card.
 
-> **[Screenshot: Docker Desktop's first-launch welcome screen with the "Continue without signing in" option highlighted]**
+![Docker Desktop welcome screen with the Skip link visible in the top-right](images/install-docker-welcome.png)
 
-10. Docker Desktop's main window opens. It shows a dashboard with various sections (Containers, Images, Volumes). You don't need to understand any of it. The important thing is: **Docker is now running in the background.** Look at your Windows system tray (the bottom-right corner of your screen, near the clock) — you should see a small whale icon. As long as that whale is there, Docker is alive.
+   Click Skip. You don't need a Docker account to use Yesanio.
+
+12. Docker Desktop's main window opens. It shows a dashboard with various sections (Containers, Images, Volumes). You don't need to understand any of it. The important thing is: **Docker is now running in the background.** Look at your Windows system tray (the bottom-right corner of your screen, near the clock) — you should see a small whale icon. As long as that whale is there, Docker is alive.
+
+> **Inline help — if Docker says "WSL needs updating":** Docker Desktop may tell you that your WSL version is too old and show a command to run. You'll see something like the screenshot below.
+>
+> ![Docker Desktop showing the WSL needs updating error with the wsl --update command](images/install-wsl-update.png)
+>
+> To fix it: press the Windows key, type "PowerShell", right-click Windows PowerShell and choose "Run as administrator". In the PowerShell window that opens, type `wsl --update` and press Enter. It'll download and install a newer WSL. When it finishes, **restart Windows again** (yes, a second restart — WSL updates need a reload like Docker itself did). After the restart, open Docker Desktop, and it'll either start cleanly or show the same screen with a **Try Again** button you can click now.
 
 > **Inline help — if Docker says "Docker Desktop starting…" forever:** This usually means a Windows feature called Hyper-V or Virtualisation isn't enabled in your computer's BIOS settings. This is a deeper change and varies by computer manufacturer. The honest advice here is to search the web for "enable virtualisation [your laptop model]", ask a more technical friend, or paste the error into ChatGPT or Claude and describe what you were doing — these assistants can walk you through BIOS changes in plain language. Once virtualisation is on, Docker starts in seconds.
 
@@ -94,14 +112,13 @@ If you have an older version of Windows (8, 7, or earlier), Docker Desktop won't
 
 1. In your web browser, go to: **https://github.com/jc-universe87/yesanio/releases/latest**
 2. Scroll down on that page to find a section called **Assets**.
-3. Click on the file ending in `.zip` (it'll be named something like `yesanio-v2.5.7.zip`). It downloads to your Downloads folder.
+3. Click on the file ending in `.zip` (it'll be named something like `yesanio-v2.5.21.zip`). It downloads to your Downloads folder.
+4. Open your Downloads folder. Right-click the zip file and choose **Extract All...**. Choose where to extract — leaving the default (a folder next to the zip) is fine. Click Extract.
+5. A new folder appears. The name of the outer folder matches the zip — e.g. `yesanio-v2.5.21`. **Open it**, and inside there's another folder called `yesanio` with all the actual files. This nested structure is normal.
 
-> **[Screenshot: the GitHub Releases page with the zip file under "Assets" highlighted]**
+![Windows File Explorer showing the extracted yesanio folder contents](images/install-extracted-folder.png)
 
-4. Open your Downloads folder. Right-click the zip file and choose **Extract All...**. Choose where to extract — somewhere easy to find like your Desktop is fine. Click Extract.
-5. A new folder called `yesanio` appears in the place you chose. Open it. You should see files including `docker-compose.yml`, `README.md`, and folders called `backend`, `frontend`, `docs`.
-
-> **[Screenshot: Windows File Explorer showing the extracted yesanio folder with its contents visible]**
+   The folder you need to be in contains `docker-compose.yml`, `README.md`, and subfolders called `backend`, `frontend`, `docs`. That's your working folder for the next step.
 
 ### Step 3 — Open a terminal in the yesanio folder
 
@@ -110,9 +127,7 @@ A "terminal" is a window where you type commands instead of clicking. Don't be i
 1. In File Explorer, navigate **into** the `yesanio` folder.
 2. Click on the address bar at the top of the window (where it shows the path like `Desktop > yesanio`). It will turn into a text box.
 3. Delete what's there, type **`powershell`**, and press Enter.
-4. A blue or black window opens with text like `PS C:\Users\YourName\Desktop\yesanio>` followed by a blinking cursor. **This is the terminal.** It's already pointing at your yesanio folder, which is exactly what you want.
-
-> **[Screenshot: a PowerShell window open at the yesanio folder location, ready for input]**
+4. A blue or black window opens with text like `PS C:\Users\YourName\Downloads\yesanio-v2.5.21\yesanio>` followed by a blinking cursor. **This is the terminal.** It's already pointing at your yesanio folder, which is exactly what you want.
 
 > **Inline help — if "powershell" doesn't work:** Some Windows versions need you to type `pwsh` instead. If neither works, hold Shift and right-click anywhere inside the yesanio folder (in empty space, not on a file), and choose **Open PowerShell window here** or **Open in Terminal**.
 
@@ -155,15 +170,20 @@ Both Apple Silicon Macs (M1/M2/M3/M4) and Intel Macs work fine. On Apple Silicon
 ### Step 1 — Install Docker Desktop
 
 1. In Safari, go to: **https://www.docker.com/products/docker-desktop/**
-2. Click **Download for Mac**. The page asks whether you have an Apple chip (M1, M2, M3) or an Intel chip. To check yours: Apple logo → About This Mac → look at "Chip" or "Processor". Pick the matching button.
-3. A file called `Docker.dmg` downloads (about 600 MB).
+2. **Which Mac do you have — Apple Silicon or Intel?** Apple started shipping its own chips (called "Apple Silicon" — M1, M2, M3, M4) in late 2020. Macs sold before that have Intel chips. To check: click the Apple logo (top-left of your screen) → **About This Mac**. Look at the line labelled **Chip** (Apple Silicon) or **Processor** (Intel). If it says anything like "Apple M1", "Apple M2", "Apple M3", or "Apple M4", you have Apple Silicon. If it says "Intel Core i5", "Intel Core i7", or similar, you have Intel.
+3. On the Docker download page, click **Download Docker Desktop** and pick the matching option from the menu:
 
-> **[Screenshot: the Docker.com Mac download page with the Apple Silicon and Intel options visible]**
+![The Docker Desktop download page showing the five download options including Mac Apple Silicon and Mac Intel](images/install-docker-download.png)
+
+   - **Download for Mac – Apple Silicon** if you have an M-series chip
+   - **Download for Mac – Intel Chip** if you have an Intel-based Mac
+
+   Picking the wrong one means Docker won't run; picking the right one means it just works. You only do this once.
+
+4. A file called `Docker.dmg` downloads (about 600 MB).
 
 4. Open Downloads, double-click `Docker.dmg`. A window opens showing the Docker icon and an Applications folder shortcut.
 5. **Drag the Docker icon onto the Applications folder.** This installs it.
-
-> **[Screenshot: the Docker DMG window with the drag-to-Applications instruction visible]**
 
 6. Open your Applications folder, find **Docker**, and double-click it.
 7. macOS will warn you: *"Docker is an application downloaded from the Internet. Are you sure you want to open it?"* Click **Open**.
@@ -171,8 +191,6 @@ Both Apple Silicon Macs (M1/M2/M3/M4) and Intel Macs work fine. On Apple Silicon
 9. The first launch shows a welcome screen and asks you to accept the licence. Accept it. You can **skip the sign-in step** — click "Continue without signing in".
 
 10. After a moment, Docker Desktop's main dashboard appears, and a small **whale icon** appears in your menu bar at the top-right of your screen. As long as that whale is there, Docker is running.
-
-> **[Screenshot: macOS menu bar showing the Docker whale icon highlighted]**
 
 > **Inline help — if Docker won't start:** macOS sometimes blocks Docker from running on first launch. Open System Settings → Privacy & Security, scroll to the "Security" section, and look for a message about Docker being blocked. Click **Allow** next to it.
 
@@ -359,7 +377,7 @@ After `docker compose up -d` finishes successfully on any platform:
 2. Open your normal web browser (Chrome, Firefox, Safari, Edge — any of them).
 3. In the address bar, type: **`http://localhost:6210`** (and press Enter).
 
-> **[Screenshot: Yesanio's welcome wizard in a browser, showing the first step "Welcome to Yesanio"]**
+![The Yesanio welcome wizard on first launch](images/install-welcome-wizard.png)
 
 You should see Yesanio's welcome wizard. From here, the in-app guide takes over. The wizard walks you through:
 

@@ -2,6 +2,18 @@
 
 All notable changes to Yesanio.
 
+## 2.5.21 — April 2026
+Doc-only release. No code or schema changes.
+
+**INSTALL-FOR-EVERYONE.md** improvements from a real Windows install walkthrough:
+- Seven real screenshots embedded in the install guide (Windows About page, Docker download page, Docker configuration checkboxes, Docker welcome screen, WSL-needs-updating error, extracted folder structure, Yesanio welcome wizard).
+- **Windows chip guidance**: AMD64 vs ARM64, with where to check (System type on the About page) and which button to click on the Docker download page.
+- **Mac chip guidance**: Apple Silicon (M1/M2/M3/M4) vs Intel, with how to check and why it matters.
+- **Windows Docker Desktop configuration**: corrected from "two checkboxes" to three — tick WSL 2, leave Windows Containers UNticked, tick Add shortcut. The doc had it wrong before.
+- **Windows restart reality**: it's a full Windows restart, not a sign-out, and sometimes two restarts are needed if WSL2 itself needs updating.
+- **WSL needs updating** inline help: the exact error dialog is documented with a screenshot, and the user is walked through `wsl --update` in admin PowerShell.
+- **Docker Desktop sign-in screen**: corrected from "Continue without signing in" to the actual "Skip" link in the top-right of the sign-in card.
+
 ## 2.5.20 — April 2026
 Doc-only release. No code or schema changes. Users running v2.5.19 don't need to redeploy.
 - **INSTALL-FOR-EVERYONE.md** — multiple improvements after a real Chromebook install test surfaced gaps:
