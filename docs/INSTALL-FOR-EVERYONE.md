@@ -18,7 +18,7 @@ Here's the honest preview:
 - **Difficulty:** moderate but not technical. You'll be following written instructions exactly. No code to write.
 - **What you'll need:** a reasonably modern computer (Windows 10/11, macOS, Linux, or a Chromebook from the last 5 years), an internet connection, and ~3 GB of free disk space.
 - **What can go wrong:** mostly Docker installation issues. If you hit one, this guide tells you what it means and what to do.
-- **When to ask for help:** if anything in this guide doesn't match what you see on screen and you can't tell why, that's a normal moment to ask a more technical friend or to file a question on Yesanio's GitHub page.
+- **When to ask for help:** if anything in this guide doesn't match what you see on screen and you can't tell why, that's a normal moment to ask a more technical friend, or paste the error message into an AI assistant like ChatGPT or Claude with a short description of what you were doing. Either approach will usually get you unstuck in a few minutes.
 
 You're not stupid if you find any of this confusing. The first time anyone does this, it feels strange. The second time it's routine.
 
@@ -54,7 +54,7 @@ Then continue from [Opening Yesanio for the first time](#opening-yesanio-for-the
 
 ### Before you start: check your Windows version
 
-Yesanio works on Windows 10 (64-bit, version 1903 or newer) and Windows 11. To check yours:
+Yesanio works on Windows 10 (64-bit, version 2004 / May 2020 update or newer — this is Docker Desktop's WSL2 requirement) and Windows 11. To check yours:
 
 1. Press the **Windows key** on your keyboard, type "About your PC", and press Enter.
 2. Scroll down to find **Edition** and **Version**. You want Windows 10 (any modern edition) or Windows 11.
@@ -88,7 +88,7 @@ If you have an older version of Windows (8, 7, or earlier), Docker Desktop won't
 
 10. Docker Desktop's main window opens. It shows a dashboard with various sections (Containers, Images, Volumes). You don't need to understand any of it. The important thing is: **Docker is now running in the background.** Look at your Windows system tray (the bottom-right corner of your screen, near the clock) — you should see a small whale icon. As long as that whale is there, Docker is alive.
 
-> **Inline help — if Docker says "Docker Desktop starting…" forever:** This usually means a Windows feature called Hyper-V or Virtualisation isn't enabled in your computer's BIOS settings. This is a deeper change and varies by computer manufacturer. The honest advice here is to search the web for "enable virtualisation [your laptop model]" or ask a more technical friend. Once virtualisation is on, Docker starts in seconds.
+> **Inline help — if Docker says "Docker Desktop starting…" forever:** This usually means a Windows feature called Hyper-V or Virtualisation isn't enabled in your computer's BIOS settings. This is a deeper change and varies by computer manufacturer. The honest advice here is to search the web for "enable virtualisation [your laptop model]", ask a more technical friend, or paste the error into ChatGPT or Claude and describe what you were doing — these assistants can walk you through BIOS changes in plain language. Once virtualisation is on, Docker starts in seconds.
 
 ### Step 2 — Download Yesanio
 
@@ -148,9 +148,9 @@ If you see all four green ticks, **Yesanio is now running**. Continue to [Openin
 
 ### Before you start
 
-Yesanio works on macOS 11 (Big Sur) or newer. To check your version: click the Apple logo (top-left of your screen) → **About This Mac**. The version number is shown there. If yours is older, you'll need to update macOS first.
+Yesanio works on macOS 12 (Monterey) or newer — that's Docker Desktop's minimum. To check your version: click the Apple logo (top-left of your screen) → **About This Mac**. The version number is shown there. If yours is older, you'll need to update macOS first.
 
-Both Apple Silicon Macs (M1/M2/M3) and Intel Macs work fine.
+Both Apple Silicon Macs (M1/M2/M3/M4) and Intel Macs work fine. On Apple Silicon Macs, the first time Docker Desktop launches, macOS may prompt you to install Rosetta 2 (Apple's compatibility layer for older software). Click **Install** when asked — it takes a minute and is needed for some of the components Yesanio uses.
 
 ### Step 1 — Install Docker Desktop
 
@@ -261,7 +261,13 @@ cd yesanio
 docker compose up -d
 ```
 
-(On older Linux installs, use `docker-compose up -d` with a hyphen instead. Both work with Yesanio.)
+If that fails with "compose is not a docker command" or similar, try the older hyphen form instead:
+
+```
+docker-compose up -d
+```
+
+Both work with Yesanio; distributions ship whichever the package maintainers preferred at build time.
 
 Continue to [Opening Yesanio for the first time](#opening-yesanio-for-the-first-time).
 
@@ -298,9 +304,21 @@ sudo systemctl enable --now docker
 sudo usermod -aG docker $USER
 ```
 
-(Note: it's `docker-compose` with a hyphen on Debian-based systems including Chromebook's Linux. Some online tutorials show `docker-compose-plugin` — that's a different package name from Docker's own repository, which Chromebook's Linux doesn't use.)
+(Note: on Chromebook's default Linux, you'll get the older `docker-compose` command with a hyphen. Some online tutorials show `docker-compose-plugin` — that's a package from Docker's own repository, which Chromebook's Linux doesn't use by default. If you've previously added Docker's repository manually, you might have the newer `docker compose` with a space instead — both work fine with Yesanio.)
 
-When the last command finishes, **fully restart the Linux container** so the docker group permission takes effect. Right-click the terminal app icon in the launcher → **Shut down Linux**. Wait a few seconds, then reopen the terminal app. (Just closing and reopening the terminal window isn't enough on Chromebook — the whole Linux environment needs to restart for the group change to apply.)
+When the last command finishes, the docker group permission won't be active in your current terminal yet. The quickest fix is to type:
+
+```
+newgrp docker
+```
+
+This activates the docker group in your current shell immediately. To verify it worked:
+
+```
+docker ps
+```
+
+You should see a header row (with columns like CONTAINER ID, IMAGE, COMMAND) and no error. If you get a "permission denied" message instead, `newgrp docker` didn't stick for some reason — fall back to the nuclear option: right-click the terminal app icon in the launcher → **Shut down Linux**, wait a few seconds, then reopen the terminal app. That always works.
 
 ### Step 3 — Download Yesanio
 
@@ -309,11 +327,15 @@ In the Linux terminal:
 ```
 cd ~
 # Visit https://github.com/jc-universe87/yesanio/releases/latest in your browser to find the
-# current version's filename, then download it. Example for v2.5.14:
-wget https://github.com/jc-universe87/yesanio/releases/download/v2.5.14/yesanio-v2.5.14.zip
-unzip yesanio-v2.5.14.zip
+# current version's filename, then download it. Example:
+wget https://github.com/jc-universe87/yesanio/releases/download/v2.5.19/yesanio-v2.5.19.zip
+unzip yesanio-v2.5.19.zip
 cd yesanio
 ```
+
+> **If you've tried installing Yesanio before and have a previous `yesanio` folder in your home directory, remove it first:** `sudo rm -r ~/yesanio`. Then re-run the commands above.
+
+> **Alternative — install directly from GitHub using git:** if you have `git` available (it's installed by default on Crostini), you can skip the zip entirely: `git clone https://github.com/jc-universe87/yesanio.git && cd yesanio`. This creates the `yesanio` folder directly in your home directory (not `yesanio/yesanio` — just `yesanio`).
 
 ### Step 4 — Start Yesanio
 
@@ -325,7 +347,7 @@ docker-compose up -d
 
 Continue to [Opening Yesanio for the first time](#opening-yesanio-for-the-first-time).
 
-> **Chromebook-specific note for opening Yesanio:** Recent ChromeOS versions automatically forward `localhost` from Linux to ChromeOS, so `http://localhost:6210` works in your normal Chrome browser. If it doesn't, try `http://penguin.linux.test:6210` instead — that's the ChromeOS-specific name for the Linux environment.
+> **Chromebook-specific note for opening Yesanio:** On current ChromeOS, **both** `http://localhost:6210` and `http://penguin.linux.test:6210` work in your normal Chrome browser. The `penguin.linux.test` hostname is a ChromeOS standard — it's the same on every Chromebook with default Linux setup, not specific to any one device. Use whichever you find easier to remember.
 
 ---
 
@@ -462,7 +484,7 @@ This means a Windows feature called WSL2 isn't installed. Open PowerShell as adm
 
 ### "Docker Desktop is starting…" forever (Windows)
 
-Usually means hardware virtualisation isn't enabled in your computer's BIOS. The fix varies by manufacturer — search the web for "enable virtualisation [your laptop model]" or ask a more technical friend. The change is in BIOS, not Windows, so you'll restart your computer and press a key like F2 or Delete during boot to enter the BIOS menu. The setting is usually called "Intel VT-x", "AMD-V", or "Virtualisation Technology". Enable it, save, exit. Docker should start in seconds after.
+Usually means hardware virtualisation isn't enabled in your computer's BIOS. The fix varies by manufacturer — search the web for "enable virtualisation [your laptop model]", ask a more technical friend, or paste this situation into ChatGPT or Claude and tell it your laptop model. The change is in BIOS, not Windows, so you'll restart your computer and press a key like F2 or Delete during boot to enter the BIOS menu. The setting is usually called "Intel VT-x", "AMD-V", or "Virtualisation Technology". Enable it, save, exit. Docker should start in seconds after.
 
 ### "Permission denied" when running docker (Linux)
 
@@ -499,3 +521,13 @@ If you got Yesanio running and your first plan saved, you've done something most
 The rest is using Yesanio for what it's for: planning your household's money carefully, month by month, with the boring bills handled and the important things you're saving for set aside on day one.
 
 Welcome.
+
+---
+
+# A note on what's been tested
+
+These instructions have been written based on Docker Desktop's published behaviour on Windows and macOS, and on actual first-run installs on a Debian Linux server and a consumer Chromebook running ChromeOS's default Linux environment. The Linux and Chromebook paths are verified end-to-end.
+
+The Windows and macOS paths describe what Docker Desktop says it does, and what it does on most users' machines — but the author doesn't own a Mac, and the Windows test environment was a VM, not a real Windows laptop. If your screen shows something different from what's described here, trust what Docker Desktop itself is asking you to do. Docker Desktop's own error messages are generally clear and its installer handles the hard cases.
+
+If you hit something stuck and the dialog boxes don't match this guide, ask a friend, or paste exactly what you're seeing into ChatGPT or Claude — they're well-informed about Docker Desktop and can usually get you past any one-off screen in a few minutes.

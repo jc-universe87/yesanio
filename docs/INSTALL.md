@@ -28,7 +28,7 @@ Wait ~10 seconds for migrations to complete, then open `http://localhost:6210`. 
 
 **Linux:** Install Docker Engine and the `docker-compose-plugin`. Add yourself to the `docker` group to avoid `sudo`.
 
-**Chromebook:** Enable Linux (Settings → Advanced → Developers → Linux development environment). Inside the Linux terminal, install Docker, then follow the Linux flow. Open `http://localhost:6210` in the ChromeOS Chrome browser — port forwarding from the Linux container works automatically on recent ChromeOS versions.
+**Chromebook:** Enable Linux (Settings → Advanced → Developers → Linux development environment). Inside Linux: `sudo apt install -y docker.io docker-compose`, `sudo usermod -aG docker $USER`, then `newgrp docker` to activate the group in the current shell (or restart Linux fully if `newgrp` doesn't take). Chromebook's default Linux ships `docker-compose` (hyphen), not `docker compose` (space), so use `docker-compose up -d`. Both `http://localhost:6210` and `http://penguin.linux.test:6210` work in the ChromeOS Chrome browser — `penguin.linux.test` is a ChromeOS-wide convention, same on every Chromebook.
 
 ## Ports
 

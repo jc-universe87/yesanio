@@ -2,6 +2,20 @@
 
 All notable changes to Yesanio.
 
+## 2.5.20 — April 2026
+Doc-only release. No code or schema changes. Users running v2.5.19 don't need to redeploy.
+- **INSTALL-FOR-EVERYONE.md** — multiple improvements after a real Chromebook install test surfaced gaps:
+  - Chromebook: use `newgrp docker` to activate the docker group in the current shell (faster than the full Linux container restart, which is now documented as the fallback only).
+  - Chromebook: reframed the `docker compose` vs `docker-compose` guidance — not "Chromebook needs hyphen" but "try one, if it fails try the other, both work."
+  - Chromebook: documented that both `localhost:6210` and `penguin.linux.test:6210` work on current ChromeOS, and that `penguin.linux.test` is a ChromeOS-wide convention (any Chromebook with default Linux setup), not device-specific.
+  - Chromebook: added an optional `git clone` path as an alternative to downloading the zip. Also documented how to remove a previous `~/yesanio` folder before reinstall.
+  - Windows version floor corrected: WSL2 needs Windows 10 version 2004 (May 2020 update) or newer, not the previously-stated 1903.
+  - macOS version floor corrected: Docker Desktop now requires macOS 12 (Monterey), not macOS 11 (Big Sur).
+  - Added an Apple Silicon note: Docker Desktop may prompt for Rosetta 2 installation on first launch.
+  - "Ask for help" language updated throughout: in addition to asking a more technical friend, users are now pointed to AI assistants like ChatGPT or Claude for paste-the-error-and-explain help. Removed the suggestion to file questions on the GitHub repo, since this invites ongoing support load on the maintainer.
+  - Added a closing footnote honestly flagging which install paths are personally verified (Linux, Chromebook) versus which describe Docker Desktop's documented behaviour without hands-on testing (Windows, macOS).
+- **INSTALL.md** — same Chromebook findings applied in condensed form.
+
 ## 2.5.19 — April 2026
 - **Compatibility fix:** Yesanio now runs on systems with legacy `docker-compose` (1.x), including Chromebook's default Linux environment, Debian Bookworm, and older Ubuntu installs. The `name: yesanio` directive at the top of `docker-compose.yml` was a Compose v2.x feature that broke compose-1.x with `'name' does not match any of the regexes` error. Removed. Container/volume names now derive from folder name, so users should always unzip into a folder called `yesanio`.
 - `restore.sh` now auto-detects whether `docker compose` (space) or `docker-compose` (hyphen) is available and uses whichever exists.
