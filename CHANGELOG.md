@@ -2,6 +2,67 @@
 
 All notable changes to Yesanio.
 
+## 2.6.6 — April 2026
+Small addition: a permanent footer visible on every view shows the current Yesanio version and attribution. Reads:
+
+> Yesanio v2.6.6 · © Pistio · MIT
+
+The version number links to the release page on GitHub for that specific tag, so a user noticing they're on an older version can click through and see what's in the current version. Frontend-only, no schema changes.
+
+## 2.6.5 — April 2026
+**Bug fix: goals without a target were showing as empty on both the Goals page and Home, even when they had accumulated contributions.**
+
+The backend was (correctly) summing contributions into `goals.current` for every saving item. But the frontend card-rendering logic only displayed the `current` value **when target > 0**. If target was 0 (the default for auto-created goals), the card silently showed "no target set" and hid the £100 or £500 of contributions already accumulated. Similarly on Home: the savings line filtered for `target > 0` and so never mentioned targetless goals.
+
+Fixed in both places:
+- **Goals page**: targetless goals with progress now display *"£100 saved · no target set"* instead of just *"no target set"*. Data that was always in the database is now visible.
+- **Home view**: savings line now includes targetless goals too. Shown as *"Saving toward Junior ISA Yeri (£50 saved)"* rather than a percentage. Targeted goals still show percentage; targetless goals show the absolute amount.
+
+No schema changes, no backend changes — just frontend conditionals that were hiding real data.
+
+## 2.6.4 — April 2026
+**Feature.** Frontend-only.
+
+The Calculator panel can now be dragged. Click and hold on the panel's header (the bar with "Calculator" at the top) and drag it anywhere on screen. Useful for the recurring problem of the panel sitting on top of the items you're trying to add to it — drag it out of the way once and continue working.
+
+Behaviour:
+- **Desktop (>760px)**: drag the header to move the panel anywhere. The panel can't be dragged off the visible area — it snaps back inside the viewport on release.
+- **Mobile (≤760px)**: the panel docks to the bottom of the screen as a full-width sheet, no dragging. Bottom-sheet is the native mobile pattern and works regardless of where you scroll.
+- **Position resets on each open.** The panel doesn't remember where you last put it across page reloads (or even between opens) — every fresh open starts at the default bottom-right position. Avoids "where did I last leave it?" confusion.
+- **Window resize** while the panel is open re-clamps the position so it stays in view (useful if you rotate a tablet or resize a window).
+
+A small ⋮⋮ handle icon shows on the left of the header on desktop, and the cursor changes to "move" — both signals that the header is grabbable.
+
+## 2.6.3 — April 2026
+**Calculator panel — usability improvements.** Frontend-only, no schema change.
+
+The Calculator panel previously sat fixed in the bottom-right corner, exactly where the most-edited rows often are. This release makes it work on every screen size:
+
+- **Desktop (>760px wide)**: The panel header is now a drag handle (cursor changes to "move", subtle ⋮⋮ grip indicator on hover). Drag the panel anywhere on screen. Position is constrained inside the viewport — drop too far off-screen and it snaps back inside the visible area on release. Position resets to default when you close the panel; reopening starts fresh in the bottom-right corner.
+- **Phone (≤760px wide)**: The panel docks as a full-width bottom sheet, taking the entire bottom of the screen up to 60% viewport height. No dragging on phones (it would just end up off-screen or covering the whole screen anyway). The standard mobile pattern.
+- Window-resize handler re-clamps a dragged panel back inside the viewport if you resize the browser smaller than the panel's current position.
+
+## 2.6.3 — April 2026
+**Bug fix.** Frontend-only.
+
+The Calculator's per-item +/− buttons broke when groups or items were reordered via drag-and-drop. The selected state was lost, and clicking a button after a reorder added the wrong item to the calculation.
+
+Root cause: the calculator was tracking items by their array indices `(gIdx, iIdx)`, which become stale the moment items move. After a reorder, the calculator was looking up "item at position 3" but position 3 now held a different item.
+
+Fix: switched the calculator to track items by direct JavaScript object reference. Object references survive reordering — the calculator now knows "I have THIS specific item in my sum" and doesn't care where it lives in the array. Three benefits:
+
+- Reordering preserves the calculator state and the +/− button highlighting
+- The calculator amount stays live as you edit the item's amount field on the Plan view
+- Items deleted from the Plan are auto-removed from the Calculator on next render (no zombie lines)
+
+Custom amount entries (typed values, not item-linked) are unaffected — they were already tracked independently.
+
+## 2.6.2 — April 2026
+Three small UX tweaks. Frontend-only, no schema changes.
+- **Renamed "Transfer calculator" to just "Calculator".** The original name implied a single use case (deciding bank transfer amounts). The tool is useful for any "what's the sum of these items?" question — recurring subscription totals, savings goal contributions, anything. The shorter name doesn't constrain it.
+- **Item delete button moved to the rightmost position** in each row. The new column order is: drag, name, amount, notes, paid, savings, recurring, calculator (+/−), delete. The delete column always sits at the end so muscle memory works whether the calculator is open or closed.
+- **Replaced ✕ with ⊗ for all delete actions** — group delete, item delete, goal delete, tag chip remove, and the remove-from-calculation button on each calc line. The ✕ character read too closely to the multiplication sign in the calculator context. ⊗ (circled X) is the standard "remove/dismiss" glyph in modern UIs and reads unambiguously. Cancel buttons (which dismiss without deleting) still use ✕ to keep the visual distinction between "cancel" and "delete."
+
 ## 2.6.1 — April 2026
 **Bug fix + feature.** Frontend-only, no schema changes.
 

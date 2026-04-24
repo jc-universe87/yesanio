@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Yesanio v2.6.1</title>
+  <title>Yesanio v2.6.6</title>
   <link rel="icon" type="image/png" href="./yesanio_logogram.png">
   <link rel="apple-touch-icon" href="./yesanio_logogram.png">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -190,7 +190,7 @@
       user-select: none;
     }
     .tag-chip:hover { background: #d8e6f0; }
-    .tag-chip::after { content: "✕"; font-size: 9px; opacity: 0.6; margin-left: 2px; }
+    .tag-chip::after { content: "⊗"; font-size: 11px; opacity: 0.6; margin-left: 2px; }
     .tags-input input {
       border: none;
       outline: none;
@@ -728,7 +728,7 @@ tr:hover .drag-handle-icon,.col-drag:hover .drag-handle-icon{color:#3a342e}
   nav#nav button{text-align:left;width:100%;padding:8px 14px;font-size:14px;border-radius:5px}
 }
 
-/* ---------- v2.6.0: Transfer calculator ---------- */
+/* ---------- v2.6.0: Calculator ---------- */
 #calcFab{
   position:fixed;bottom:20px;right:20px;
   width:52px;height:52px;border-radius:50%;
@@ -747,13 +747,31 @@ body.calc-ready #calcFab{display:flex;align-items:center;justify-content:center}
   border-radius:10px;box-shadow:0 6px 20px rgba(60,50,35,.2);
   z-index:91;display:none;flex-direction:column;
   font-family:'Inter',sans-serif;
+  max-width:calc(100vw - 16px);
 }
 #calcPanel.is-open{display:flex}
+#calcPanel.is-dragging{user-select:none;opacity:0.95;box-shadow:0 10px 28px rgba(60,50,35,.35)}
+@media (max-width: 760px){
+  #calcPanel{
+    bottom:0 !important;left:0 !important;right:0 !important;top:auto !important;
+    width:100% !important;max-width:100% !important;
+    border-radius:10px 10px 0 0;
+  }
+  #calcPanelHeader{cursor:default !important}
+  #calcPanelHeader::before{display:none}
+}
 #calcPanelHeader{
   display:flex;align-items:center;justify-content:space-between;
   padding:10px 14px;border-bottom:1px solid var(--border);
   font-family:'Lora',serif;font-size:15px;color:var(--text);
+  cursor:move;user-select:none;touch-action:none;
 }
+#calcPanelHeader:hover{background:#f7f3e9}
+#calcPanelHeader::before{
+  content:"⋮⋮";color:var(--muted);font-weight:700;letter-spacing:-2px;font-size:11px;
+  margin-right:6px;opacity:0.6;
+}
+#calcPanel.dragging{transition:none;opacity:0.92}
 #calcPanelClose{
   background:transparent;border:none;font-size:18px;cursor:pointer;
   color:var(--muted);padding:0 4px;line-height:1;
@@ -793,7 +811,7 @@ body.calc-ready #calcFab{display:flex;align-items:center;justify-content:center}
 .calc-line-amount{font-variant-numeric:tabular-nums;flex-shrink:0}
 .calc-line-remove{
   background:transparent;border:none;color:var(--muted);cursor:pointer;
-  font-size:14px;line-height:1;padding:0 2px;flex-shrink:0;
+  font-size:13px;line-height:1;padding:0 2px;flex-shrink:0;
 }
 .calc-line-remove:hover{color:#a03030}
 #calcTotalRow{
@@ -817,6 +835,7 @@ body.calc-ready #calcFab{display:flex;align-items:center;justify-content:center}
 #calcCopyBtn.copied{background:#2d6a2d;border-color:#2d6a2d}
 
 /* Per-item +/− buttons — hidden by default, visible when calc panel is open */
+.col-calc{width:60px;text-align:center;white-space:nowrap}
 .calc-btn-plus,.calc-btn-minus{
   display:none;width:22px;height:22px;border:1px solid var(--border);border-radius:4px;
   background:transparent;cursor:pointer;font-size:12px;font-weight:600;
@@ -864,6 +883,30 @@ body.calc-active .calc-btn-minus{display:inline-block}
   .plan-summary-cell{align-items:center;text-align:center}
   .plan-summary-sep{display:none}
 }
+
+  
+/* v2.6.3: On phone-width screens, dock the calculator to the bottom (full-width sheet, not draggable) */
+@media (max-width: 760px){
+  #calcPanel{
+    bottom:0 !important;right:0 !important;left:0 !important;top:auto !important;
+    width:auto !important;max-height:60vh;
+    border-radius:10px 10px 0 0;
+    border-bottom:none;
+  }
+  #calcPanelHeader{cursor:default}
+  #calcPanelHeader::before{display:none}
+  #calcPanelHeader:hover{background:transparent}
+}
+
+/* ---------- v2.6.6: Global footer ---------- */
+#appFooter{
+  text-align:center;padding:18px 16px 28px 16px;
+  font-size:11px;color:#a69d8f;font-family:'Inter',sans-serif;
+  border-top:1px solid #eae4d5;margin-top:28px;
+}
+#appFooter a{color:#8a8075;text-decoration:none}
+#appFooter a:hover{color:var(--steel);text-decoration:underline}
+#appFooter .sep{margin:0 6px;color:#c8bfb0}
 
   </style>
 </head>
@@ -1262,19 +1305,28 @@ body.calc-active .calc-btn-minus{display:inline-block}
     <div class="settings-about">
       <h4>About Yesanio</h4>
       <p>Yesanio is a self-hosted household budgeting tool built around the "pay yourself first" principle. Every pound gets a job before the month begins — savings and giving are set aside first, not last.</p>
-      <div class="version-line">Version 2.6.1 · <a href="https://github.com/jc-universe87/yesanio" target="_blank">GitHub</a> · MIT licence · © 2026 Johannes Kim (Pistio)</div>
+      <div class="version-line">Version 2.6.6 · <a href="https://github.com/jc-universe87/yesanio" target="_blank">GitHub</a> · MIT licence · © 2026 Johannes Kim (Pistio)</div>
       <blockquote>"The plans of the diligent lead surely to abundance." — Proverbs 21:5</blockquote>
     </div>
   </section>
 
 </main>
 
+<footer id="appFooter">
+  <a href="https://github.com/jc-universe87/yesanio/releases/tag/v2.6.6" target="_blank" rel="noopener">Yesanio v2.6.6</a>
+  <span class="sep">·</span>
+  © Pistio
+  <span class="sep">·</span>
+  MIT
+</footer>
+
+
 <div class="toast" id="toast"></div>
 
 <script src="/Sortable.min.js"></script>
 <script>
 // =====================================================================
-//  YESANIO v2.6.1
+//  YESANIO v2.6.6
 //  - single state object, render functions, pure calculate
 //  - inline two-step delete confirms (no popups)
 //  - smarter copy-previous (uses /months)
@@ -1396,6 +1448,8 @@ function render() {
   updateTotals();
   // v2.5.12: actually wire up drag-and-drop after the DOM is built
   setTimeout(() => { if (typeof initPlanSortables === "function") initPlanSortables(); }, 0);
+  // v2.6.3: refresh calculator button states (the buttons are brand new DOM after render)
+  if (typeof renderCalcState === "function") renderCalcState();
 }
 
 // ---------- TAGS ----------
@@ -1478,7 +1532,7 @@ function renderGroup(group, gIdx) {
   const deleteBtn = document.createElement("button");
   deleteBtn.className = "btn-icon";
   deleteBtn.title = "Delete group";
-  deleteBtn.textContent = "✕";
+  deleteBtn.textContent = "⊗";
   deleteBtn.addEventListener("click", () => startGroupConfirm(gIdx));
 
   const dragHandle = document.createElement("span");
@@ -1538,6 +1592,7 @@ function renderGroup(group, gIdx) {
         <th class="col-status" title="Tick when this item has been paid">Paid</th>
         <th class="col-saving" title="Linked to a savings goal">💰</th>
         <th class="col-recurring" title="Recurring items are kept when copying month">⟳</th>
+        <th class="col-calc"></th>
         <th class="col-actions"></th>
       </tr>
     </thead>
@@ -1711,27 +1766,29 @@ function renderItem(item, gIdx, iIdx) {
   const tdDel = document.createElement("td");
   tdDel.className = "col-actions";
   renderItemDeleteCell(tdDel, tr, gIdx, iIdx, false);
-  // v2.6.0: calculator +/− buttons (shown only when calc panel is open)
+  // v2.6.2: calculator +/− buttons in their own cell (positioned BEFORE delete column)
+  const tdCalc = document.createElement("td");
+  tdCalc.className = "col-calc";
   const calcPlus = document.createElement("button");
   calcPlus.className = "calc-btn-plus";
   calcPlus.textContent = "+";
-  calcPlus.title = "Add to transfer calculator";
+  calcPlus.title = "Add to calculator";
   calcPlus.dataset.gIdx = gIdx;
   calcPlus.dataset.iIdx = iIdx;
   calcPlus.dataset.calcSign = "+";
   const calcMinus = document.createElement("button");
   calcMinus.className = "calc-btn-minus";
   calcMinus.textContent = "−";
-  calcMinus.title = "Subtract from transfer calculator";
+  calcMinus.title = "Subtract from calculator";
   calcMinus.dataset.gIdx = gIdx;
   calcMinus.dataset.iIdx = iIdx;
   calcMinus.dataset.calcSign = "-";
-  tdDel.appendChild(calcPlus);
-  tdDel.appendChild(calcMinus);
+  tdCalc.appendChild(calcPlus);
+  tdCalc.appendChild(calcMinus);
   const tdDrag = document.createElement("td");
   tdDrag.className = "col-drag drag-handle";
   tdDrag.innerHTML = '<span class="drag-handle-icon" title="Drag to reorder">⋮⋮</span>';
-  tr.append(tdDrag, tdName, tdAmt, tdNotes, tdStatus, tdSav, tdRec, tdDel);
+  tr.append(tdDrag, tdName, tdAmt, tdNotes, tdStatus, tdSav, tdRec, tdCalc, tdDel);
   return tr;
 }
 
@@ -1740,7 +1797,7 @@ function renderItemDeleteCell(td, tr, gIdx, iIdx, confirming) {
   if (!confirming) {
     const btn = document.createElement("button");
     btn.className = "btn-icon";
-    btn.textContent = "✕";
+    btn.textContent = "⊗";
     btn.title = "Delete item";
     btn.addEventListener("click", () => {
       const it = state.groups[gIdx] && state.groups[gIdx].items[iIdx];
@@ -1906,11 +1963,28 @@ async function renderHome(){
   if(t.giving<=0||planEmpty) givingLine.textContent="";
   else{const gg=groups.find(g=>g.is_giving); const names=gg?(gg.items||[]).slice(0,3).map(i=>i.name).filter(Boolean):[]; const more=gg?(gg.items||[]).length:0; let tail=""; if(names.length>0) tail=` — including ${names.join(", ")}${more>3?", and others":""}`; givingLine.textContent=`We're setting aside ${fmt(t.giving)} for giving in ${monthShort}${tail}.`;}
   const savingLine=document.getElementById("homeBandSaving");
-  const ag=(homeGoals||[]).filter(g=>Number(g.target)>0 && Number(g.current)<Number(g.target)).map(g=>({...g,pct:Number(g.current)/Number(g.target)})).sort((a,b)=>b.pct-a.pct).slice(0,2);
+  const ag=(homeGoals||[]).filter(g=>{
+    const t=Number(g.target), c=Number(g.current);
+    return (t>0 && c<t) || (t===0 && c>0);
+  }).map(g=>{
+    const t=Number(g.target), c=Number(g.current);
+    return {...g, pct: t>0 ? c/t : null, currentVal: c};
+  }).sort((a,b)=>{
+    // Targeted goals (pct defined) come before untargeted
+    if (a.pct !== null && b.pct === null) return -1;
+    if (a.pct === null && b.pct !== null) return 1;
+    if (a.pct !== null) return b.pct - a.pct;
+    return b.currentVal - a.currentVal;
+  }).slice(0,2);
   if(ag.length===0) savingLine.textContent="";
   else{
     const parts=ag.map(g=>{
-      let s=`${g.name} (${Math.round(g.pct*100)}%`;
+      let s;
+      if (g.pct !== null) {
+        s=`${g.name} (${Math.round(g.pct*100)}%`;
+      } else {
+        s=`${g.name} (${fmt(g.currentVal)} saved`;
+      }
       if(g.pending>0) s+=`, plus ${fmt(g.pending)} pending`;
       s+=")";
       return s;
@@ -2669,7 +2743,9 @@ function renderGoalCard(g, confirming) {
     if (hasPending) {
       pendingHtml = `<div class="goal-pending">${pendingOverThreshold ? '<span class="clock">🕒</span>' : ""}+${fmt(g.pending)} pending — ${g.pending_count || 1} item${(g.pending_count||1)>1?"s":""} not yet marked paid</div>`;
     }
-    const targetLabel = g.target > 0 ? `${fmt(g.current)} of ${fmt(g.target)} (${Math.round(pct)}%)` : "no target set";
+    const targetLabel = g.target > 0
+      ? `${fmt(g.current)} of ${fmt(g.target)} (${Math.round(pct)}%)`
+      : (g.current > 0 ? `${fmt(g.current)} saved · no target set` : "no target set");
     let achievedHtml = "";
     if (isAchieved) {
       achievedHtml = `<span class="achieved-badge">✓ Achieved</span><div class="achieved-line">Reached ${formatAchievedDate(g.achieved_at)}</div>`;
@@ -2697,7 +2773,7 @@ function renderGoalCard(g, confirming) {
     const delBtn = document.createElement("button");
     delBtn.className = "btn-icon";
     delBtn.title = "Delete";
-    delBtn.textContent = "✕";
+    delBtn.textContent = "⊗";
     delBtn.addEventListener("click", () => {
       const replacement = renderGoalCard(g, true);
       card.replaceWith(replacement);
@@ -3787,8 +3863,17 @@ function initPlanSortables(){
         items.splice(evt.newIndex, 0, moved);
         markDirty();
         if (typeof pushHistory === "function") pushHistory();
-        // No re-render needed — DOM already matches. Just update totals.
+        // DOM rows haven't been rebuilt, but their dataset.iIdx values are now stale.
+        // The simplest correct fix is to re-render the row dataset: walk the tbody
+        // and re-stamp dataset.iIdx onto each row's calc buttons in DOM order.
+        const tbodyRows = evt.to.querySelectorAll("tr");
+        tbodyRows.forEach((tr, newIdx) => {
+          tr.querySelectorAll(".calc-btn-plus, .calc-btn-minus").forEach(btn => {
+            btn.dataset.iIdx = String(newIdx);
+          });
+        });
         if (typeof updateTotals === "function") updateTotals();
+        if (typeof renderCalcState === "function") renderCalcState();
       }
     }));
   });
@@ -3879,7 +3964,7 @@ window.closeNavMenu = closeNavMenu;
 
 
 // =====================================================================
-//  v2.6.0 — TRANSFER CALCULATOR
+//  v2.6.0 — CALCULATOR
 // =====================================================================
 // A floating panel on the Plan view. Lets the user pick items (+/-) from
 // the current plan, type custom amounts, and see a running total. The
@@ -3897,6 +3982,77 @@ function calcIsOpen(){
   return panel && panel.classList.contains("is-open");
 }
 
+// v2.6.4: Drag-to-move on desktop. Mobile uses fixed bottom-sheet (drag is no-op).
+let _calcDrag = null;
+
+function isMobileLayout(){
+  return window.matchMedia("(max-width: 760px)").matches;
+}
+
+function clampPanelToViewport(panel){
+  const margin = 8;
+  const r = panel.getBoundingClientRect();
+  const maxLeft = window.innerWidth - r.width - margin;
+  const maxTop = window.innerHeight - r.height - margin;
+  let left = parseFloat(panel.style.left);
+  let top = parseFloat(panel.style.top);
+  if (isNaN(left)) left = r.left;
+  if (isNaN(top)) top = r.top;
+  if (left < margin) left = margin;
+  if (top < margin) top = margin;
+  if (left > maxLeft) left = Math.max(margin, maxLeft);
+  if (top > maxTop) top = Math.max(margin, maxTop);
+  panel.style.left = left + "px";
+  panel.style.top = top + "px";
+  panel.style.right = "auto";
+  panel.style.bottom = "auto";
+}
+
+function startCalcDrag(e){
+  if (isMobileLayout()) return;
+  const panel = document.getElementById("calcPanel");
+  if (!panel || !panel.classList.contains("is-open")) return;
+  if (e.target.closest("#calcPanelClose")) return;
+  e.preventDefault();
+  const r = panel.getBoundingClientRect();
+  panel.style.left = r.left + "px";
+  panel.style.top = r.top + "px";
+  panel.style.right = "auto";
+  panel.style.bottom = "auto";
+  _calcDrag = {
+    panel,
+    pointerId: e.pointerId,
+    offsetX: e.clientX - r.left,
+    offsetY: e.clientY - r.top,
+  };
+  panel.classList.add("is-dragging");
+  try { e.currentTarget.setPointerCapture(e.pointerId); } catch(_){}
+}
+
+function moveCalcDrag(e){
+  if (!_calcDrag || e.pointerId !== _calcDrag.pointerId) return;
+  e.preventDefault();
+  const panel = _calcDrag.panel;
+  panel.style.left = (e.clientX - _calcDrag.offsetX) + "px";
+  panel.style.top = (e.clientY - _calcDrag.offsetY) + "px";
+}
+
+function endCalcDrag(e){
+  if (!_calcDrag) return;
+  const panel = _calcDrag.panel;
+  panel.classList.remove("is-dragging");
+  clampPanelToViewport(panel);
+  try { e.currentTarget.releasePointerCapture(_calcDrag.pointerId); } catch(_){}
+  _calcDrag = null;
+}
+
+window.addEventListener("resize", () => {
+  const panel = document.getElementById("calcPanel");
+  if (panel && panel.classList.contains("is-open") && !isMobileLayout()) {
+    if (panel.style.left && panel.style.top) clampPanelToViewport(panel);
+  }
+});
+
 function toggleCalcPanel(forceClose){
   const panel = document.getElementById("calcPanel");
   const fab = document.getElementById("calcFab");
@@ -3906,26 +4062,32 @@ function toggleCalcPanel(forceClose){
   fab.classList.toggle("is-open", willOpen);
   document.body.classList.toggle("calc-active", willOpen);
   fab.textContent = willOpen ? "×" : "🧮";
-  fab.setAttribute("aria-label", willOpen ? "Close transfer calculator" : "Open transfer calculator");
+  fab.setAttribute("aria-label", willOpen ? "Close calculator" : "Open calculator");
   if (willOpen) {
     const input = document.getElementById("calcCustomInput");
     if (input) setTimeout(() => input.focus(), 50);
+  } else {
+    // Reset positioning so the next open starts at the default bottom-right
+    panel.style.left = "";
+    panel.style.top = "";
+    panel.style.right = "";
+    panel.style.bottom = "";
   }
 }
 
-function calcItemKey(gIdx, iIdx){ return `item:${gIdx}:${iIdx}`; }
-
-function calcFindLineIndex(key){
-  return calcLines.findIndex(l => l._key === key);
+function calcFindLineIndexByItem(itemRef){
+  return calcLines.findIndex(l => l.itemRef === itemRef);
 }
 
 function calcAddOrToggleItem(gIdx, iIdx, sign){
+  // Look up the item by the (gIdx, iIdx) at click time. The result — itemRef —
+  // is what the calculator actually tracks. Once we have it, the integer indices
+  // can change (via reorder) and the calculator still knows which item is meant.
   const g = state.groups[gIdx];
   if (!g) return;
-  const it = g.items[iIdx];
-  if (!it) return;
-  const key = calcItemKey(gIdx, iIdx);
-  const existingIdx = calcFindLineIndex(key);
+  const itemRef = g.items[iIdx];
+  if (!itemRef) return;
+  const existingIdx = calcFindLineIndexByItem(itemRef);
   if (existingIdx >= 0) {
     // Already present — if same sign, remove it (toggle off); if different sign, flip it
     if (calcLines[existingIdx].sign === sign) {
@@ -3935,11 +4097,8 @@ function calcAddOrToggleItem(gIdx, iIdx, sign){
     }
   } else {
     calcLines.push({
-      _key: key,
       type: "item",
-      gIdx, iIdx,
-      name: it.name || "(unnamed)",
-      amount: Number(it.amount) || 0,
+      itemRef: itemRef,  // direct reference — survives reordering
       sign: sign
     });
   }
@@ -3960,15 +4119,13 @@ function calcAddCustom(sign){
     toast("Couldn't parse that number", "error");
     return;
   }
-  // Apply sign: if user typed a negative number AND clicked +, we still add it as-is.
-  // Sign here is which button they clicked.
   const absAmount = Math.abs(value);
   const finalSign = (value < 0) ? (sign === "+" ? "-" : "+") : sign;
   calcLines.push({
-    _key: `custom:${Date.now()}:${Math.random().toString(36).slice(2,8)}`,
     type: "custom",
-    name: "Custom",
-    amount: absAmount,
+    customId: `custom-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
+    customName: "Custom",
+    customAmount: absAmount,
     sign: finalSign
   });
   input.value = "";
@@ -3976,8 +4133,11 @@ function calcAddCustom(sign){
   input.focus();
 }
 
-function calcRemoveLine(key){
-  const idx = calcFindLineIndex(key);
+function calcRemoveLine(matcher){
+  // matcher is either an item reference or a customId string
+  const idx = calcLines.findIndex(l =>
+    (l.itemRef && l.itemRef === matcher) || (l.customId && l.customId === matcher)
+  );
   if (idx >= 0) {
     calcLines.splice(idx, 1);
     renderCalcState();
@@ -3989,9 +4149,27 @@ function calcClear(){
   renderCalcState();
 }
 
+function calcLineAmount(line){
+  // Item lines read the live amount from the item reference (so live edits to the
+  // amount field on the Plan view are reflected in the calculator).
+  // Custom lines have a fixed amount captured at add-time.
+  if (line.type === "item" && line.itemRef) {
+    return Number(line.itemRef.amount) || 0;
+  }
+  return Number(line.customAmount) || 0;
+}
+
+function calcLineName(line){
+  if (line.type === "item" && line.itemRef) {
+    return line.itemRef.name || "(unnamed)";
+  }
+  return line.customName || "Custom";
+}
+
 function calcTotal(){
   return calcLines.reduce((sum, l) => {
-    return sum + (l.sign === "+" ? l.amount : -l.amount);
+    const amt = calcLineAmount(l);
+    return sum + (l.sign === "+" ? amt : -amt);
   }, 0);
 }
 
@@ -4000,6 +4178,14 @@ function calcFmt(n){
 }
 
 function renderCalcState(){
+  // First: prune any item lines whose item is no longer in the plan (deleted rows).
+  // We can detect orphans by checking whether the itemRef still exists in any group.
+  const liveItems = new Set();
+  state.groups.forEach(g => (g.items || []).forEach(it => liveItems.add(it)));
+  calcLines = calcLines.filter(l =>
+    l.type !== "item" || liveItems.has(l.itemRef)
+  );
+
   const list = document.getElementById("calcList");
   const totalEl = document.getElementById("calcTotalAmount");
   if (!list || !totalEl) return;
@@ -4012,27 +4198,32 @@ function renderCalcState(){
     sign.textContent = line.sign === "+" ? "+" : "−";
     const name = document.createElement("span");
     name.className = "calc-line-name";
-    name.textContent = line.name;
+    name.textContent = calcLineName(line);
     const amt = document.createElement("span");
     amt.className = "calc-line-amount";
-    amt.textContent = calcFmt(line.amount);
+    amt.textContent = calcFmt(calcLineAmount(line));
     const rm = document.createElement("button");
     rm.className = "calc-line-remove";
-    rm.textContent = "×";
+    rm.textContent = "⊗";
     rm.title = "Remove from calculation";
-    rm.addEventListener("click", () => calcRemoveLine(line._key));
+    const matcher = line.type === "item" ? line.itemRef : line.customId;
+    rm.addEventListener("click", () => calcRemoveLine(matcher));
     row.append(sign, name, amt, rm);
     list.appendChild(row);
   });
   const t = calcTotal();
   totalEl.textContent = (t < 0 ? "−" : "") + calcFmt(Math.abs(t));
-  // Update the .selected state on all visible +/− buttons
+  // Update the .selected state on all visible +/− buttons.
+  // For each button, look up the item it represents (via gIdx/iIdx as click-time
+  // pointers), and check whether that item reference is in calcLines.
   document.querySelectorAll(".calc-btn-plus, .calc-btn-minus").forEach(btn => {
-    const gIdx = btn.dataset.gIdx;
-    const iIdx = btn.dataset.iIdx;
-    if (gIdx == null) return;
-    const key = calcItemKey(Number(gIdx), Number(iIdx));
-    const line = calcLines.find(l => l._key === key);
+    const gIdx = Number(btn.dataset.gIdx);
+    const iIdx = Number(btn.dataset.iIdx);
+    if (isNaN(gIdx) || isNaN(iIdx)) return;
+    const g = state.groups[gIdx];
+    const itemRef = g && g.items[iIdx];
+    if (!itemRef) { btn.classList.remove("selected"); return; }
+    const line = calcLines.find(l => l.itemRef === itemRef);
     const isThisSign = line && line.sign === btn.dataset.calcSign;
     btn.classList.toggle("selected", !!isThisSign);
   });
@@ -4063,6 +4254,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const copyBtn = document.getElementById("calcCopyBtn");
   if (fab) fab.addEventListener("click", () => toggleCalcPanel());
   if (closeBtn) closeBtn.addEventListener("click", () => toggleCalcPanel(true));
+
+  // v2.6.4: drag handlers on the panel header (pointer events for mouse + touch + pen)
+  const dragHeader = document.getElementById("calcPanelHeader");
+  if (dragHeader) {
+    dragHeader.addEventListener("pointerdown", startCalcDrag);
+    dragHeader.addEventListener("pointermove", moveCalcDrag);
+    dragHeader.addEventListener("pointerup", endCalcDrag);
+    dragHeader.addEventListener("pointercancel", endCalcDrag);
+  }
   if (addBtn) addBtn.addEventListener("click", () => calcAddCustom("+"));
   if (subBtn) subBtn.addEventListener("click", () => calcAddCustom("-"));
   if (input) input.addEventListener("keydown", e => {
@@ -4113,14 +4313,147 @@ document.addEventListener("DOMContentLoaded", () => {
 window.toggleCalcPanel = toggleCalcPanel;
 window.calcClear = calcClear;
 
+
+// =====================================================================
+//  v2.6.3 — CALCULATOR PANEL DRAGGING (desktop only)
+// =====================================================================
+// Drag the panel by its header. Constrained inside the viewport on
+// release. Resets to default position on page reload (no persistence).
+// On screens ≤760px wide, dragging is disabled (panel docks to bottom
+// as a full-width sheet — handled by CSS).
+// =====================================================================
+
+(function initCalcDrag(){
+  let dragState = null;
+  function isMobileViewport(){ return window.innerWidth <= 760; }
+
+  function onPointerDown(e){
+    if (isMobileViewport()) return;
+    // Only start a drag from the header itself, not from buttons inside it
+    if (e.target.closest("#calcPanelClose")) return;
+    const panel = document.getElementById("calcPanel");
+    if (!panel || !panel.classList.contains("is-open")) return;
+    const rect = panel.getBoundingClientRect();
+    dragState = {
+      panel: panel,
+      startX: e.clientX,
+      startY: e.clientY,
+      origLeft: rect.left,
+      origTop: rect.top,
+      width: rect.width,
+      height: rect.height
+    };
+    panel.classList.add("dragging");
+    // Once we start dragging, switch from right/bottom positioning to left/top
+    panel.style.right = "auto";
+    panel.style.bottom = "auto";
+    panel.style.left = rect.left + "px";
+    panel.style.top = rect.top + "px";
+    e.preventDefault();
+    document.addEventListener("pointermove", onPointerMove);
+    document.addEventListener("pointerup", onPointerUp);
+    document.addEventListener("pointercancel", onPointerUp);
+  }
+
+  function onPointerMove(e){
+    if (!dragState) return;
+    const dx = e.clientX - dragState.startX;
+    const dy = e.clientY - dragState.startY;
+    let newLeft = dragState.origLeft + dx;
+    let newTop = dragState.origTop + dy;
+    dragState.panel.style.left = newLeft + "px";
+    dragState.panel.style.top = newTop + "px";
+  }
+
+  function onPointerUp(){
+    if (!dragState) return;
+    const panel = dragState.panel;
+    // Constrain inside viewport
+    const margin = 8;
+    const rect = panel.getBoundingClientRect();
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    let left = rect.left;
+    let top = rect.top;
+    if (left < margin) left = margin;
+    if (top < margin) top = margin;
+    if (left + rect.width > vw - margin) left = vw - rect.width - margin;
+    if (top + rect.height > vh - margin) top = vh - rect.height - margin;
+    panel.style.left = left + "px";
+    panel.style.top = top + "px";
+    panel.classList.remove("dragging");
+    dragState = null;
+    document.removeEventListener("pointermove", onPointerMove);
+    document.removeEventListener("pointerup", onPointerUp);
+    document.removeEventListener("pointercancel", onPointerUp);
+  }
+
+  // Reset position when the panel is closed, so reopening starts at default
+  function resetCalcPanelPosition(){
+    const panel = document.getElementById("calcPanel");
+    if (!panel) return;
+    panel.style.left = "";
+    panel.style.top = "";
+    panel.style.right = "";
+    panel.style.bottom = "";
+  }
+
+  // Re-clamp position on window resize so dragged panel doesn't end up off-screen
+  function onResize(){
+    if (isMobileViewport()) {
+      // Mobile: clear inline styles so CSS bottom-sheet kicks in cleanly
+      resetCalcPanelPosition();
+      return;
+    }
+    const panel = document.getElementById("calcPanel");
+    if (!panel || !panel.classList.contains("is-open")) return;
+    if (!panel.style.left) return; // never been dragged, leave defaults
+    const margin = 8;
+    const rect = panel.getBoundingClientRect();
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    let left = parseFloat(panel.style.left);
+    let top = parseFloat(panel.style.top);
+    if (left + rect.width > vw - margin) left = Math.max(margin, vw - rect.width - margin);
+    if (top + rect.height > vh - margin) top = Math.max(margin, vh - rect.height - margin);
+    if (left < margin) left = margin;
+    if (top < margin) top = margin;
+    panel.style.left = left + "px";
+    panel.style.top = top + "px";
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const header = document.getElementById("calcPanelHeader");
+    if (header) header.addEventListener("pointerdown", onPointerDown);
+    window.addEventListener("resize", onResize);
+  });
+
+  // Patch the existing toggleCalcPanel so closing the panel resets its position
+  // (so it reopens at default rather than stuck wherever it was last dragged)
+  if (typeof window.toggleCalcPanel === "function") {
+    const _origToggle = window.toggleCalcPanel;
+    window.toggleCalcPanel = function(forceClose){
+      const wasOpen = document.getElementById("calcPanel")
+                      && document.getElementById("calcPanel").classList.contains("is-open");
+      _origToggle(forceClose);
+      const isNowOpen = document.getElementById("calcPanel")
+                      && document.getElementById("calcPanel").classList.contains("is-open");
+      if (wasOpen && !isNowOpen) {
+        // Just closed — reset position
+        resetCalcPanelPosition();
+      }
+    };
+  }
+})();
+
 </script>
 
 
-<!-- v2.6.0: Transfer calculator -->
-<button id="calcFab" title="Transfer calculator" aria-label="Open transfer calculator">🧮</button>
-<div id="calcPanel" role="dialog" aria-label="Transfer calculator">
-  <div id="calcPanelHeader">
-    <span>Transfer calculator</span>
+<!-- v2.6.0: Calculator -->
+<button id="calcFab" title="Calculator" aria-label="Open calculator">🧮</button>
+<div id="calcPanel" role="dialog" aria-label="Calculator">
+  <div id="calcPanelHeader" title="Drag to move">
+    <span>Calculator</span>
     <button id="calcPanelClose" title="Close" aria-label="Close calculator">×</button>
   </div>
   <div id="calcCustomRow">
