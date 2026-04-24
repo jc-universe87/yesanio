@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Yesanio v2.5.23</title>
+  <title>Yesanio v2.6.1</title>
   <link rel="icon" type="image/png" href="./yesanio_logogram.png">
   <link rel="apple-touch-icon" href="./yesanio_logogram.png">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -727,7 +727,145 @@ tr:hover .drag-handle-icon,.col-drag:hover .drag-handle-icon{color:#3a342e}
   nav#nav.is-open{display:flex}
   nav#nav button{text-align:left;width:100%;padding:8px 14px;font-size:14px;border-radius:5px}
 }
-</style>
+
+/* ---------- v2.6.0: Transfer calculator ---------- */
+#calcFab{
+  position:fixed;bottom:20px;right:20px;
+  width:52px;height:52px;border-radius:50%;
+  background:var(--steel);color:#fff;border:none;
+  font-size:22px;cursor:pointer;
+  box-shadow:0 4px 12px rgba(60,50,35,.25);
+  z-index:90;display:none;
+  transition:transform 0.15s, box-shadow 0.15s;
+}
+#calcFab:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(60,50,35,.3)}
+#calcFab.is-open{background:#3d6f9a}
+body.calc-ready #calcFab{display:flex;align-items:center;justify-content:center}
+#calcPanel{
+  position:fixed;bottom:84px;right:20px;width:320px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:10px;box-shadow:0 6px 20px rgba(60,50,35,.2);
+  z-index:91;display:none;flex-direction:column;
+  font-family:'Inter',sans-serif;
+}
+#calcPanel.is-open{display:flex}
+#calcPanelHeader{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px;border-bottom:1px solid var(--border);
+  font-family:'Lora',serif;font-size:15px;color:var(--text);
+}
+#calcPanelClose{
+  background:transparent;border:none;font-size:18px;cursor:pointer;
+  color:var(--muted);padding:0 4px;line-height:1;
+}
+#calcPanelClose:hover{color:var(--text)}
+#calcCustomRow{
+  display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid var(--border);
+  align-items:center;
+}
+#calcCustomInput{
+  flex:1;padding:5px 8px;font-size:13px;border:1px solid var(--border);
+  border-radius:4px;font-family:'Inter',sans-serif;
+}
+#calcCustomInput:focus{outline:1px solid var(--steel);border-color:var(--steel)}
+#calcCustomAdd,#calcCustomSub{
+  width:28px;height:28px;border:1px solid var(--border);border-radius:4px;
+  background:transparent;cursor:pointer;font-size:14px;font-weight:600;
+  color:var(--muted);
+}
+#calcCustomAdd:hover{background:#e8f0e8;color:#2d6a2d;border-color:#b0cfb0}
+#calcCustomSub:hover{background:#f5e8e8;color:#a03030;border-color:#d8b0b0}
+#calcList{
+  max-height:220px;overflow-y:auto;padding:6px 0;
+  font-size:13px;
+}
+#calcList:empty::before{
+  content:"No items selected yet. Click + or − next to an item in the Plan, or type a custom amount above.";
+  display:block;padding:14px;color:var(--muted);font-size:12px;line-height:1.5;font-style:italic;
+}
+.calc-line{
+  display:flex;align-items:center;gap:6px;padding:4px 14px;
+}
+.calc-line-sign{width:14px;font-weight:600;flex-shrink:0}
+.calc-line-sign.plus{color:#2d6a2d}
+.calc-line-sign.minus{color:#a03030}
+.calc-line-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.calc-line-amount{font-variant-numeric:tabular-nums;flex-shrink:0}
+.calc-line-remove{
+  background:transparent;border:none;color:var(--muted);cursor:pointer;
+  font-size:14px;line-height:1;padding:0 2px;flex-shrink:0;
+}
+.calc-line-remove:hover{color:#a03030}
+#calcTotalRow{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px;border-top:1px solid var(--border);
+  font-family:'Lora',serif;font-size:16px;color:var(--text);
+  background:#fbf8f1;
+}
+#calcTotalAmount{font-variant-numeric:tabular-nums;font-weight:600}
+#calcActions{
+  display:flex;gap:6px;padding:10px 14px;border-top:1px solid var(--border);
+}
+#calcActions button{
+  flex:1;padding:6px 10px;font-size:12px;border-radius:5px;cursor:pointer;
+  font-family:'Inter',sans-serif;
+}
+#calcClearBtn{background:transparent;border:1px solid var(--border);color:var(--muted)}
+#calcClearBtn:hover{background:#f5e8e8;color:#a03030;border-color:#d8b0b0}
+#calcCopyBtn{background:var(--steel);border:1px solid var(--steel);color:#fff;font-weight:500}
+#calcCopyBtn:hover{background:#3d6f9a}
+#calcCopyBtn.copied{background:#2d6a2d;border-color:#2d6a2d}
+
+/* Per-item +/− buttons — hidden by default, visible when calc panel is open */
+.calc-btn-plus,.calc-btn-minus{
+  display:none;width:22px;height:22px;border:1px solid var(--border);border-radius:4px;
+  background:transparent;cursor:pointer;font-size:12px;font-weight:600;
+  color:var(--muted);line-height:1;padding:0;
+  vertical-align:middle;margin-left:2px;
+}
+body.calc-active .calc-btn-plus,
+body.calc-active .calc-btn-minus{display:inline-block}
+.calc-btn-plus:hover{background:#e8f0e8;color:#2d6a2d;border-color:#b0cfb0}
+.calc-btn-minus:hover{background:#f5e8e8;color:#a03030;border-color:#d8b0b0}
+.calc-btn-plus.selected{background:#2d6a2d;color:#fff;border-color:#2d6a2d}
+.calc-btn-minus.selected{background:#a03030;color:#fff;border-color:#a03030}
+
+  
+/* ---------- v2.6.1: Plan summary bar (Income / Allocated / Saldo) ---------- */
+#planSummary{
+  display:flex;align-items:center;justify-content:space-around;
+  gap:16px;padding:14px 20px;margin:6px 0 14px 0;
+  background:var(--card);border:1px solid var(--border);border-radius:8px;
+  font-family:'Inter',sans-serif;
+}
+.plan-summary-cell{
+  display:flex;flex-direction:column;gap:2px;align-items:flex-start;flex:1;min-width:0;
+}
+.plan-summary-cell .label{
+  font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);
+}
+.plan-summary-cell .value{
+  font-family:'Lora',serif;font-size:20px;font-weight:500;color:var(--text);
+  font-variant-numeric:tabular-nums;line-height:1.15;
+}
+.plan-summary-cell .hint{
+  font-size:11px;color:var(--muted);margin-top:2px;line-height:1.3;
+}
+.plan-summary-sep{width:1px;background:var(--border);align-self:stretch;margin:4px 0}
+.plan-summary-cell.saldo-zero .value{color:#2d6a2d}
+.plan-summary-cell.saldo-zero .hint{color:#2d6a2d}
+.plan-summary-cell.saldo-surplus .value{color:#b8860b}
+.plan-summary-cell.saldo-surplus .hint{color:#b8860b}
+.plan-summary-cell.saldo-over .value{color:var(--bad)}
+.plan-summary-cell.saldo-over .hint{color:var(--bad);font-weight:500}
+
+@media (max-width: 600px){
+  #planSummary{flex-direction:column;gap:10px;align-items:stretch}
+  .plan-summary-cell{align-items:center;text-align:center}
+  .plan-summary-sep{display:none}
+}
+
+  </style>
 </head>
 <body>
 
@@ -974,6 +1112,24 @@ tr:hover .drag-handle-icon,.col-drag:hover .drag-handle-icon{color:#3a342e}
       </div>
     </div>
 
+    <div id="planSummary" aria-live="polite">
+      <div class="plan-summary-cell">
+        <span class="label">Income</span>
+        <span class="value" id="planSummaryIncome">—</span>
+      </div>
+      <div class="plan-summary-sep"></div>
+      <div class="plan-summary-cell">
+        <span class="label">Allocated</span>
+        <span class="value" id="planSummaryAllocated">—</span>
+      </div>
+      <div class="plan-summary-sep"></div>
+      <div class="plan-summary-cell" id="planSummarySaldoCell">
+        <span class="label">Saldo</span>
+        <span class="value" id="planSummarySaldo">—</span>
+        <span class="hint" id="planSummarySaldoHint"></span>
+      </div>
+    </div>
+
     <div id="groupsContainer"></div>
 
     <div class="row" style="justify-content:space-between; margin-top:6px;">
@@ -1106,7 +1262,7 @@ tr:hover .drag-handle-icon,.col-drag:hover .drag-handle-icon{color:#3a342e}
     <div class="settings-about">
       <h4>About Yesanio</h4>
       <p>Yesanio is a self-hosted household budgeting tool built around the "pay yourself first" principle. Every pound gets a job before the month begins — savings and giving are set aside first, not last.</p>
-      <div class="version-line">Version 2.5.23 · <a href="https://github.com/jc-universe87/yesanio" target="_blank">GitHub</a> · MIT licence · © 2026 Johannes Kim (Pistio)</div>
+      <div class="version-line">Version 2.6.1 · <a href="https://github.com/jc-universe87/yesanio" target="_blank">GitHub</a> · MIT licence · © 2026 Johannes Kim (Pistio)</div>
       <blockquote>"The plans of the diligent lead surely to abundance." — Proverbs 21:5</blockquote>
     </div>
   </section>
@@ -1118,7 +1274,7 @@ tr:hover .drag-handle-icon,.col-drag:hover .drag-handle-icon{color:#3a342e}
 <script src="/Sortable.min.js"></script>
 <script>
 // =====================================================================
-//  YESANIO v2.5.23
+//  YESANIO v2.6.1
 //  - single state object, render functions, pure calculate
 //  - inline two-step delete confirms (no popups)
 //  - smarter copy-previous (uses /months)
@@ -1555,6 +1711,23 @@ function renderItem(item, gIdx, iIdx) {
   const tdDel = document.createElement("td");
   tdDel.className = "col-actions";
   renderItemDeleteCell(tdDel, tr, gIdx, iIdx, false);
+  // v2.6.0: calculator +/− buttons (shown only when calc panel is open)
+  const calcPlus = document.createElement("button");
+  calcPlus.className = "calc-btn-plus";
+  calcPlus.textContent = "+";
+  calcPlus.title = "Add to transfer calculator";
+  calcPlus.dataset.gIdx = gIdx;
+  calcPlus.dataset.iIdx = iIdx;
+  calcPlus.dataset.calcSign = "+";
+  const calcMinus = document.createElement("button");
+  calcMinus.className = "calc-btn-minus";
+  calcMinus.textContent = "−";
+  calcMinus.title = "Subtract from transfer calculator";
+  calcMinus.dataset.gIdx = gIdx;
+  calcMinus.dataset.iIdx = iIdx;
+  calcMinus.dataset.calcSign = "-";
+  tdDel.appendChild(calcPlus);
+  tdDel.appendChild(calcMinus);
   const tdDrag = document.createElement("td");
   tdDrag.className = "col-drag drag-handle";
   tdDrag.innerHTML = '<span class="drag-handle-icon" title="Drag to reorder">⋮⋮</span>';
@@ -1656,7 +1829,50 @@ function calculateTotals(){
   });
   return {income,allocated,fixed,variable,giving,remaining:income-allocated,groupTotals,billsCounts};
 }
-function updateTotals(){}
+function updateTotals(){
+  // Compute totals and populate: per-group totals, plus the Plan summary bar.
+  const TOL = 0.005;
+  let allocated = 0;
+  const groupTotals = {};
+  state.groups.forEach((g, gIdx) => {
+    const t = (g.items || []).reduce((sum, it) => sum + (Number(it.amount) || 0), 0);
+    groupTotals[gIdx] = t;
+    allocated += t;
+  });
+  // Update each group's total display
+  document.querySelectorAll("[data-group-total]").forEach(el => {
+    const gIdx = Number(el.dataset.groupTotal);
+    if (!isNaN(gIdx) && groupTotals[gIdx] != null) {
+      el.textContent = fmt(groupTotals[gIdx]);
+    }
+  });
+  // Update the summary bar
+  const income = Number(state.income) || 0;
+  const saldo = income - allocated;
+  const incomeEl = document.getElementById("planSummaryIncome");
+  const allocEl = document.getElementById("planSummaryAllocated");
+  const saldoEl = document.getElementById("planSummarySaldo");
+  const saldoCell = document.getElementById("planSummarySaldoCell");
+  const saldoHint = document.getElementById("planSummarySaldoHint");
+  if (incomeEl) incomeEl.textContent = fmt(income);
+  if (allocEl) allocEl.textContent = fmt(allocated);
+  if (saldoEl && saldoCell && saldoHint) {
+    saldoCell.classList.remove("saldo-zero", "saldo-surplus", "saldo-over");
+    if (Math.abs(saldo) <= TOL) {
+      saldoEl.textContent = fmt(0);
+      saldoCell.classList.add("saldo-zero");
+      saldoHint.textContent = "✓ Fully planned";
+    } else if (saldo > 0) {
+      saldoEl.textContent = fmt(saldo);
+      saldoCell.classList.add("saldo-surplus");
+      saldoHint.textContent = fmt(saldo) + " unassigned";
+    } else {
+      saldoEl.textContent = "−" + fmt(Math.abs(saldo));
+      saldoCell.classList.add("saldo-over");
+      saldoHint.textContent = fmt(Math.abs(saldo)) + " over";
+    }
+  }
+}
 function formatMonthLabel(m){if(!m)return"—"; try{const[y,mo]=m.split("-").map(Number); return new Date(y,mo-1,1).toLocaleDateString("en-GB",{month:"long",year:"numeric"});}catch(e){return m;}}
 function relativeUpdatedClause(u){if(!u)return""; try{const up=new Date(u),now=new Date(); const sToday=new Date(now.getFullYear(),now.getMonth(),now.getDate()); const sUp=new Date(up.getFullYear(),up.getMonth(),up.getDate()); const d=Math.round((sToday-sUp)/86400000); if(d<=0)return"last looked at today"; if(d===1)return"last looked at yesterday"; if(d<=6)return`last looked at ${d} days ago`; if(d<=13)return"last looked at last week"; return`last looked at on ${up.toLocaleDateString("en-GB",{day:"numeric",month:"long"})}`;}catch(e){return"";}}
 let homeGoals=[];
@@ -3661,7 +3877,267 @@ document.addEventListener("DOMContentLoaded", () => {
 window.toggleNavMenu = toggleNavMenu;
 window.closeNavMenu = closeNavMenu;
 
+
+// =====================================================================
+//  v2.6.0 — TRANSFER CALCULATOR
+// =====================================================================
+// A floating panel on the Plan view. Lets the user pick items (+/-) from
+// the current plan, type custom amounts, and see a running total. The
+// target use case: deciding how much to transfer between bank accounts.
+//
+// State model:
+//   calcLines = [{ type: "item"|"custom", gIdx?, iIdx?, name, amount, sign }]
+// No persistence — resets on page reload. No backend — frontend only.
+// =====================================================================
+
+let calcLines = [];
+
+function calcIsOpen(){
+  const panel = document.getElementById("calcPanel");
+  return panel && panel.classList.contains("is-open");
+}
+
+function toggleCalcPanel(forceClose){
+  const panel = document.getElementById("calcPanel");
+  const fab = document.getElementById("calcFab");
+  if (!panel || !fab) return;
+  const willOpen = forceClose === true ? false : !calcIsOpen();
+  panel.classList.toggle("is-open", willOpen);
+  fab.classList.toggle("is-open", willOpen);
+  document.body.classList.toggle("calc-active", willOpen);
+  fab.textContent = willOpen ? "×" : "🧮";
+  fab.setAttribute("aria-label", willOpen ? "Close transfer calculator" : "Open transfer calculator");
+  if (willOpen) {
+    const input = document.getElementById("calcCustomInput");
+    if (input) setTimeout(() => input.focus(), 50);
+  }
+}
+
+function calcItemKey(gIdx, iIdx){ return `item:${gIdx}:${iIdx}`; }
+
+function calcFindLineIndex(key){
+  return calcLines.findIndex(l => l._key === key);
+}
+
+function calcAddOrToggleItem(gIdx, iIdx, sign){
+  const g = state.groups[gIdx];
+  if (!g) return;
+  const it = g.items[iIdx];
+  if (!it) return;
+  const key = calcItemKey(gIdx, iIdx);
+  const existingIdx = calcFindLineIndex(key);
+  if (existingIdx >= 0) {
+    // Already present — if same sign, remove it (toggle off); if different sign, flip it
+    if (calcLines[existingIdx].sign === sign) {
+      calcLines.splice(existingIdx, 1);
+    } else {
+      calcLines[existingIdx].sign = sign;
+    }
+  } else {
+    calcLines.push({
+      _key: key,
+      type: "item",
+      gIdx, iIdx,
+      name: it.name || "(unnamed)",
+      amount: Number(it.amount) || 0,
+      sign: sign
+    });
+  }
+  renderCalcState();
+}
+
+function calcAddCustom(sign){
+  const input = document.getElementById("calcCustomInput");
+  if (!input) return;
+  const raw = (input.value || "").trim();
+  if (!raw) return;
+  // Evaluate a safe numeric expression: digits, . + - * / ( ) and spaces only
+  let value = NaN;
+  if (/^[\d\s+\-*/.()]+$/.test(raw)) {
+    try { value = Function(`"use strict";return (${raw})`)(); } catch(e) { value = NaN; }
+  }
+  if (!isFinite(value) || isNaN(value)) {
+    toast("Couldn't parse that number", "error");
+    return;
+  }
+  // Apply sign: if user typed a negative number AND clicked +, we still add it as-is.
+  // Sign here is which button they clicked.
+  const absAmount = Math.abs(value);
+  const finalSign = (value < 0) ? (sign === "+" ? "-" : "+") : sign;
+  calcLines.push({
+    _key: `custom:${Date.now()}:${Math.random().toString(36).slice(2,8)}`,
+    type: "custom",
+    name: "Custom",
+    amount: absAmount,
+    sign: finalSign
+  });
+  input.value = "";
+  renderCalcState();
+  input.focus();
+}
+
+function calcRemoveLine(key){
+  const idx = calcFindLineIndex(key);
+  if (idx >= 0) {
+    calcLines.splice(idx, 1);
+    renderCalcState();
+  }
+}
+
+function calcClear(){
+  calcLines = [];
+  renderCalcState();
+}
+
+function calcTotal(){
+  return calcLines.reduce((sum, l) => {
+    return sum + (l.sign === "+" ? l.amount : -l.amount);
+  }, 0);
+}
+
+function calcFmt(n){
+  return (Math.round(n * 100) / 100).toFixed(2);
+}
+
+function renderCalcState(){
+  const list = document.getElementById("calcList");
+  const totalEl = document.getElementById("calcTotalAmount");
+  if (!list || !totalEl) return;
+  list.innerHTML = "";
+  calcLines.forEach(line => {
+    const row = document.createElement("div");
+    row.className = "calc-line";
+    const sign = document.createElement("span");
+    sign.className = "calc-line-sign " + (line.sign === "+" ? "plus" : "minus");
+    sign.textContent = line.sign === "+" ? "+" : "−";
+    const name = document.createElement("span");
+    name.className = "calc-line-name";
+    name.textContent = line.name;
+    const amt = document.createElement("span");
+    amt.className = "calc-line-amount";
+    amt.textContent = calcFmt(line.amount);
+    const rm = document.createElement("button");
+    rm.className = "calc-line-remove";
+    rm.textContent = "×";
+    rm.title = "Remove from calculation";
+    rm.addEventListener("click", () => calcRemoveLine(line._key));
+    row.append(sign, name, amt, rm);
+    list.appendChild(row);
+  });
+  const t = calcTotal();
+  totalEl.textContent = (t < 0 ? "−" : "") + calcFmt(Math.abs(t));
+  // Update the .selected state on all visible +/− buttons
+  document.querySelectorAll(".calc-btn-plus, .calc-btn-minus").forEach(btn => {
+    const gIdx = btn.dataset.gIdx;
+    const iIdx = btn.dataset.iIdx;
+    if (gIdx == null) return;
+    const key = calcItemKey(Number(gIdx), Number(iIdx));
+    const line = calcLines.find(l => l._key === key);
+    const isThisSign = line && line.sign === btn.dataset.calcSign;
+    btn.classList.toggle("selected", !!isThisSign);
+  });
+}
+
+function calcCopyTotal(){
+  const t = calcTotal();
+  const text = calcFmt(Math.abs(t));
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById("calcCopyBtn");
+    if (btn) {
+      const old = btn.textContent;
+      btn.textContent = "Copied ✓";
+      btn.classList.add("copied");
+      setTimeout(() => { btn.textContent = old; btn.classList.remove("copied"); }, 1400);
+    }
+  }).catch(() => toast("Could not copy to clipboard", "error"));
+}
+
+// Wire up event listeners once DOM is ready
+document.addEventListener("DOMContentLoaded", () => {
+  const fab = document.getElementById("calcFab");
+  const closeBtn = document.getElementById("calcPanelClose");
+  const addBtn = document.getElementById("calcCustomAdd");
+  const subBtn = document.getElementById("calcCustomSub");
+  const input = document.getElementById("calcCustomInput");
+  const clearBtn = document.getElementById("calcClearBtn");
+  const copyBtn = document.getElementById("calcCopyBtn");
+  if (fab) fab.addEventListener("click", () => toggleCalcPanel());
+  if (closeBtn) closeBtn.addEventListener("click", () => toggleCalcPanel(true));
+  if (addBtn) addBtn.addEventListener("click", () => calcAddCustom("+"));
+  if (subBtn) subBtn.addEventListener("click", () => calcAddCustom("-"));
+  if (input) input.addEventListener("keydown", e => {
+    if (e.key === "Enter") { e.preventDefault(); calcAddCustom("+"); }
+  });
+  if (clearBtn) clearBtn.addEventListener("click", () => calcClear());
+  if (copyBtn) copyBtn.addEventListener("click", () => calcCopyTotal());
+
+  // Event delegation for +/− buttons on item rows (these are created on every render)
+  document.addEventListener("click", (e) => {
+    const plus = e.target.closest(".calc-btn-plus");
+    const minus = e.target.closest(".calc-btn-minus");
+    if (plus) {
+      e.preventDefault();
+      const gIdx = Number(plus.dataset.gIdx);
+      const iIdx = Number(plus.dataset.iIdx);
+      if (!isNaN(gIdx) && !isNaN(iIdx)) calcAddOrToggleItem(gIdx, iIdx, "+");
+    } else if (minus) {
+      e.preventDefault();
+      const gIdx = Number(minus.dataset.gIdx);
+      const iIdx = Number(minus.dataset.iIdx);
+      if (!isNaN(gIdx) && !isNaN(iIdx)) calcAddOrToggleItem(gIdx, iIdx, "-");
+    }
+  });
+});
+
+// Show the calc FAB only on the Plan view. Hook into existing showView().
+function updateCalcFabVisibility(){
+  const plan = document.getElementById("setupView");
+  if (!plan) return;
+  const onPlan = plan.classList.contains("active");
+  document.body.classList.toggle("calc-ready", onPlan);
+  if (!onPlan && calcIsOpen()) toggleCalcPanel(true);
+}
+// Patch showView so that every view switch updates FAB visibility
+if (typeof window.showView === "function") {
+  const _origShowView = window.showView;
+  window.showView = function(view){
+    _origShowView(view);
+    updateCalcFabVisibility();
+  };
+}
+// Also run once on load
+document.addEventListener("DOMContentLoaded", () => {
+  setTimeout(updateCalcFabVisibility, 50);
+});
+
+window.toggleCalcPanel = toggleCalcPanel;
+window.calcClear = calcClear;
+
 </script>
+
+
+<!-- v2.6.0: Transfer calculator -->
+<button id="calcFab" title="Transfer calculator" aria-label="Open transfer calculator">🧮</button>
+<div id="calcPanel" role="dialog" aria-label="Transfer calculator">
+  <div id="calcPanelHeader">
+    <span>Transfer calculator</span>
+    <button id="calcPanelClose" title="Close" aria-label="Close calculator">×</button>
+  </div>
+  <div id="calcCustomRow">
+    <input type="text" id="calcCustomInput" placeholder="Custom amount (e.g. 47.50 or 50+30)" />
+    <button id="calcCustomAdd" title="Add to total">+</button>
+    <button id="calcCustomSub" title="Subtract from total">−</button>
+  </div>
+  <div id="calcList"></div>
+  <div id="calcTotalRow">
+    <span>Total</span>
+    <span id="calcTotalAmount">0.00</span>
+  </div>
+  <div id="calcActions">
+    <button id="calcClearBtn">Clear</button>
+    <button id="calcCopyBtn">Copy total</button>
+  </div>
+</div>
 
 </body>
 </html>

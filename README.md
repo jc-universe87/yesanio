@@ -8,7 +8,7 @@
 
 Yesanio is a self-hosted budgeting tool for households that plan their money together — built around the principle that every pound has a job before the month begins.
 
-Version 2.5.23 · [Changelog](CHANGELOG.md) · MIT licence · © 2026 Johannes Kim (Pistio)
+Version 2.6.1 · [Changelog](CHANGELOG.md) · MIT licence · © 2026 Johannes Kim (Pistio)
 
 ---
 
@@ -25,6 +25,12 @@ This is a deliberate choice. Most budgeting tools fail by making you feel guilty
   <br>
   <em>The Home view — read-only, shared across the household.</em>
 </p>
+
+## Where the name comes from
+
+"Yesanio" comes from the Korean word **예산 (yesan)** — "budget," literally "to calculate beforehand." The suffix **-이오 (-io)** is the polite sentence ending meaning "it is." Together, *yesanio* roughly translates to *"this is the budget."*
+
+Which is the whole philosophy in one word: set the budget before the month begins, then live inside it.
 
 ## Who is it for?
 
@@ -181,16 +187,26 @@ settings    — key/value preferences (user_name, wizard_completed, etc.)
 
 Schema changes are managed through the forward-only migration system in `backend/main.py`. The current schema is version 6.
 
-### Contributing
+## Contributing
 
-Yesanio is MIT-licensed and welcomes contributions, particularly:
+Yesanio is small by design — most feature requests get a "that's deliberately not in Yesanio, here's why" response. But genuine contributions are welcome, particularly:
 
-- Translations (the UI is currently English-only)
-- Charts and reporting improvements
-- Accessibility fixes
-- Documentation
+- **Translations.** The UI is English-only today. If you'd like to help translate Yesanio into another language, open an issue and we'll coordinate.
+- **Bug fixes and small improvements.** Open a PR with a clear description.
+- **Documentation.** Corrections, clarifications, and improvements to the install guide are always welcome.
 
-Open an issue before large changes to discuss direction — Yesanio has a deliberate "less is more" design philosophy, and not every feature request is a fit.
+For larger changes, please open an issue first to discuss direction. Yesanio has a "less is more" design philosophy, and not every request is a fit.
+
+## Support
+
+Yesanio is part of **Pistio** — a small collection of self-hosted tools built for households, churches, and communities.
+
+If Yesanio is useful to your household, you can support its continued development:
+
+- [Sponsor on GitHub](https://github.com/sponsors/jc-universe87) — one-off or monthly, lowest fees
+- [Tip via Ko-fi](https://ko-fi.com/pistio) — quick one-off tip
+
+Yesanio is MIT-licensed, self-hostable, and free forever. Sponsorship supports the ongoing maintenance of the code itself, which benefits everyone running Yesanio.
 
 ---
 

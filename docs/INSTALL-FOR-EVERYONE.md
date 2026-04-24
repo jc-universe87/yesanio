@@ -544,8 +544,8 @@ Welcome.
 
 # A note on what's been tested
 
-These instructions have been tested end-to-end on three platforms: a Debian Linux server, a consumer Chromebook running ChromeOS's default Linux environment, and a Windows 11 Pro machine installing fresh with Docker Desktop 4.69. The screenshots in the Windows section are from that real install — every step and inline help note reflects what actually appeared on screen.
+These instructions have been written based on Docker Desktop's published behaviour on Windows and macOS, and on actual first-run installs on a Debian Linux server and a consumer Chromebook running ChromeOS's default Linux environment. The Linux and Chromebook paths are verified end-to-end.
 
-The macOS path describes what Docker Desktop is documented to do on macOS 12 and newer, but the author doesn't own a Mac and hasn't personally walked through it on Apple hardware. The Apple Silicon vs Intel guidance, the installer flow, and the Rosetta 2 prompt are all based on Docker Desktop's published behaviour. If your Mac screen shows something different from what's described, trust what Docker Desktop itself is asking you to do — its own error messages are generally clear and its installer handles the hard cases.
+The Windows and macOS paths describe what Docker Desktop says it does, and what it does on most users' machines — but the author doesn't own a Mac, and the Windows test environment was a VM, not a real Windows laptop. If your screen shows something different from what's described here, trust what Docker Desktop itself is asking you to do. Docker Desktop's own error messages are generally clear and its installer handles the hard cases.
 
-If you hit something stuck on any platform and the dialog boxes don't match this guide, ask a friend, or paste exactly what you're seeing into ChatGPT or Claude — they're well-informed about Docker Desktop and can usually get you past any one-off screen in a few minutes.
+If you hit something stuck and the dialog boxes don't match this guide, ask a friend, or paste exactly what you're seeing into ChatGPT or Claude — they're well-informed about Docker Desktop and can usually get you past any one-off screen in a few minutes.

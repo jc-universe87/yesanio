@@ -2,6 +2,35 @@
 
 All notable changes to Yesanio.
 
+## 2.6.1 — April 2026
+**Bug fix + feature.** Frontend-only, no schema changes.
+
+The `updateTotals()` function had been an empty stub since v2.4.0. It was called from 15+ places across the codebase every time something changed (typing a number, ticking Paid, saving, dragging), but did nothing. No one noticed because the Home view's editorial summary handled the "how's this month looking?" question. But the Plan view — where you're actually editing — had no running totals visible. Embarrassing oversight, now fixed.
+
+- **Group totals** now populate in each group card header (right side) as `£X,XXX.00`, updating live as you type or tick items.
+- **New Plan summary bar** at the top of the Plan view, below the month/income/notes toolbar and above the first group. Three cells: **Income** (what you earn), **Allocated** (sum of everything planned), **Saldo** (what's left over).
+- **Saldo visual states** follow the Yesanio philosophy ("every pound has a job — zero is the goal state"):
+  - **Zero** → calm green, "✓ Fully planned"
+  - **Positive** (surplus) → warm gold, "£X unassigned"
+  - **Negative** (over) → red warning, "£X over"
+
+Same visual vocabulary as the Home view, applied to the editing surface.
+
+## 2.6.0 — April 2026
+New feature. Frontend-only — no schema changes.
+
+**Transfer calculator.** A small floating panel on the Plan view, for the specific use case of "how much do I need to move between bank accounts this month?" Click the 🧮 button in the bottom-right corner of the Plan view. While the panel is open:
+
+- Every item row shows small **+** and **−** buttons on the right
+- Clicking **+** adds the item's amount to a running total
+- Clicking **−** subtracts it
+- Clicking the same button again removes the item from the calculation
+- Clicking the opposite button flips its sign
+- A text input at the top of the panel accepts custom amounts — either a number or a simple expression like `50+30`
+- **Copy total** puts the number on your clipboard, ready to paste into your bank's transfer screen
+
+The calculation resets when you reload the page. It's a session tool, not a saved object. No backend involvement, no persistence — pure frontend state.
+
 ## 2.5.23 — April 2026
 Doc and UI-text polish pass. No code logic or schema changes. Users on v2.5.22 don't need to redeploy, but this release is the cleaner face for anyone landing on the public repo.
 - **README Home view example**: changed the example name from "JOHANNES" to the generic "ALEX", so the illustration reads as an example rather than as the author's real budget.
