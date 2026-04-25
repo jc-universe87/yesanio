@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Yesanio v2.6.6</title>
+  <title>Yesanio v2.7.1</title>
   <link rel="icon" type="image/png" href="./yesanio_logogram.png">
   <link rel="apple-touch-icon" href="./yesanio_logogram.png">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -898,7 +898,7 @@ body.calc-active .calc-btn-minus{display:inline-block}
   #calcPanelHeader:hover{background:transparent}
 }
 
-/* ---------- v2.6.6: Global footer ---------- */
+/* ---------- v2.7.1: Global footer ---------- */
 #appFooter{
   text-align:center;padding:18px 16px 28px 16px;
   font-size:11px;color:#a69d8f;font-family:'Inter',sans-serif;
@@ -907,6 +907,127 @@ body.calc-active .calc-btn-minus{display:inline-block}
 #appFooter a{color:#8a8075;text-decoration:none}
 #appFooter a:hover{color:var(--steel);text-decoration:underline}
 #appFooter .sep{margin:0 6px;color:#c8bfb0}
+
+  
+/* ---------- v2.7.1: Goal tile redesign ---------- */
+/* Goal card has two modes: tile (default) and editing (toggled). 
+   Tile = progress dashboard. Editing reveals fields. */
+.goal-card{
+  display:block;  /* override the flex from older CSS — tile uses internal layout */
+  position:relative;
+  padding:14px 16px 14px 38px !important;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:8px;
+  margin-bottom:8px;
+  transition:box-shadow 0.15s, border-color 0.15s;
+}
+.goal-card:hover{box-shadow:0 2px 6px rgba(60,50,35,.06)}
+.goal-card.editing{box-shadow:0 4px 14px rgba(60,50,35,.12);border-color:var(--steel)}
+
+/* Tile head: name on left, progress summary on right */
+.goal-tile-head{
+  display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+  margin-bottom:6px;
+  padding-right:38px;  /* reserve space for the absolutely-positioned ✎ button */
+}
+.goal-tile-name{
+  font-family:'Lora',serif;font-size:16px;font-weight:500;color:var(--text);
+  flex:1;min-width:0;
+}
+.goal-tile-name .achieved-tag{
+  font-family:'Lora',serif;font-style:italic;font-size:12px;color:#3d6b3d;
+  font-weight:400;margin-left:6px;
+}
+.goal-tile-amount{
+  font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;
+  white-space:nowrap;flex-shrink:0;
+}
+.goal-tile-amount.has-target{color:var(--text);font-weight:500}
+.goal-tile-amount .pct{color:var(--muted);font-weight:400;margin-left:4px}
+
+/* Bigger, calmer progress bar */
+.goal-progress{
+  width:100% !important;height:8px;background:#eef0f3;border-radius:4px;
+  overflow:hidden;margin:0;
+}
+.goal-progress > div{height:100%;background:var(--steel);transition:width 0.3s}
+.goal-progress > div.complete{background:var(--good)}
+.goal-progress > div.pending-heavy{background:linear-gradient(90deg, var(--steel) 70%, #d4a017 100%)}
+.goal-progress.no-target > div{background:repeating-linear-gradient(90deg, #eef0f3 0, #eef0f3 6px, #e3e6ea 6px, #e3e6ea 12px);width:100% !important;opacity:0.5}
+
+/* Pending row underneath progress bar */
+.goal-pending{
+  font-size:11px;color:#b78103;margin-top:8px;display:flex;align-items:center;gap:4px;
+}
+.goal-pending .clock{font-size:11px}
+
+/* Edit pencil — top-right corner */
+.goal-edit-btn{
+  position:absolute;top:12px;right:12px;
+  width:24px;height:24px;
+  border:1px solid transparent;border-radius:5px;
+  background:transparent;cursor:pointer;
+  font-size:12px;color:#a69d8f;opacity:0.7;
+  display:flex;align-items:center;justify-content:center;
+  transition:background 0.12s,border-color 0.12s,color 0.12s,opacity 0.12s;
+  z-index:2;  /* sit above the tile content */
+}
+.goal-card:hover .goal-edit-btn{opacity:1}
+.goal-card:hover .goal-edit-btn{color:var(--text)}
+.goal-edit-btn:hover{background:#f0ebdd;border-color:#e1ddd4}
+.goal-card.editing .goal-edit-btn{background:var(--steel);border-color:var(--steel);color:#fff}
+
+/* Edit panel — hidden by default, revealed when .editing */
+.goal-edit-panel{
+  display:none;
+  margin-top:14px;padding-top:14px;
+  border-top:1px solid var(--border);
+}
+.goal-card.editing .goal-edit-panel{display:block}
+.goal-edit-row{
+  display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:10px;
+}
+.goal-edit-field{display:flex;flex-direction:column;gap:3px;flex:1;min-width:120px}
+.goal-edit-field label{
+  font-size:10px;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);
+}
+.goal-edit-field input{
+  padding:6px 8px;font-size:13px;border:1px solid var(--border);border-radius:4px;
+  font-family:'Inter',sans-serif;
+}
+.goal-edit-field input:focus{outline:1px solid var(--steel);border-color:var(--steel)}
+.goal-edit-actions{
+  display:flex;gap:8px;justify-content:space-between;align-items:center;
+  margin-top:8px;
+}
+.goal-edit-actions .right-actions{display:flex;gap:8px}
+.goal-edit-actions .btn{padding:5px 12px;font-size:12px}
+
+/* Achieved goals — subdued visual treatment */
+.goal-card.achieved{background:#f7faf6;border-color:#d4dccd}
+.goal-card.achieved .goal-tile-name{color:#5a6856}
+
+/* Confirming-delete state */
+.goal-card.confirming{
+  border-color:var(--bad);background:#fef0ef;
+}
+.goal-card.confirming .goal-tile-name{color:var(--bad)}
+
+/* Drag handle stays where it was */
+.goal-drag-handle{position:absolute;top:50%;left:8px;transform:translateY(-50%);
+  background:transparent;border:1px solid transparent;color:#b8aa92;
+  font-size:14px;letter-spacing:-2px;font-weight:700;padding:6px 6px;
+  cursor:grab;user-select:none;border-radius:4px;touch-action:none;line-height:1;
+}
+.goal-card:hover .goal-drag-handle{color:#3a342e;border-color:#e1ddd4;background:#f0ebdd}
+.goal-drag-handle:active{cursor:grabbing}
+
+/* Mobile: stack tile head */
+@media (max-width: 600px){
+  .goal-tile-head{flex-direction:column;align-items:flex-start;gap:2px}
+  .goal-edit-row{flex-direction:column;align-items:stretch}
+}
 
   </style>
 </head>
@@ -1305,7 +1426,7 @@ body.calc-active .calc-btn-minus{display:inline-block}
     <div class="settings-about">
       <h4>About Yesanio</h4>
       <p>Yesanio is a self-hosted household budgeting tool built around the "pay yourself first" principle. Every pound gets a job before the month begins — savings and giving are set aside first, not last.</p>
-      <div class="version-line">Version 2.6.6 · <a href="https://github.com/jc-universe87/yesanio" target="_blank">GitHub</a> · MIT licence · © 2026 Johannes Kim (Pistio)</div>
+      <div class="version-line">Version 2.7.1 · <a href="https://github.com/jc-universe87/yesanio" target="_blank">GitHub</a> · MIT licence · © 2026 Johannes Kim (Pistio)</div>
       <blockquote>"The plans of the diligent lead surely to abundance." — Proverbs 21:5</blockquote>
     </div>
   </section>
@@ -1313,7 +1434,7 @@ body.calc-active .calc-btn-minus{display:inline-block}
 </main>
 
 <footer id="appFooter">
-  <a href="https://github.com/jc-universe87/yesanio/releases/tag/v2.6.6" target="_blank" rel="noopener">Yesanio v2.6.6</a>
+  <a href="https://github.com/jc-universe87/yesanio/releases/tag/v2.7.1" target="_blank" rel="noopener">Yesanio v2.7.1</a>
   <span class="sep">·</span>
   © Pistio
   <span class="sep">·</span>
@@ -1326,7 +1447,7 @@ body.calc-active .calc-btn-minus{display:inline-block}
 <script src="/Sortable.min.js"></script>
 <script>
 // =====================================================================
-//  YESANIO v2.6.6
+//  YESANIO v2.7.1
 //  - single state object, render functions, pure calculate
 //  - inline two-step delete confirms (no popups)
 //  - smarter copy-previous (uses /months)
@@ -2658,21 +2779,36 @@ async function importCSV(file) {
 
 async function saveGoalInline(goalId, btn) {
   const card = btn.closest(".goal-card");
-  const target = Number(card.querySelector(".goal-target-input").value || 0);
-  const kind = card.querySelector(".goal-kind-input").value.trim();
-  const count_from = card.querySelector(".goal-cf").value || null;
-  const count_to = card.querySelector(".goal-ct").value || null;
+  if (!card) return;
+  const tInput = card.querySelector(".goal-target-input");
+  const cfInput = card.querySelector(".goal-cf");
+  const ctInput = card.querySelector(".goal-ct");
+  const target = Number(tInput && tInput.value || 0);
+  const count_from = (cfInput && cfInput.value) || null;
+  const count_to = (ctInput && ctInput.value) || null;
+  // Preserve fields the user can't edit in the new tile UI (name, kind) by reading
+  // from the cached goals data fetched at last loadGoals() call.
+  const existing = (typeof goalsState !== "undefined" ? goalsState : []).find(g => g.id === goalId) || {};
   try {
+    btn.disabled = true;
     const res = await fetch(`${API}/goals/${goalId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: "", kind, target, count_from, count_to })
+      body: JSON.stringify({
+        name: existing.name || "",
+        kind: existing.kind || "",
+        target: target,
+        count_from: count_from,
+        count_to: count_to
+      })
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     await loadGoals();
     toast("Goal updated", "success");
   } catch (e) {
     toast("Update failed: " + e.message, "error");
+  } finally {
+    btn.disabled = false;
   }
 }
 
@@ -2733,68 +2869,27 @@ function renderGoalCard(g, confirming) {
   const isAchieved = !!g.achieved_at;
   card.className = "goal-card" + (confirming ? " confirming" : "") + (isAchieved ? " achieved" : "");
   card.dataset.goalId = g.id;
-  const pct = g.target > 0 ? Math.min(100, (g.current / g.target) * 100) : 0;
-  const complete = pct >= 100;
-  const hasPending = (g.pending || 0) > 0;
-  const pendingOverThreshold = g.target > 0 && (g.pending || 0) / g.target > 0.1;
 
-  if (!confirming) {
-    let pendingHtml = "";
-    if (hasPending) {
-      pendingHtml = `<div class="goal-pending">${pendingOverThreshold ? '<span class="clock">🕒</span>' : ""}+${fmt(g.pending)} pending — ${g.pending_count || 1} item${(g.pending_count||1)>1?"s":""} not yet marked paid</div>`;
-    }
-    const targetLabel = g.target > 0
-      ? `${fmt(g.current)} of ${fmt(g.target)} (${Math.round(pct)}%)`
-      : (g.current > 0 ? `${fmt(g.current)} saved · no target set` : "no target set");
-    let achievedHtml = "";
-    if (isAchieved) {
-      achievedHtml = `<span class="achieved-badge">✓ Achieved</span><div class="achieved-line">Reached ${formatAchievedDate(g.achieved_at)}</div>`;
-    }
+  const target = Number(g.target) || 0;
+  const current = Number(g.current) || 0;
+  const pending = Number(g.pending) || 0;
+  const pct = target > 0 ? Math.min(100, (current / target) * 100) : 0;
+  const complete = target > 0 && pct >= 100;
+  const pendingHeavy = target > 0 && pending / target > 0.2;
+  const pendingCount = g.pending_count || 0;
+
+  if (confirming) {
     card.innerHTML = `
-      <div class="goal-info">
-        ${achievedHtml}<div class="goal-name">${escapeHtml(g.name)}</div>
-        <div class="goal-meta">${escapeHtml(g.kind || "—")} · ${targetLabel}</div>
-        <div class="goal-progress"><div class="${complete ? 'complete' : ''}" style="width:${pct}%"></div></div>
-        ${pendingHtml}
-        <div class="goal-save-row">
-          <label style="font-size:11px;">Target</label>
-          <input type="number" step="0.01" value="${g.target}" class="goal-target-input" data-id="${g.id}">
-          <label style="font-size:11px;">Kind</label>
-          <input type="text" value="${escapeHtml(g.kind||"")}" class="goal-kind-input" data-id="${g.id}" style="width:90px;font-size:12px;" placeholder="saving / emergency">
-          <button class="btn" onclick="saveGoalInline(${g.id}, this)">Save</button>
-        </div>
-        <div class="goal-dates">
-          <div><label>Count from</label><input type="month" value="${g.count_from||""}" class="goal-cf" data-id="${g.id}"></div>
-          <div><label>Count to</label><input type="month" value="${g.count_to||""}" class="goal-ct" data-id="${g.id}"></div>
-        </div>
+      <div class="goal-tile-head">
+        <div class="goal-tile-name" style="color:var(--bad);">Delete "${escapeHtml(g.name)}"?</div>
       </div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px;">This cannot be undone.</div>
     `;
-    if (pendingOverThreshold) card.style.borderLeft = "3px solid #b8860b";
-    const delBtn = document.createElement("button");
-    delBtn.className = "btn-icon";
-    delBtn.title = "Delete";
-    delBtn.textContent = "⊗";
-    delBtn.addEventListener("click", () => {
-      const replacement = renderGoalCard(g, true);
-      card.replaceWith(replacement);
-    });
-    card.appendChild(delBtn);
-    const goalDrag = document.createElement("button");
-    goalDrag.className = "goal-drag-handle drag-handle";
-    goalDrag.innerHTML = "⋮⋮";
-    goalDrag.title = "Drag to reorder";
-    goalDrag.type = "button";
-    card.appendChild(goalDrag);
-  } else {
-    card.innerHTML = `
-      <div class="goal-info">
-        <div class="goal-name" style="color:var(--bad);">Delete "${escapeHtml(g.name)}"?</div>
-        <div class="goal-meta">This cannot be undone.</div>
-      </div>
-    `;
+    const actions = document.createElement("div");
+    actions.style.cssText = "display:flex;gap:6px;margin-top:10px;";
     const yes = document.createElement("button");
     yes.className = "btn btn-confirm";
-    yes.textContent = "Confirm";
+    yes.textContent = "Confirm delete";
     yes.addEventListener("click", async () => {
       try {
         const res = await fetch(`${API}/goals/${g.id}`, { method: "DELETE" });
@@ -2809,15 +2904,109 @@ function renderGoalCard(g, confirming) {
     no.className = "btn btn-ghost";
     no.textContent = "Cancel";
     no.addEventListener("click", () => {
-      const replacement = renderGoalCard(g, false);
-      card.replaceWith(replacement);
+      card.replaceWith(renderGoalCard(g, false));
     });
-    const wrap = document.createElement("div");
-    wrap.style.display = "flex";
-    wrap.style.gap = "6px";
-    wrap.append(yes, no);
-    card.appendChild(wrap);
+    actions.append(yes, no);
+    card.appendChild(actions);
+    return card;
   }
+
+  // ── Tile head: name + amount ──
+  let amountHtml;
+  if (target > 0) {
+    amountHtml = `<span class="goal-tile-amount has-target">${fmt(current)} of ${fmt(target)} <span class="pct">· ${Math.round(pct)}%</span></span>`;
+  } else if (current > 0) {
+    amountHtml = `<span class="goal-tile-amount">${fmt(current)} saved</span>`;
+  } else {
+    amountHtml = `<span class="goal-tile-amount" style="font-style:italic;opacity:0.7;">no target set</span>`;
+  }
+  const achievedTag = isAchieved
+    ? `<span class="achieved-tag">✓ reached ${formatAchievedDate(g.achieved_at)}</span>`
+    : "";
+
+  // ── Progress bar ──
+  const barClass = target > 0 ? "" : "no-target";
+  const fillClass = complete ? "complete" : (pendingHeavy ? "pending-heavy" : "");
+  const fillWidth = target > 0 ? pct : 100;
+
+  // ── Pending row ──
+  const pendingHtml = pending > 0
+    ? `<div class="goal-pending"><span class="clock">🕒</span>+${fmt(pending)} pending${pendingCount > 0 ? ` — ${pendingCount} item${pendingCount > 1 ? "s" : ""} not yet ticked Paid` : ""}</div>`
+    : "";
+
+  // ── Edit panel (collapsed by default) ──
+  const editPanelHtml = `
+    <div class="goal-edit-panel">
+      <div class="goal-edit-row">
+        <div class="goal-edit-field">
+          <label>Target amount</label>
+          <input type="number" step="0.01" value="${target}" class="goal-target-input" data-id="${g.id}">
+        </div>
+        <div class="goal-edit-field">
+          <label>Count from (optional)</label>
+          <input type="month" value="${g.count_from || ""}" class="goal-cf" data-id="${g.id}">
+        </div>
+        <div class="goal-edit-field">
+          <label>Count to (optional)</label>
+          <input type="month" value="${g.count_to || ""}" class="goal-ct" data-id="${g.id}">
+        </div>
+      </div>
+      <div class="goal-edit-actions">
+        <button class="btn btn-ghost goal-delete-btn" type="button">Delete goal</button>
+        <div class="right-actions">
+          <button class="btn btn-ghost goal-cancel-btn" type="button">Cancel</button>
+          <button class="btn goal-save-btn" type="button">Save</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  card.innerHTML = `
+    <button class="goal-drag-handle drag-handle" type="button" title="Drag to reorder">⋮⋮</button>
+    <button class="goal-edit-btn" type="button" title="Edit goal" aria-label="Edit goal">✎</button>
+    <div class="goal-tile-head">
+      <div class="goal-tile-name">${escapeHtml(g.name)}${achievedTag}</div>
+      ${amountHtml}
+    </div>
+    <div class="goal-progress ${barClass}"><div class="${fillClass}" style="width:${fillWidth}%"></div></div>
+    ${pendingHtml}
+    ${editPanelHtml}
+  `;
+
+  // Wire up the edit toggle
+  const editBtn = card.querySelector(".goal-edit-btn");
+  editBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    card.classList.toggle("editing");
+    if (card.classList.contains("editing")) {
+      const targetInput = card.querySelector(".goal-target-input");
+      if (targetInput) setTimeout(() => targetInput.focus(), 50);
+    }
+  });
+
+  // Save button
+  card.querySelector(".goal-save-btn").addEventListener("click", () => {
+    saveGoalInline(g.id, card.querySelector(".goal-save-btn"));
+    card.classList.remove("editing");
+  });
+
+  // Cancel button — collapses without saving
+  card.querySelector(".goal-cancel-btn").addEventListener("click", () => {
+    card.classList.remove("editing");
+    // Reset inputs to original values
+    const tInput = card.querySelector(".goal-target-input");
+    if (tInput) tInput.value = target;
+    const cf = card.querySelector(".goal-cf");
+    if (cf) cf.value = g.count_from || "";
+    const ct = card.querySelector(".goal-ct");
+    if (ct) ct.value = g.count_to || "";
+  });
+
+  // Delete button
+  card.querySelector(".goal-delete-btn").addEventListener("click", () => {
+    card.replaceWith(renderGoalCard(g, true));
+  });
+
   return card;
 }
 

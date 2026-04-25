@@ -2,6 +2,25 @@
 
 All notable changes to Yesanio.
 
+## 2.7.1 — April 2026
+**Visual fix.** Frontend-only.
+
+The ✎ edit pencil added in v2.7.0 was rendering on top of the progress amount text on the right side of each goal tile (e.g. "2%" overlapping with the pencil glyph). Fixed by reserving right-padding on the tile head so amount text leaves room for the absolutely-positioned button. Pencil also slightly smaller and softer (lower opacity at rest, full on hover) so it doesn't compete with the goal name visually.
+
+## 2.7.0 — April 2026
+**Goals view redesign.** Frontend-only — no backend or schema changes.
+
+The Goals view had accumulated edit fields that pushed the actual progress out of focus. Every goal card showed all the configuration (target input, kind input, two date pickers, save button) at all times — even though most visits to the Goals page are just to glance at progress, not to reconfigure anything.
+
+Redesigned around progress-first, configuration-on-demand:
+
+- **Tile view (default state)** — Each goal card shows the name, the progress amount (e.g. *"£100 of £500 · 20%"* or *"£50 saved · no target set"*), a wider progress bar, and a pending row if relevant. Nothing else. Clean dashboard tile.
+- **Edit on demand** — A small ✎ pencil icon in the top-right corner of each card opens the edit panel. Target amount, optional Count from / Count to date range, Save / Cancel / Delete buttons. Card collapses back to tile view on Save or Cancel.
+- **Visual refresh** — More breathing room, bigger typography for the goal name (Lora serif), softer meta text. Achieved goals get a subtle green tint instead of competing for attention.
+- **Hidden but preserved**: the "Kind" field (which had no behavioural meaning in the app — it was a cosmetic label) is no longer in the edit UI. Existing goal records keep their `kind` value in the database; the API still accepts it; users just can't edit it from the Goals page anymore. Reduces UI surface area without data loss.
+
+Drag-to-reorder still works. Pending warnings still show. Confirm-to-delete still requires two clicks.
+
 ## 2.6.6 — April 2026
 Small addition: a permanent footer visible on every view shows the current Yesanio version and attribution. Reads:
 

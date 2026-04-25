@@ -8,7 +8,7 @@
 
 Yesanio is a self-hosted budgeting tool for households that plan their money together — built around the principle that every pound has a job before the month begins.
 
-Version 2.6.6 · [Changelog](CHANGELOG.md) · MIT licence · © 2026 Johannes Kim (Pistio)
+Version 2.7.1 · [Changelog](CHANGELOG.md) · MIT licence · © 2026 Johannes Kim (Pistio)
 
 ---
 
