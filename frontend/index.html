@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Yesanio v2.7.1</title>
+  <title>Yesanio v2.7.2</title>
   <link rel="icon" type="image/png" href="./yesanio_logogram.png">
   <link rel="apple-touch-icon" href="./yesanio_logogram.png">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -898,7 +898,7 @@ body.calc-active .calc-btn-minus{display:inline-block}
   #calcPanelHeader:hover{background:transparent}
 }
 
-/* ---------- v2.7.1: Global footer ---------- */
+/* ---------- v2.7.2: Global footer ---------- */
 #appFooter{
   text-align:center;padding:18px 16px 28px 16px;
   font-size:11px;color:#a69d8f;font-family:'Inter',sans-serif;
@@ -909,7 +909,7 @@ body.calc-active .calc-btn-minus{display:inline-block}
 #appFooter .sep{margin:0 6px;color:#c8bfb0}
 
   
-/* ---------- v2.7.1: Goal tile redesign ---------- */
+/* ---------- v2.7.2: Goal tile redesign ---------- */
 /* Goal card has two modes: tile (default) and editing (toggled). 
    Tile = progress dashboard. Editing reveals fields. */
 .goal-card{
@@ -1094,11 +1094,13 @@ body.calc-active .calc-btn-minus{display:inline-block}
       <div class="helper-tip-title"><span class="helper-tip-icon">💡</span>How the Plan view works</div>
       <p>A plan is one month of your budget. You organise money into <strong>groups</strong> (categories like Housing, Giving, Groceries), and each group contains <strong>items</strong> (individual line entries).</p>
       <ul>
+        <li><strong>The summary bar</strong> at the top shows your Income, the total Allocated across all groups, and your Saldo (what's left). The aim is Saldo = £0 — every pound has a job.</li>
         <li><strong>FIXED</strong> groups are costs you've committed to — bills, subscriptions, long-term savings.</li>
         <li><strong>VARIABLE</strong> groups are flexible living costs — credit or debit card payoffs, personal allowances, shopping budgets.</li>
         <li><strong>🤲 Giving toggle</strong> on a group flags it as giving — shown separately on Home.</li>
         <li><strong>💰 Saving toggle</strong> on an item links it to a goal and counts toward your progress.</li>
         <li><strong>Paid checkbox</strong> marks whether each bill or contribution has actually been paid. Only ticked items count toward goal progress.</li>
+        <li><strong>🧮 Calculator</strong> (bottom-right) helps you sum items together — useful for working out how much to transfer between bank accounts, or what a set of subscriptions totals. Click + or − next to any item to add it to the running total.</li>
       </ul>
     </div>
 
@@ -1362,15 +1364,15 @@ body.calc-active .calc-btn-minus{display:inline-block}
     <div class="helper-tip" id="tip-goals" style="margin:0 0 16px 0;">
       <button class="helper-tip-dismiss" onclick="dismissTip('goals')">Understood, don't show again</button>
       <div class="helper-tip-title"><span class="helper-tip-icon">💡</span>How goals work in Yesanio</div>
-      <p>Goals are long-term targets you're saving toward — an emergency fund, a holiday, a car. In Yesanio, goals are not edited directly. Instead:</p>
+      <p>Goals are long-term targets you're saving toward — an emergency fund, a holiday, a car. They aren't created here directly; they grow out of your monthly plan:</p>
       <ol>
-        <li>Plan an item toward your goal (e.g. "Holiday Fund" or "Emergency Fund" in any FIXED group).</li>
-        <li>Click the 💰 toggle to mark it as a saving contribution.</li>
-        <li>Save the plan. A matching goal is created automatically.</li>
-        <li>Set a <strong>target</strong> here. The goal's balance grows as you tick the Paid box on each month's contribution.</li>
+        <li>On the Plan view, add an item toward your goal (e.g. "Holiday Fund" or "Emergency Fund").</li>
+        <li>Click the <strong>💰 toggle</strong> on that item to mark it as a saving contribution.</li>
+        <li>Save the plan — a matching goal appears here automatically.</li>
+        <li>Click the <strong>✎ pencil</strong> on the goal's tile to set a target amount, and optionally a date window if you only want to count contributions from a specific period.</li>
       </ol>
-      <p>The <strong>date window</strong> lets you count contributions only from a specific time range — useful for yearly goals like "Holiday 2026". Leave both dates blank to count forever.</p>
-      <p>If you see <strong>"+£X pending"</strong>, it means items are flagged as savings but their Paid box isn't ticked yet. Tick Paid once the contribution actually happens, and it counts toward progress.</p>
+      <p>The goal's balance grows as you tick the <strong>Paid checkbox</strong> on each month's contribution in the Plan view. Until then, unticked savings show as <strong>"+£X pending"</strong> on the goal — they're planned but not yet contributed.</p>
+      <p>Each goal tile is collapsible: by default you see just the name, the running total, and a progress bar. Click the ✎ pencil to edit, click again to collapse.</p>
     </div>
     <div class="card">
       <h3 style="margin:0 0 8px 0; font-size:14px;">Add a goal</h3>
@@ -1426,7 +1428,7 @@ body.calc-active .calc-btn-minus{display:inline-block}
     <div class="settings-about">
       <h4>About Yesanio</h4>
       <p>Yesanio is a self-hosted household budgeting tool built around the "pay yourself first" principle. Every pound gets a job before the month begins — savings and giving are set aside first, not last.</p>
-      <div class="version-line">Version 2.7.1 · <a href="https://github.com/jc-universe87/yesanio" target="_blank">GitHub</a> · MIT licence · © 2026 Johannes Kim (Pistio)</div>
+      <div class="version-line">Version 2.7.2 · <a href="https://github.com/jc-universe87/yesanio" target="_blank">GitHub</a> · MIT licence · © 2026 Johannes Kim (Pistio)</div>
       <blockquote>"The plans of the diligent lead surely to abundance." — Proverbs 21:5</blockquote>
     </div>
   </section>
@@ -1434,7 +1436,7 @@ body.calc-active .calc-btn-minus{display:inline-block}
 </main>
 
 <footer id="appFooter">
-  <a href="https://github.com/jc-universe87/yesanio/releases/tag/v2.7.1" target="_blank" rel="noopener">Yesanio v2.7.1</a>
+  <a href="https://github.com/jc-universe87/yesanio/releases/tag/v2.7.2" target="_blank" rel="noopener">Yesanio v2.7.2</a>
   <span class="sep">·</span>
   © Pistio
   <span class="sep">·</span>
@@ -1447,7 +1449,7 @@ body.calc-active .calc-btn-minus{display:inline-block}
 <script src="/Sortable.min.js"></script>
 <script>
 // =====================================================================
-//  YESANIO v2.7.1
+//  YESANIO v2.7.2
 //  - single state object, render functions, pure calculate
 //  - inline two-step delete confirms (no popups)
 //  - smarter copy-previous (uses /months)
@@ -3562,6 +3564,7 @@ function renderWizard(){
         <p>This is a budgeting tool for households that plan their money together. Every pound gets a job before the month begins.</p>
         <p>Yesanio follows a principle called <strong>"pay yourself first"</strong> &mdash; savings, giving, and long-term commitments are set aside at the start of the month, not whatever happens to be left at the end. The boring bills are handled. The important things you're saving for are funded. What remains funds daily life.</p>
         <p>Yesanio doesn't track what you spend. It helps you decide where your money goes, so that by the end of the month, you've done what you intended to do.</p>
+        <p>One person edits the plan. Everyone in the household can open the <strong>Home page</strong> to see how the month is shaping up — without risk of changing anything.</p>
       </div>
       <div class="wizard-actions">
         <button class="wizard-skip" onclick="skipWizard()">Skip wizard</button>

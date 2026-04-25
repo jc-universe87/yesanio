@@ -2,6 +2,17 @@
 
 All notable changes to Yesanio.
 
+## 2.7.2 — April 2026
+**Documentation refresh.** Frontend-only.
+
+The in-app helper tips and the welcome wizard had drifted out of sync with the product after the recent feature work. Updated to match what's actually on screen now:
+
+- **Plan view tip** now mentions the summary bar (Income / Allocated / Saldo) and the 🧮 Calculator. The other bullets (FIXED/VARIABLE, Giving, Saving, Paid) were already accurate.
+- **Goals view tip** rewritten for the v2.7.0 tile redesign. Removed references to the old "Set target here" form-style flow; now describes clicking the ✎ pencil on a goal tile to edit the target and date window. Also clarifies that tiles are collapsible by default.
+- **Welcome wizard step 1** got one new sentence about the Home page being household-shareable — it was the one core promise of Yesanio that wasn't called out anywhere in the wizard.
+
+No backend changes. No data changes.
+
 ## 2.7.1 — April 2026
 **Visual fix.** Frontend-only.
 
