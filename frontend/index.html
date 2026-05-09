@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Yesanio v2.7.2</title>
+  <title>Yesanio v2.8.1</title>
   <link rel="icon" type="image/png" href="./yesanio_logogram.png">
   <link rel="apple-touch-icon" href="./yesanio_logogram.png">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,33 +21,79 @@
       --good: #2e7d32;
       --bad: #c62828;
       --bad-bg: #fff0f0;
+
+      /* v2.8.0 — Refined design system, brought over from Yesanio Sole
+         Trader Edition v0.6.0. Generous whitespace, calm typography,
+         subtle depth instead of heavy borders. The software should feel
+         invisible — its job is to surface your household budget and
+         get out of the way. */
+      --hairline:    rgba(60, 50, 35, 0.08);    /* the lightest divider — almost nothing */
+      --soft-border: rgba(60, 50, 35, 0.12);    /* default border on calm cards */
+      --strong-border: rgba(60, 50, 35, 0.22);  /* hover/active outline */
+      --shadow-sm:   0 1px 2px rgba(60, 50, 35, 0.04);
+      --shadow-md:   0 1px 3px rgba(60, 50, 35, 0.06), 0 4px 12px rgba(60, 50, 35, 0.04);
+      --shadow-lg:   0 4px 16px rgba(60, 50, 35, 0.10), 0 0 0 0.5px rgba(60, 50, 35, 0.05);
+      --radius-sm:   4px;
+      --radius-md:   8px;
+      --radius-lg:   12px;
+      --radius-pill: 999px;
+      --space-1:     4px;
+      --space-2:     8px;
+      --space-3:     12px;
+      --space-4:     16px;
+      --space-5:     24px;
+      --space-6:     32px;
+
+      /* v2.8.0 — Coherent typography scale (1.125 ratio). Used as
+         CSS variables so a future tweak is one-place. */
+      --fs-meta:     11px;     /* uppercase labels, tags, chrome bits */
+      --fs-small:    12px;     /* secondary info, hints, footnotes */
+      --fs-body:     14px;     /* default body text */
+      --fs-input:    14px;     /* form controls — match body */
+      --fs-button:   13.5px;   /* button labels */
+      --fs-card-title: 17px;   /* card h3 */
+      --fs-section:  22px;     /* section headlines */
+      --fs-hero:     32px;     /* key numbers */
+      --lh-tight:    1.3;      /* headings */
+      --lh-normal:   1.55;     /* body */
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding-top: 58px;     /* leaves room for the fixed header (v2.8.0) */
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: var(--bg);
       color: var(--text);
-      line-height: 1.4;
-      font-size: 13px;
+      line-height: var(--lh-normal);
+      font-size: var(--fs-body);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
+    /* ---------- Header (fixed, refined v2.8.0) -----------------
+       Three-column grid: brand left, centered nav, menu button right.
+       Backdrop-blur gives the chrome the translucent feel content
+       benefits from when scrolling under it. */
     header {
-      background: var(--card);
-      border-bottom: 1px solid var(--border);
-      padding: 8px 16px;
-      display: flex;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(252, 250, 244, 0.82);
+      backdrop-filter: saturate(180%) blur(14px);
+      -webkit-backdrop-filter: saturate(180%) blur(14px);
+      border-bottom: 1px solid rgba(60, 50, 35, 0.08);
+      padding: 8px 20px;
+      display: grid;
+      grid-template-columns: minmax(140px, auto) 1fr auto;
       align-items: center;
-      justify-content: space-between;
+      gap: 16px;
+      min-height: 54px;
     }
-    .brand-wrap {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+    .brand-wrap { display: flex; align-items: center; gap: 10px; min-width: 0; }
     .brand-logo {
-      height: 36px;
-      width: 36px;
+      height: 32px;
+      width: 32px;
       display: block;
+      flex-shrink: 0;
     }
     .brand {
       font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -56,91 +102,184 @@
       display: flex;
       align-items: baseline;
       letter-spacing: -1px;
+      min-width: 0;
     }
     .brand-yesan {
-      font-size: 28px;
+      font-size: 24px;
       color: #333333;
     }
     .brand-io {
-      font-size: 21px;          /* 75% of YESAN, matching SVG ratio (150/200) */
-      color: #4682B4;
+      font-size: 18px;
+      color: var(--steel);
       letter-spacing: -1px;
     }
     .brand-tagline {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       font-weight: 400;
       color: var(--muted);
-      font-size: 11px;
+      font-size: var(--fs-meta);
       margin-left: 10px;
       letter-spacing: 0;
       align-self: center;
       padding-bottom: 2px;
     }
-    nav { display: flex; gap: 2px; }
-    nav button {
+
+    /* ---------- Nav (refined pill-tab strip, v2.8.0) ----------- */
+    nav#nav {
+      display: flex;
+      gap: 2px;
+      justify-self: center;
+      background: rgba(60, 50, 35, 0.04);
+      padding: 3px;
+      border-radius: 10px;
+    }
+    nav#nav button {
       background: transparent;
-      border: 1px solid transparent;
-      padding: 5px 12px;
-      font-size: 13px;
+      border: none;
+      padding: 6px 14px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", Roboto, sans-serif;
+      font-size: 14px;
       cursor: pointer;
-      border-radius: 5px;
+      border-radius: 7px;
       color: var(--muted);
       font-weight: 500;
+      letter-spacing: -0.1px;
+      transition: background-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
     }
-    nav button.active { background: var(--steel); color: white; }
-    nav button:hover:not(.active) { background: #eef1f5; color: var(--text); }
+    nav#nav button:hover:not(.active) {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.7);
+    }
+    nav#nav button.active {
+      background: white;
+      color: var(--text);
+      box-shadow: 0 1px 2px rgba(60, 50, 35, 0.08), 0 0 0 0.5px rgba(60, 50, 35, 0.04);
+      font-weight: 600;
+    }
+
+    /* ---------- Hamburger (narrow viewports, v2.8.0) ---------- */
+    #navToggle {
+      display: none;
+      background: rgba(255, 255, 255, 0.6);
+      border: 1px solid rgba(60, 50, 35, 0.12);
+      color: var(--text);
+      line-height: 1;
+      padding: 7px 9px;
+      border-radius: 9px;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+      font-size: 18px;
+      justify-self: end;
+    }
+    #navToggle:hover { background: rgba(255, 255, 255, 0.95); border-color: rgba(60, 50, 35, 0.22); }
+    #navToggle.is-open { background: var(--steel); color: #fff; border-color: var(--steel); }
+
+    @media (max-width: 760px) {
+      header {
+        grid-template-columns: auto 1fr auto;
+        padding: 8px 14px;
+      }
+      .brand-tagline { display: none; }
+      .brand-yesan { font-size: 22px; }
+      .brand-io { font-size: 16px; }
+      nav#nav {
+        display: none;
+        position: fixed;
+        top: 58px;
+        right: 12px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(60, 50, 35, .15), 0 0 0 0.5px rgba(60, 50, 35, .05);
+        padding: 6px;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 180px;
+        z-index: 101;
+        justify-self: stretch;
+      }
+      nav#nav.is-open { display: flex; }
+      nav#nav button {
+        text-align: left;
+        width: 100%;
+        padding: 9px 14px;
+        font-size: 14px;
+        border-radius: 7px;
+      }
+      #navToggle { display: inline-flex; }
+    }
+
+    @media (max-width: 480px) {
+      header { padding: 8px 12px; gap: 8px; }
+      .brand-logo { height: 28px; width: 28px; }
+      .brand-yesan { font-size: 20px; }
+      .brand-io { font-size: 14px; }
+    }
 
     main {
       max-width: 1400px;
       margin: 0 auto;
-      padding: 12px 16px;
+      padding: var(--space-4) var(--space-4) var(--space-6);
     }
     .view { display: none; }
     .view.active { display: block; }
 
+    /* v2.8.0 — Refined cards: lighter borders, soft shadow, more
+       breathing room. Cards still feel like surfaces but recede so
+       the data inside takes the foreground. */
     .card {
       background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px 12px;
-      margin-bottom: 10px;
+      border: 1px solid var(--soft-border);
+      border-radius: var(--radius-md);
+      padding: 20px 22px;
+      margin-bottom: var(--space-4);
+      box-shadow: var(--shadow-sm);
     }
-    .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+    .row { display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: flex-end; }
 
     label {
       display: block;
-      font-size: 10px;
+      font-size: var(--fs-meta);
       color: var(--muted);
-      margin-bottom: 2px;
+      margin-bottom: 4px;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.4px;
+      letter-spacing: 0.5px;
     }
-    input, select, textarea, button { font-family: inherit; font-size: 13px; }
+    input, select, textarea, button { font-family: inherit; font-size: var(--fs-input); }
     input[type=text], input[type=number], input[type=month], select, textarea {
-      padding: 5px 8px;
-      border: 1px solid var(--border);
-      border-radius: 5px;
+      padding: 8px 12px;
+      border: 1px solid var(--soft-border);
+      border-radius: var(--radius-md);
       background: white;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }
-    input[type=text]:focus, input[type=number]:focus, select:focus, textarea:focus {
-      outline: 2px solid var(--steel);
-      outline-offset: -1px;
+    input[type=text]:focus, input[type=number]:focus, input[type=month]:focus, select:focus, textarea:focus {
+      outline: none;
       border-color: var(--steel);
+      box-shadow: 0 0 0 3px rgba(73, 109, 142, 0.15);
     }
-    textarea { width: 100%; resize: vertical; min-height: 36px; font-size: 12px; }
+    textarea { width: 100%; resize: vertical; min-height: 36px; font-size: var(--fs-small); }
 
+    /* ---------- Buttons (refined v2.8.0) ---------- */
     .btn {
       background: var(--steel);
       color: white;
       border: none;
-      padding: 6px 14px;
-      border-radius: 5px;
+      padding: 9px 18px;
+      border-radius: var(--radius-md);
       cursor: pointer;
-      font-weight: 600;
-      font-size: 13px;
+      font-weight: 500;
+      font-size: var(--fs-button);
+      font-family: inherit;
+      letter-spacing: -0.1px;
+      transition: background-color 0.15s ease, transform 0.05s ease, box-shadow 0.15s ease;
+      box-shadow: var(--shadow-sm);
     }
-    .btn:hover { background: var(--steel-dark); }
+    .btn:hover { background: var(--steel-dark); box-shadow: var(--shadow-md); }
+    .btn:active { transform: translateY(1px); }
     .btn.dirty {
       background: var(--gold);
       color: #1a1a1a;
@@ -152,7 +291,7 @@
       50% { box-shadow: 0 0 0 4px rgba(212, 160, 23, 0); }
     }
     .last-saved {
-      font-size: 11px;
+      font-size: var(--fs-meta);
       color: var(--muted);
       font-variant-numeric: tabular-nums;
       padding: 0 6px;
@@ -212,7 +351,7 @@
       color: var(--muted);
       cursor: pointer;
       padding: 2px 6px;
-      font-size: 13px;
+      font-size: 14px;
       border-radius: 4px;
       width: 100%;
       line-height: 1;
@@ -237,7 +376,7 @@
     .chart-bar.fixed { fill: var(--steel-dark); }
     .chart-bar.variable { fill: var(--gold); }
     .chart-axis-label {
-      font-size: 10px;
+      font-size: 11px;
       fill: var(--muted);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
@@ -351,7 +490,7 @@
       outline: 1px solid var(--steel);
     }
     .group-kind-select {
-      font-size: 10px !important;
+      font-size: 11px !important;
       padding: 2px 4px !important;
       font-weight: 700;
       border-radius: 8px !important;
@@ -364,7 +503,7 @@
       color: var(--text);
       margin-left: auto;
       font-variant-numeric: tabular-nums;
-      font-size: 13px;
+      font-size: 14px;
     }
     .group-confirm-bar {
       padding: 6px 10px;
@@ -392,7 +531,7 @@
     table.items th {
       font-weight: 600;
       color: var(--muted);
-      font-size: 10px;
+      font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.4px;
       background: #fcfcfd;
@@ -464,7 +603,7 @@
       padding: 10px 12px;
     }
     .stat-label {
-      font-size: 10px;
+      font-size: 11px;
       color: var(--muted);
       text-transform: uppercase;
       letter-spacing: 0.4px;
@@ -540,7 +679,7 @@
       border-radius: 6px;
       background: var(--text);
       color: white;
-      font-size: 13px;
+      font-size: 14px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       opacity: 0;
       transform: translateY(10px);
@@ -586,13 +725,13 @@ body,input,select,button,textarea{font-family:'Inter',-apple-system,BlinkMacSyst
 .home-footer-notes{font-size:12px;font-style:italic;color:#7a716a;white-space:pre-wrap;line-height:1.5}
 .home-footer-notes:empty{display:none}
 .col-saving{width:5%;text-align:center}
-.saving-toggle{background:none;border:1px solid var(--border);border-radius:4px;padding:2px 5px;font-size:13px;cursor:pointer;opacity:.4}
+.saving-toggle{background:none;border:1px solid var(--border);border-radius:4px;padding:2px 5px;font-size:14px;cursor:pointer;opacity:.4}
 .saving-toggle.on{opacity:1;border-color:#b8860b;background:#fdfaed}
 .goal-pending{font-size:11px;color:#b78103;margin-top:2px}
 .goal-pending .clock{margin-right:2px}
 .goal-dates{display:flex;gap:8px;margin-top:6px;font-size:11px}
 .goal-dates input{width:110px;font-size:11px;padding:2px 4px}
-.goal-dates label{font-size:10px;opacity:.6;display:block;margin-bottom:1px}
+.goal-dates label{font-size:11px;opacity:.6;display:block;margin-bottom:1px}
 .goal-save-row{margin-top:6px;display:flex;gap:6px;align-items:center}
 .goal-save-row input[type="number"]{width:90px;font-size:12px}
 /* ---------- Wizard (v2.5.1) ---------- */
@@ -616,7 +755,7 @@ body,input,select,button,textarea{font-family:'Inter',-apple-system,BlinkMacSyst
 .wizard-actions{display:flex;justify-content:space-between;align-items:center;margin-top:24px;gap:12px}
 .wizard-actions .wizard-skip{font-size:12px;color:#7a716a;background:none;border:none;cursor:pointer;text-decoration:underline}
 .wizard-actions .wizard-right{display:flex;gap:8px;margin-left:auto}
-.wizard-btn{padding:8px 18px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid transparent;font-family:'Inter',sans-serif}
+.wizard-btn{padding:8px 18px;border-radius:6px;font-size:14px;font-weight:500;cursor:pointer;border:1px solid transparent;font-family:'Inter',sans-serif}
 .wizard-btn-primary{background:#4682B4;color:#fff;border-color:#4682B4}
 .wizard-btn-primary:hover{background:#3d6f9a}
 .wizard-btn-ghost{background:transparent;color:#3a342e;border-color:#c8c0ae}
@@ -628,7 +767,7 @@ body,input,select,button,textarea{font-family:'Inter',-apple-system,BlinkMacSyst
 .wizard-choice-btn span{font-size:12px;color:#6a5f50;line-height:1.5}
 
 /* ---------- Helper tips ---------- */
-.helper-tip{background:#fdfaed;border:1px solid #ead9a6;border-left:3px solid #b8860b;border-radius:8px;padding:14px 16px;margin-bottom:16px;font-size:13px;line-height:1.6;color:#3a342e;position:relative}
+.helper-tip{background:#fdfaed;border:1px solid #ead9a6;border-left:3px solid #b8860b;border-radius:8px;padding:14px 16px;margin-bottom:16px;font-size:14px;line-height:1.6;color:#3a342e;position:relative}
 .helper-tip.hidden{display:none}
 .helper-tip-icon{margin-right:6px}
 .helper-tip-title{font-weight:600;color:#2c2722;margin-bottom:6px}
@@ -642,7 +781,7 @@ body,input,select,button,textarea{font-family:'Inter',-apple-system,BlinkMacSyst
 /* ---------- Improved rename warning ---------- */
 .rename-warn-panel{background:#fdfaed;border:1px solid #ead9a6;border-left:3px solid #b8860b;border-radius:8px;padding:14px 16px;margin:8px 0;display:flex;gap:12px;align-items:flex-start}
 .rename-warn-icon{font-size:20px;flex-shrink:0;line-height:1}
-.rename-warn-body{flex:1;font-size:13px;line-height:1.55;color:#3a342e}
+.rename-warn-body{flex:1;font-size:14px;line-height:1.55;color:#3a342e}
 .rename-warn-body strong{display:block;color:#2c2722;margin-bottom:6px;font-weight:600}
 .rename-warn-body p{margin:0 0 10px 0}
 .rename-warn-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
@@ -653,7 +792,7 @@ body,input,select,button,textarea{font-family:'Inter',-apple-system,BlinkMacSyst
 .rename-warn-actions .btn-break:hover{background:#f0ebdd}
 
 /* ---------- Settings About + helper tips toggle ---------- */
-.settings-about{margin-top:24px;padding:16px 18px;background:#fbf8f1;border:1px solid #ebe5d6;border-radius:10px;font-size:13px;line-height:1.6;color:#3a342e}
+.settings-about{margin-top:24px;padding:16px 18px;background:#fbf8f1;border:1px solid #ebe5d6;border-radius:10px;font-size:14px;line-height:1.6;color:#3a342e}
 .settings-about h4{margin:0 0 8px 0;font-size:14px;font-weight:600;color:#2c2722;font-family:'Lora',serif}
 .settings-about p{margin:4px 0}
 .settings-about .version-line{font-size:11px;color:#7a716a;margin-top:10px}
@@ -669,7 +808,7 @@ body{padding-top:62px}
 
 /* ---------- v2.5.8: Undo/redo toolbar ---------- */
 .history-toolbar{display:inline-flex;gap:4px;align-items:center;margin-left:8px}
-.history-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:3px 8px;border-radius:4px;cursor:pointer;font-size:13px;line-height:1}
+.history-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:3px 8px;border-radius:4px;cursor:pointer;font-size:14px;line-height:1}
 .history-btn:hover:not(:disabled){border-color:var(--steel);color:var(--steel)}
 .history-btn:disabled{opacity:.35;cursor:not-allowed}
 .history-btn.revert{margin-left:6px;font-size:11px;padding:3px 8px}
@@ -679,7 +818,7 @@ body{padding-top:62px}
 .rename-warn-actions .btn-cancel:hover{background:#f0ebdd}
 .delete-warn-panel{background:#fdf0ee;border:1px solid #e9b5ad;border-left:3px solid #c0392b;border-radius:8px;padding:14px 16px;margin:8px 0;display:flex;gap:12px;align-items:flex-start}
 .delete-warn-icon{font-size:20px;flex-shrink:0;line-height:1}
-.delete-warn-body{flex:1;font-size:13px;line-height:1.55;color:#3a342e}
+.delete-warn-body{flex:1;font-size:14px;line-height:1.55;color:#3a342e}
 .delete-warn-body strong{display:block;color:#2c2722;margin-bottom:6px;font-weight:600}
 .delete-warn-body p{margin:0 0 10px 0}
 .delete-warn-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
@@ -782,7 +921,7 @@ body.calc-ready #calcFab{display:flex;align-items:center;justify-content:center}
   align-items:center;
 }
 #calcCustomInput{
-  flex:1;padding:5px 8px;font-size:13px;border:1px solid var(--border);
+  flex:1;padding:5px 8px;font-size:14px;border:1px solid var(--border);
   border-radius:4px;font-family:'Inter',sans-serif;
 }
 #calcCustomInput:focus{outline:1px solid var(--steel);border-color:var(--steel)}
@@ -795,7 +934,7 @@ body.calc-ready #calcFab{display:flex;align-items:center;justify-content:center}
 #calcCustomSub:hover{background:#f5e8e8;color:#a03030;border-color:#d8b0b0}
 #calcList{
   max-height:220px;overflow-y:auto;padding:6px 0;
-  font-size:13px;
+  font-size:14px;
 }
 #calcList:empty::before{
   content:"No items selected yet. Click + or − next to an item in the Plan, or type a custom amount above.";
@@ -811,7 +950,7 @@ body.calc-ready #calcFab{display:flex;align-items:center;justify-content:center}
 .calc-line-amount{font-variant-numeric:tabular-nums;flex-shrink:0}
 .calc-line-remove{
   background:transparent;border:none;color:var(--muted);cursor:pointer;
-  font-size:13px;line-height:1;padding:0 2px;flex-shrink:0;
+  font-size:14px;line-height:1;padding:0 2px;flex-shrink:0;
 }
 .calc-line-remove:hover{color:#a03030}
 #calcTotalRow{
@@ -861,7 +1000,7 @@ body.calc-active .calc-btn-minus{display:inline-block}
   display:flex;flex-direction:column;gap:2px;align-items:flex-start;flex:1;min-width:0;
 }
 .plan-summary-cell .label{
-  font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);
+  font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);
 }
 .plan-summary-cell .value{
   font-family:'Lora',serif;font-size:20px;font-weight:500;color:var(--text);
@@ -940,7 +1079,7 @@ body.calc-active .calc-btn-minus{display:inline-block}
   font-weight:400;margin-left:6px;
 }
 .goal-tile-amount{
-  font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;
+  font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums;
   white-space:nowrap;flex-shrink:0;
 }
 .goal-tile-amount.has-target{color:var(--text);font-weight:500}
@@ -990,10 +1129,10 @@ body.calc-active .calc-btn-minus{display:inline-block}
 }
 .goal-edit-field{display:flex;flex-direction:column;gap:3px;flex:1;min-width:120px}
 .goal-edit-field label{
-  font-size:10px;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);
+  font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);
 }
 .goal-edit-field input{
-  padding:6px 8px;font-size:13px;border:1px solid var(--border);border-radius:4px;
+  padding:6px 8px;font-size:14px;border:1px solid var(--border);border-radius:4px;
   font-family:'Inter',sans-serif;
 }
 .goal-edit-field input:focus{outline:1px solid var(--steel);border-color:var(--steel)}
@@ -1029,6 +1168,116 @@ body.calc-active .calc-btn-minus{display:inline-block}
   .goal-edit-row{flex-direction:column;align-items:stretch}
 }
 
+/* ====================================================================
+   v2.8.0 — Mobile overhaul. Same touch-first refinements brought over
+   from Yesanio Sole Trader Edition v0.7.0 so both products feel
+   consistent on phones.
+
+     1. No iOS auto-zoom — inputs at 16px+ on focus
+     2. Real tap targets — 44px minimum height
+     3. Modals → full-screen sheets on phones
+     4. Hamburger menu drops as a wider sheet with bigger tap targets
+     5. Goal tiles, plan rows, settings rows: bigger touch surfaces
+
+   The Yesanio-specific Plan view (with its FIXED/VARIABLE/PAID
+   columns) and Goals view already have decent mobile collapse logic;
+   this layer reinforces them with consistent tap targets and input
+   sizing.
+   ==================================================================== */
+
+@media (max-width: 760px) {
+  /* iOS zoom prevention */
+  input[type="text"],
+  input[type="number"],
+  input[type="month"],
+  input[type="search"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="password"],
+  input[type="date"],
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+
+  /* 44px tap targets */
+  .btn { min-height: 44px; padding: 11px 20px; font-size: 15px; }
+  nav#nav button { min-height: 44px; }
+  input[type="text"],
+  input[type="number"],
+  input[type="month"],
+  input[type="search"],
+  input[type="date"],
+  select { padding: 12px 14px; min-height: 44px; }
+  input[type="checkbox"] { width: 22px; height: 22px; cursor: pointer; }
+
+  /* Tighter card padding */
+  .card { padding: 16px 14px; margin-bottom: 12px; }
+
+  /* Hamburger sheet wider with bigger tap targets */
+  nav#nav { right: 8px; left: 8px; min-width: 0; padding: 8px; }
+  nav#nav button { padding: 13px 16px; font-size: 16px; }
+
+  /* Home headline + heading slightly tighter on narrow screens */
+  .home-headline { padding: 22px 18px !important; margin-bottom: 18px !important; }
+  .home-headline-text { font-size: 19px !important; line-height: 1.5 !important; }
+  .home-heading { font-size: 24px !important; }
+
+  /* Goal tiles and plan rows: bigger tap surfaces */
+  .goal-card,
+  .goal-tile {
+    padding: 14px 16px;
+    min-height: 60px;
+  }
+
+  /* Modal/dialog → full-screen sheet on mobile */
+  .wizard-overlay,
+  .modal-overlay,
+  .calc-overlay {
+    padding: 0 !important;
+    align-items: stretch !important;
+  }
+  .wizard-modal,
+  .modal,
+  .calc-modal {
+    max-width: none !important;
+    width: 100% !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    overflow-y: auto;
+  }
+
+  /* Wizard buttons fit thumbs */
+  .wizard-btn,
+  .wizard-choice-btn { min-height: 48px; font-size: 15px; }
+
+  /* Tags input: bigger tap targets for chips */
+  .tags-input { padding: 8px 8px; min-height: 44px; }
+  .tag-chip { font-size: 14px; padding: 4px 12px; min-height: 32px; }
+
+  /* Last-saved indicator hides on phones (we have the dirty button
+     pulse for the same signal) */
+  .last-saved { display: none; }
+
+  /* Tables in the Plan view that aren't already collapsible: switch
+     to mobile cards with the same data-mobile-label pseudo-element
+     pattern as the Sole Trader Edition's ledger. Yesanio's Plan view
+     is a more bespoke layout so this is opt-in via .table-mobile-cards
+     class on individual <table>s if/when needed in the future. */
+}
+
+/* Even tighter on very narrow phones */
+@media (max-width: 380px) {
+  main { padding: 12px 8px var(--space-5); }
+  .card { padding: 14px 12px; }
+  .home-heading { font-size: 22px !important; }
+  .home-headline-text { font-size: 18px !important; }
+}
+
   </style>
 </head>
 <body>
@@ -1050,7 +1299,6 @@ body.calc-active .calc-btn-minus{display:inline-block}
       <span class="brand-tagline">· Clarity. Overview. Control.</span>
     </div>
   </div>
-  <button id="navToggle" aria-label="Open menu" aria-expanded="false">☰</button>
   <nav id="nav">
     <button data-view="home" class="active">Home</button>
     <button data-view="setup">Plan</button>
@@ -1058,6 +1306,9 @@ body.calc-active .calc-btn-minus{display:inline-block}
     <button data-view="goals">Goals</button>
     <button data-view="settings">Settings</button>
   </nav>
+  <button id="navToggle" aria-label="Open menu" aria-expanded="false">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+  </button>
 </header>
 
 <main>
@@ -1335,22 +1586,22 @@ body.calc-active .calc-btn-minus{display:inline-block}
     </div>
 
     <div class="card">
-      <h4 style="margin:0 0 8px 0; font-size:13px;">Income vs Allocated</h4>
+      <h4 style="margin:0 0 8px 0; font-size:14px;">Income vs Allocated</h4>
       <div id="chart_income_alloc" class="chart-container"></div>
     </div>
 
     <div class="card">
-      <h4 style="margin:0 0 8px 0; font-size:13px;">Fixed vs Variable spending</h4>
+      <h4 style="margin:0 0 8px 0; font-size:14px;">Fixed vs Variable spending</h4>
       <div id="chart_fixed_var" class="chart-container"></div>
     </div>
 
     <div class="card">
-      <h4 style="margin:0 0 8px 0; font-size:13px;">Allocation rate (% of income committed)</h4>
+      <h4 style="margin:0 0 8px 0; font-size:14px;">Allocation rate (% of income committed)</h4>
       <div id="chart_alloc_rate" class="chart-container"></div>
     </div>
 
     <div class="card">
-      <h4 style="margin:0 0 8px 0; font-size:13px;">Summary</h4>
+      <h4 style="margin:0 0 8px 0; font-size:14px;">Summary</h4>
       <div id="chart_summary"></div>
     </div>
   </section>
@@ -1360,7 +1611,7 @@ body.calc-active .calc-btn-minus{display:inline-block}
   <!-- ============================================================ -->
   <section id="goalsView" class="view">
     <h2 style="font-family:'Lora',serif;font-size:20px;font-weight:500;margin:0 0 4px 0;color:#2c2722;">Goals</h2>
-    <p style="font-size:13px;color:#6a5f50;margin:0 0 16px 0;line-height:1.5;">Long-term targets you're saving toward — track progress as you mark monthly contributions paid.</p>
+    <p style="font-size:14px;color:#6a5f50;margin:0 0 16px 0;line-height:1.5;">Long-term targets you're saving toward — track progress as you mark monthly contributions paid.</p>
     <div class="helper-tip" id="tip-goals" style="margin:0 0 16px 0;">
       <button class="helper-tip-dismiss" onclick="dismissTip('goals')">Understood, don't show again</button>
       <div class="helper-tip-title"><span class="helper-tip-icon">💡</span>How goals work in Yesanio</div>
@@ -1436,7 +1687,7 @@ body.calc-active .calc-btn-minus{display:inline-block}
 </main>
 
 <footer id="appFooter">
-  <a href="https://github.com/jc-universe87/yesanio/releases/tag/v2.7.2" target="_blank" rel="noopener">Yesanio v2.7.2</a>
+  <a href="https://github.com/jc-universe87/yesanio/releases/tag/v2.8.1" target="_blank" rel="noopener">Yesanio v2.8.1</a>
   <span class="sep">·</span>
   © Pistio
   <span class="sep">·</span>
@@ -2309,7 +2560,7 @@ function startMonthDeleteConfirm() {
   slot.innerHTML = `
     <span class="inline-confirm">
       Type <strong>${escapeHtml(month)}</strong> to confirm:
-      <input type="text" id="monthDeleteConfirmInput" placeholder="${escapeHtml(month)}" style="width:90px;padding:2px 6px;font-size:13px;margin:0 4px;">
+      <input type="text" id="monthDeleteConfirmInput" placeholder="${escapeHtml(month)}" style="width:90px;padding:2px 6px;font-size:14px;margin:0 4px;">
       <button class="btn btn-confirm" id="confirmDeleteBtn" disabled>Delete</button>
       <button class="btn btn-ghost" id="cancelDeleteBtn">Cancel</button>
     </span>
@@ -3333,7 +3584,7 @@ async function waitForBackend(){
       ov = document.createElement("div");
       ov.id = "bootOverlay";
       ov.style.cssText = "position:fixed;inset:0;background:#fbf8f1;display:flex;align-items:center;justify-content:center;z-index:9999;font-family:'Lora',serif;font-size:18px;color:#6a5f50;";
-      ov.innerHTML = '<div style="text-align:center;"><div style="font-size:24px;margin-bottom:8px;">Yesanio</div><div style="font-size:13px;font-family:Inter,sans-serif;opacity:0.7;">Connecting&hellip;</div></div>';
+      ov.innerHTML = '<div style="text-align:center;"><div style="font-size:24px;margin-bottom:8px;">Yesanio</div><div style="font-size:14px;font-family:Inter,sans-serif;opacity:0.7;">Connecting&hellip;</div></div>';
       document.body.appendChild(ov);
     }
   }, 500);
@@ -3356,7 +3607,7 @@ async function waitForBackend(){
   clearTimeout(overlayTimer);
   // Give up after 30s; let normal error handling show what's wrong
   const ov = document.getElementById("bootOverlay");
-  if (ov) ov.innerHTML = '<div style="text-align:center;color:#c0392b;"><div style="font-size:18px;margin-bottom:8px;">Could not reach Yesanio backend</div><div style="font-size:13px;font-family:Inter,sans-serif;">Check that all containers are running, then refresh.</div></div>';
+  if (ov) ov.innerHTML = '<div style="text-align:center;color:#c0392b;"><div style="font-size:18px;margin-bottom:8px;">Could not reach Yesanio backend</div><div style="font-size:14px;font-family:Inter,sans-serif;">Check that all containers are running, then refresh.</div></div>';
   return false;
 }
 

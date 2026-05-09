@@ -2,6 +2,103 @@
 
 All notable changes to Yesanio.
 
+## 2.8.1 — May 2026
+
+**Mobile overhaul.** Frontend-only. Same touch-first refinements brought over from Yesanio Sole Trader Edition v0.7.0 so both products feel consistent on phones.
+
+### What changed
+
+- **No iOS auto-zoom.** Inputs at 16px on focus (was 14px, which triggers Safari's auto-zoom and breaks layout on every form field touch).
+- **44px tap targets** on all buttons, nav items, and form inputs — iOS HIG minimum so you don't mis-tap.
+- **Hamburger sheet is wider and more comfortable.** Drops with 8px side margins (was 12px), 13px button padding (was 9px), 16px font (was 14px) — easier to read and tap.
+- **Modals → full-screen sheets on mobile.** The wizard, calculator, and any other dialogs now go full-bleed instead of awkwardly letterboxing on a phone screen. They feel native.
+- **Wizard buttons** at 48px min-height with 15px font for thumb-friendly choices.
+- **Tags input** has 44px min-height with 32px chips so adding tags doesn't require pixel-perfect tapping.
+- **Goal tiles** at 60px min-height for easier tapping.
+- **Home headline + heading** tighten gracefully on narrow screens (22 × 18px padding, 19px headline-text, 24px home-heading; even tighter at <380px).
+- **Last-saved timestamp hides on phones** — the dirty-button gold pulse already signals unsaved state, so the timestamp is screen real estate that doesn't earn its keep on mobile.
+
+### What was preserved
+
+The cream `home-headline` cards with state-driven colours, the home-band conversational lines, the goal tiles and charts, the Plan view layout — all unchanged in their distinctive Yesanio treatment. The mobile layer reinforces them with consistent tap targets and input sizing rather than redesigning them.
+
+### Forward note
+
+The Plan view's tables (Income / Allocated / etc.) currently scroll horizontally on phones. A future release could opt-in to a `.table-mobile-cards` class that uses the same `data-mobile-label` pattern as the Sole Trader Edition's ledger to convert each row into a stacked card. Out of scope for this release — the existing horizontal scroll works, just isn't optimal.
+
+### Compatible
+
+Backend version bumped from 2.8.0 to 2.8.1 (cosmetic only — no API changes). Frontend → backend is fully compatible with any 2.7.x or 2.8.x backend you already have running.
+
+### Deploy
+
+```bash
+cd ~/docker-compose
+unzip -o yesanio-v2.8.1.zip
+cd yesanio
+docker compose down
+docker compose build --no-cache yesanio-backend
+docker compose up -d --force-recreate
+```
+
+Hard-refresh the browser. Test on a phone — the inputs should not auto-zoom on focus, buttons should feel substantial under a thumb, and any modal that opens should fill the screen.
+
+## 2.8.0 — May 2026
+
+**Visual alignment with Yesanio Sole Trader Edition.** Frontend-only. No new features, no backend changes, no data changes — every line of this release is about how the UI feels under your eyes for sustained use.
+
+### What changed
+
+The Sole Trader Edition (sibling project) had a typography + layout refinement pass through v0.2.1 → v0.6.0 that reworked the design system around CSS variables (typography scale, spacing scale, shadow scale, softer borders). This release brings the same visual layer to the original Yesanio so the two products feel like they belong to the same family.
+
+**A real typography scale, in CSS variables.** Before: 9 different font sizes used in roughly random places (10, 11, 12, 13, 14, 16, 18, 20, 22, 28). After: one coherent scale held in `--fs-meta` (11px) → `--fs-small` (12) → `--fs-body` (14) → `--fs-card-title` (17) → `--fs-section` (22) → `--fs-hero` (32). Plus `--lh-tight` (1.3) and `--lh-normal` (1.55) for line-heights.
+
+**Body text bumped 13 → 14px**, line-height 1.4 → 1.55. Reading helper tips, settings copy, the home headlines — all noticeably more comfortable for sustained use.
+
+**Tiny labels bumped 10 → 11px.** Below 11px, uppercase letter-spaced labels become genuinely hard to read; one notch up clears that threshold cleanly across all the labels in the Plan and Settings views.
+
+**Refined cards.** Lighter borders (12% alpha instead of solid grey), soft 1px shadow, 20px+ padding instead of 10px. Cards still feel like surfaces but recede so the data inside takes the foreground.
+
+**Three-column header with backdrop-blur.** Brand left, centered pill-tab nav, hamburger right. The header is now `position: fixed` with a translucent cream background and `backdrop-filter: saturate(180%) blur(14px)` — content tints subtly through the chrome when you scroll. Hairline border at 8% alpha replaces the solid border-bottom.
+
+**Pill-tab nav.** Active tab is white with a tiny shadow; inactive tabs sit in a 4% grey pill background. Mirrors the Sole Trader Edition's chrome.
+
+**Bigger inputs with softer focus.** Padding bumped from 5px to 8px vertical. Focus state is a 3px translucent steel halo instead of a harsh 2px solid outline. They feel premium now — more like the kind of fields you'd see in Stripe or Linear.
+
+**Bigger buttons** (9 × 18 padding instead of 6 × 14), with a tiny shadow that lifts on hover and a 1px translate on click for tactile feedback.
+
+**SVG hamburger** instead of the `☰` text glyph (2010-era), at 18 × 18px, in a translucent white pill.
+
+### Mobile
+
+The header collapses to hamburger at <760px. The dropdown nav sheet drops from below the header with a 12px corner radius, larger shadow, and slightly larger tap targets (9px vertical padding, 14px font).
+
+At <480px the brand wordmark shrinks (20/14px) to leave room for the pill nav button.
+
+### What did NOT change
+
+- All views (Home / Plan / Charts / Goals / Settings) and their distinctive Yesanio treatments — the cream `home-headline` cards with state-driven colours (`is-fresh` / `is-planned` / `is-surplus` / `is-over`), the home-band lines, the goal tiles, the chart styles
+- The dirty-button gold pulse animation
+- All keyboard shortcuts and behaviour
+- Backend logic — VERSION bumped to 2.8.0 so health endpoint reports the new version, but no API or data changes
+
+### Compatible
+
+Backend version bumped from 2.7.2 to 2.8.0 (cosmetic only — no API contract change). Frontend → backend is fully compatible with any 2.7.x backend you already have running.
+
+### Deploy
+
+```bash
+cd ~/docker-compose
+unzip -o yesanio-v2.8.0.zip
+cd yesanio
+docker compose down
+docker compose build --no-cache yesanio-backend
+docker compose up -d --force-recreate
+```
+
+Hard-refresh the browser (Ctrl+Shift+R / Cmd+Shift+R).
+
 ## 2.7.2 — April 2026
 **Documentation refresh.** Frontend-only.
 
